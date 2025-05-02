@@ -1,4 +1,4 @@
-# Multi-Agent VLLM Interaction Framework
+# TFrameX Agents Framework
 
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) <!-- Adjust license if needed -->
