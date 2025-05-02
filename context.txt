@@ -1,0 +1,1 @@
+The user is specifically interested in the practical applications of Large Language Models (LLMs) in software development workflows, excluding code generation itself. Focus on areas like documentation assistance, test case generation from requirements, and natural language querying of codebase metrics.
