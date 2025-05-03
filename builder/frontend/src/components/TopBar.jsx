@@ -42,7 +42,7 @@ const TopBar = () => {
     <div className="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4 shadow-md">
       {/* Project Controls */}
       <div className="flex items-center space-x-4">
-         <span className="text-lg font-semibold text-gray-100">Flow Runner</span>
+         <span className="text-lg font-semibold text-gray-100">Tesslate Studio</span>
         {/* Project Selector */}
         <select
           value={currentProjectId || ''}

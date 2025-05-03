@@ -1,0 +1,163 @@
+<memory>
+The project is a Doggie Daycare landing page with a playful, pastel-themed design. Key elements include:
+- A header with logo, navigation, and CTA button
+- Hero section with background image and overlay text
+- Services section with 3-4 cards (playtime, grooming, training)
+- Testimonials with client photos
+- Contact form with name, email, message fields
+- Footer with links and copyright
+- Responsive design using CSS media queries
+- Google Fonts (Poppins for body, Great Vibes for headings)
+- Soft pastel color palette (light blue, yellow, pink)
+- Rounded corners on buttons/cards
+- Favicon with paw print icon
+- Form validation via JavaScript (no backend integration)
+- Semantic HTML5 structure
+- Optimized images for performance
+</memory>
+
+<prompt filename="index.html">
+Create a semantic HTML5 structure with:
+1. Doctype declaration and html lang="en"
+2. Head section with:
+   - Meta charset=utf-8
+   - Meta viewport=width=device-width, initial-scale=1.0
+   - Title tag with "Doggie Daycare - Where Your Pup Thrives!"
+   - Link to css/style.css
+   - Link to Google Fonts (Poppins and Great Vibes)
+   - Favicon link to assets/favicon.ico
+3. Body structure:
+   - Header with logo (img src="assets/images/logo.png" alt="Doggie Daycare Logo")
+   - Navigation bar with links to Home, About, Services, Booking, Contact
+   - Hero section with:
+     - Full-width image (img src="assets/images/dog1.jpg" alt="Happy dog in daycare")
+     - Overlay text with h1 and h2 tags
+     - CTA button "Book a Spot"
+   - Services section with 3-4 cards (use divs with class="service-card")
+   - Testimonials section with quotes and client photos
+   - Contact form with:
+     - Input fields for name, email, message
+     - Submit button
+   - Footer with links and copyright
+   - Script tag linking to js/script.js
+</prompt>
+
+<prompt filename="css/style.css">
+Style the page with:
+1. Global styles:
+   - Font stack: Poppins for body, Great Vibes for headings
+   - Background color: #fff8f0 (pastel yellow)
+   - Margin/padding reset
+2. Header styles:
+   - Flex layout with logo and nav
+   - Background color: #f0f8ff (pastel blue)
+   - Padding and border-radius
+3. Hero section:
+   - Full-height container with background image
+   - Centered text with semi-transparent overlay
+   - Bold heading font size 3rem
+   - CTA button with rounded corners and hover effect
+4. Services section:
+   - Grid layout with 3 columns
+   - Card styles with box-shadow and padding
+   - Icon placeholders (use font-awesome or custom SVG)
+5. Testimonials:
+   - Card layout with border and padding
+   - Client photo alignment
+6. Contact form:
+   - Responsive layout with input styling
+   - Error state styling for invalid fields
+7. Footer:
+   - Light background color
+   - Link styling with hover effect
+8. Add @media queries for:
+   - Mobile devices (max-width: 768px)
+   - Tablet devices (min-width: 769px, max-width: 1024px)
+</prompt>
+
+<prompt filename="css/responsive.css">
+Add responsive adjustments:
+1. Navigation bar:
+   - Change to vertical stack on small screens
+   - Add hamburger menu for mobile
+2. Hero section:
+   - Reduce font size on small screens
+3. Services grid:
+   - Change to 1-column layout on small screens
+4. Contact form:
+   - Stack input fields vertically on small screens
+5. Footer:
+   - Stack links vertically on small screens
+</prompt>
+
+<prompt filename="js/script.js">
+Implement JavaScript features:
+1. Form validation:
+   - Check for empty fields
+   - Validate email format
+   - Display error messages
+2. Smooth scrolling:
+   - Add click event to navigation links
+   - Animate scroll to section IDs
+3. Add event listener for:
+   - Form submission (prevent default)
+   - Input field changes (real-time validation)
+4. Create functions:
+   - validateForm()
+   - smoothScroll()
+   - showErrorMessage()
+</prompt>
+
+<prompt filename="assets/images/logo.png">
+Create a placeholder logo with:
+- Dog silhouette icon
+- Text "Doggie Daycare"
+- Pastel color scheme
+- 200x80px dimensions
+- PNG format
+</prompt>
+
+<prompt filename="assets/images/dog1.jpg">
+Create a hero background image with:
+- Happy dog in daycare environment
+- Bright, colorful setting
+- 1920x1080px resolution
+- JPEG format
+</prompt>
+
+<prompt filename="assets/images/dog2.jpg">
+Create a secondary dog image with:
+- Dog playing with toys
+- Outdoor park setting
+- 1200x800px resolution
+- JPEG format
+</prompt>
+
+<prompt filename="assets/images/dog3.jpg">
+Create a third dog image with:
+- Dog sleeping in a bed
+- Cozy indoor environment
+- 800x1200px resolution
+- JPEG format
+</prompt>
+
+<prompt filename="assets/favicon.ico">
+Create a favicon with:
+- Paw print icon
+- 16x16 and 32x32px versions
+- PNG format
+- Transparent background
+</prompt>
+
+<prompt filename=".gitignore">
+Add standard gitignore rules:
+1. /node_modules/
+2. /dist/
+3. /env/
+4. *.log
+5. *.env
+6. /assets/images/*.png
+7. /assets/images/*.jpg
+8. /css/*.css
+9. /js/*.js
+</prompt>

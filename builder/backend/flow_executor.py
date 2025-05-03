@@ -131,7 +131,7 @@ def strip_think_tags(text: str) -> str:
 
 async def execute_node(node_data: Dict[str, Any], run_id: str) -> Any:
     """Executes a single node based on its type and data."""
-    node_type = node_data.get('nodeType')
+    node_type = node_data.get('type')
     node_id = node_data.get('id', 'unknown_node')
     data = node_data.get('data', {})
     start_time = time.time()
@@ -239,7 +239,7 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
         # We wrap execute_node to capture results along with node info
         async def task_wrapper(n):
             result = await execute_node(n, run_id)
-            return {"id": n.get('id'), "type": n.get('nodeType'), "result": result}
+            return {"id": n.get('id'), "type": n.get('type'), "result": result}
         
         execution_tasks.append(task_wrapper(node))
 
@@ -251,7 +251,7 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
     for node in nodes:
          # Only run nodes that seem like "end points" or stand-alone systems for now
          # This avoids running intermediate nodes without proper data passing.
-         node_type = node.get('nodeType')
+         node_type = node.get('type')
          if node_type in ['basicAgent', 'contextAgent', 'chainOfAgents', 'multiCallSystem', 'softwareBuilder']:
              logger.info(f"[{run_id}] Adding node {node.get('id')} ({node_type}) to execution queue.")
              try:
