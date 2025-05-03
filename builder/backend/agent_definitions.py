@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 # Import tframex components needed for instantiation
 from tframex.model import VLLMModel
-from tframex.agents import BasicAgent, ContextAgent
+from tframex.agents import BasicAgent, ContextAgent # BasicAgent is needed for FlowBuilder
 from tframex.systems import ChainOfAgents, MultiCallSystem
 
 # Import the execution functions
@@ -13,12 +13,12 @@ from agents.basic import execute_basic_agent
 from agents.context import execute_context_agent
 from agents.chain import execute_chain_system
 from agents.multi_call import execute_multi_call_system
+from agents.flow_builder import execute_flow_builder_agent # <-- NEW IMPORT
 
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-# --- Central Model Configuration (lazy loaded in flow_executor) ---
-# Configuration from Environment (can be used by constructors if needed)
+# --- Configs (remain the same) ---
 API_URL = os.getenv("API_URL")
 API_KEY = os.getenv("API_KEY")
 MODEL_NAME = os.getenv("MODEL_NAME")
@@ -32,32 +32,29 @@ CHAIN_CHUNK_OVERLAP = int(os.getenv("CHAIN_CHUNK_OVERLAP", 200))
 AGENT_REGISTRY = {}
 
 def register_agent(agent_id, name, description, agent_type, inputs, outputs, constructor, execute_function):
-    """
-    Helper to register agent/system definitions.
-    Inputs/Outputs map logical_name -> details_dict {handle_id, description, required?, type?}
-    """
+    """Helper to register agent/system definitions."""
     if agent_id in AGENT_REGISTRY:
-        # Log a warning instead of crashing if hot-reloading might cause issues
         logger.warning(f"Agent/System with ID '{agent_id}' is being re-registered.")
-        # raise ValueError(f"Agent/System with ID '{agent_id}' already registered.")
 
-    # Validate basic structure
+    # Basic validation
     for logical_name, details in inputs.items():
         if not isinstance(details, dict) or 'handle_id' not in details:
-            raise ValueError(f"Input '{logical_name}' for agent '{agent_id}' is missing 'handle_id' in its definition.")
+             # Allow simple descriptions for agents like flowBuilder that don't use visual handles
+             if not isinstance(details, dict) or 'description' not in details:
+                  raise ValueError(f"Input '{logical_name}' for agent '{agent_id}' lacks details.")
     for logical_name, details in outputs.items():
-         if not isinstance(details, dict) or 'handle_id' not in details:
-            raise ValueError(f"Output '{logical_name}' for agent '{agent_id}' is missing 'handle_id' in its definition.")
+        if not isinstance(details, dict) or 'description' not in details: # Output might not need handle_id
+             raise ValueError(f"Output '{logical_name}' for agent '{agent_id}' lacks details.")
 
     AGENT_REGISTRY[agent_id] = {
         "id": agent_id,
         "name": name,
         "description": description,
-        "type": agent_type, # 'agent' or 'system'
-        "inputs": inputs, # Dict: { logical_name: { handle_id: str, description: str, required?: bool, type?: str } }
-        "outputs": outputs, # Dict: { logical_name: { handle_id: str, description: str, type?: str } }
-        "constructor": constructor, # Function/Class to create an instance (takes model)
-        "execute_function": execute_function # Async function that runs the logic
+        "type": agent_type,
+        "inputs": inputs,
+        "outputs": outputs,
+        "constructor": constructor,
+        "execute_function": execute_function
     }
     logger.debug(f"Registered agent/system: {agent_id}")
 
@@ -222,23 +219,46 @@ register_agent(
     execute_function=execute_multi_call_system
 )
 
+# --- Flow Builder Agent (NEW) ---
+register_agent(
+    agent_id="flowBuilderAgent",
+    name="Flow Builder Agent",
+    description="Internal agent used by the chatbot sidebar to generate/modify flows.",
+    agent_type="agent", # It acts like an agent taking instructions
+    inputs={
+        # These inputs are not visual handles, just logical data for the execution function
+        "user_message": {"description": "The natural language request from the user."},
+        "available_nodes_context": {"description": "String describing available node types."},
+        "current_flow_context": {"description": "JSON string of the current nodes and edges."}
+    },
+    outputs={
+        # This output is not a visual handle, it's the raw result for the API handler
+        "raw_llm_output": {"description": "The raw output from the LLM, potentially including <think> tags and JSON."}
+    },
+    # Use a BasicAgent instance as the underlying executor for the complex prompt
+    constructor=lambda model: BasicAgent(agent_id="dynamic_flowbuilder", model=model),
+    execute_function=execute_flow_builder_agent
+)
+
 # --- Functions to Access Definitions ---
-def get_definitions():
-    """Returns a list of definitions suitable for the frontend."""
+def get_definitions_for_frontend():
+    """Returns a list of definitions suitable for the frontend node list."""
     frontend_definitions = []
+    # Exclude internal agents like flowBuilderAgent from the node list
+    excluded_ids = {"flowBuilderAgent"}
     for agent_id, definition in AGENT_REGISTRY.items():
-         # Simplify inputs/outputs for frontend if needed, or send full details
+        if agent_id in excluded_ids:
+            continue
+
         frontend_definitions.append({
             "id": definition["id"],
             "name": definition["name"],
             "description": definition.get("description", ""),
             "type": definition.get("type", "unknown"),
-            # Send simplified inputs/outputs (name: description) or full structure
-            "inputs": { lname: details.get("description", "") for lname, details in definition.get("inputs", {}).items() },
-            "outputs": { lname: details.get("description", "") for lname, details in definition.get("outputs", {}).items() },
-            # Optionally send handle IDs if frontend needs them for validation?
-            "input_handles": { lname: details["handle_id"] for lname, details in definition.get("inputs", {}).items() },
-            "output_handles": { lname: details["handle_id"] for lname, details in definition.get("outputs", {}).items() },
+            "inputs": { lname: details.get("description", "") for lname, details in definition.get("inputs", {}).items() if details.get("handle_id")}, # Only show handle inputs
+            "outputs": { lname: details.get("description", "") for lname, details in definition.get("outputs", {}).items() if details.get("handle_id")}, # Only show handle outputs
+            "input_handles": { lname: details["handle_id"] for lname, details in definition.get("inputs", {}).items() if details.get("handle_id")},
+            "output_handles": { lname: details["handle_id"] for lname, details in definition.get("outputs", {}).items() if details.get("handle_id")},
         })
     return frontend_definitions
 

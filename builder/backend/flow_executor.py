@@ -3,6 +3,7 @@ import asyncio
 import os
 import logging
 import time
+import re # Import re for stripping tags
 from typing import List, Dict, Any, Set, Optional, Tuple
 from collections import deque, defaultdict
 from dotenv import load_dotenv
@@ -14,7 +15,7 @@ from tframex.model import VLLMModel
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("FlowExecutor")
+logger = logging.getLogger("FlowExecutor") # Use a consistent logger name
 
 # --- Model Setup ---
 API_URL = os.getenv("API_URL")
@@ -46,7 +47,26 @@ async def get_model() -> VLLMModel:
                 raise RuntimeError(f"Could not initialize VLLM Model: {e}")
         return vllm_model_instance
 
-# --- Helper Function for Handle Mapping ---
+# --- Helper Functions ---
+
+# NEW: Function to strip <think> tags
+def strip_think_tags(text: str) -> str:
+    """Removes content up to and including the first </think> tag if present."""
+    if not isinstance(text, str): # Ensure input is a string
+        return text # Return non-strings as-is
+
+    think_end_tag = "</think>"
+    tag_pos = text.find(think_end_tag)
+    if tag_pos != -1:
+        logger.debug("Found </think> tag, stripping preceding content.")
+        # Add basic check for content after tag
+        content_after = text[tag_pos + len(think_end_tag):].strip()
+        return content_after
+    else:
+        logger.debug("No </think> tag found, using full response.")
+        return text.strip() # Return original text (stripped) if tag not found
+
+# Helper for Handle Mapping
 def find_logical_name_for_handle(definition: Dict, handle_id: str, io_type: str) -> Optional[str]:
     """Finds the logical input/output name corresponding to a handle ID."""
     if not definition or io_type not in definition:
@@ -57,6 +77,7 @@ def find_logical_name_for_handle(definition: Dict, handle_id: str, io_type: str)
             return logical_name
     # Fallback: if handle_id itself is a key (less likely with new structure)
     if handle_id in io_map:
+        logger.debug(f"Falling back to using handle_id '{handle_id}' as logical name for {io_type}.")
         return handle_id
     return None
 
@@ -65,6 +86,7 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
     """
     Executes the flow topologically based on nodes and edges.
     Passes data between nodes according to edge connections and handle mapping.
+    Strips <think> tags from string outputs before logging or passing downstream.
     """
     run_id = f"run_{int(time.time())}"
     logger.info(f"--- Starting Dynamic Flow Execution ({run_id}) ---")
@@ -101,6 +123,7 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
             logical_input_name = find_logical_name_for_handle(target_definition, target_handle, 'inputs')
             if logical_input_name:
                 connected_logical_inputs[target_id][logical_input_name] = True
+                logger.debug(f"[{run_id}] Edge maps: {source_id}[{source_handle}] -> {target_id}[{target_handle}] (logical input: '{logical_input_name}')")
             else:
                 logger.warning(f"[{run_id}] Edge target handle '{target_handle}' on node {target_id} does not map to a defined logical input.")
         else:
@@ -108,8 +131,8 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
 
     # 2. Initialize Execution State
     queue = deque([node_id for node_id in all_node_ids if in_degree[node_id] == 0])
-    execution_results: Dict[str, Dict[str, Any]] = {} # node_id -> {logical_output_name: value}
-    node_input_data: Dict[str, Dict[str, Any]] = defaultdict(dict) # node_id -> {logical_input_name: value}
+    execution_results: Dict[str, Dict[str, Any]] = {} # node_id -> {logical_output_name: stripped_value}
+    node_input_data: Dict[str, Dict[str, Any]] = defaultdict(dict) # node_id -> {logical_input_name: stripped_value}
     executed_nodes: Set[str] = set()
     agent_instances: Dict[str, Any] = {} # Store instantiated agents/systems
 
@@ -133,7 +156,7 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
             except Exception as e:
                 logger.error(f"[{run_id}] Failed to instantiate node {node_id} ({node_type}): {e}", exc_info=True)
                 output_log.append(f"\n## ERROR: Failed to instantiate node {node_id} ({node_type}): {e} ##")
-                # Consider failing fast or marking node as failed
+                # Mark as not instantiated by *not* adding to agent_instances
 
     # 3. Execute Nodes Topologically
     exec_count = 0
@@ -150,11 +173,13 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
             logger.warning(f"[{run_id}] Node {node_id} from queue not found in map. Skipping.")
             continue
         if node_id not in agent_instances:
-            logger.warning(f"[{run_id}] Node {node_id} ({node_map[node_id].get('type')}) failed instantiation. Skipping execution.")
-            # Decrement in_degree for downstream nodes as this one won't provide output
-            for target_id, _, _ in adj[node_id]:
-                 in_degree[target_id] -= 1
-                 # Check readiness? Risky if other inputs were expected. Better to let flow fail naturally.
+            # Node failed instantiation, log and skip execution
+            node_type_for_log = node_map.get(node_id, {}).get('type', 'Unknown Type')
+            logger.warning(f"[{run_id}] Node {node_id} ({node_type_for_log}) was not instantiated successfully. Skipping execution.")
+            output_log.append(f"\n--- Node: {node_id} ({node_type_for_log}) ---")
+            output_log.append(f"Status: SKIPPED (Instantiation Failed)")
+            # We don't decrement downstream in_degrees here; the flow should naturally stop
+            # if required inputs are missing due to this node's failure.
             continue
 
 
@@ -165,6 +190,8 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
 
         if not definition or not definition.get('execute_function'):
             logger.warning(f"[{run_id}] No definition or execute_function for node {node_id} ({node_type}). Skipping.")
+            output_log.append(f"\n--- Node: {node_id} ({node_type}) ---")
+            output_log.append(f"Status: SKIPPED (No execute function defined)")
             continue
 
         # Gather input data: Start with defaults/data from the node config,
@@ -174,7 +201,7 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
         defined_input_names = set(definition.get('inputs', {}).keys())
         current_node_inputs = {k: v for k, v in current_node_inputs.items() if k in defined_input_names}
 
-        # Add data from incoming edges
+        # Add data from incoming edges (already stripped by upstream nodes)
         current_node_inputs.update(node_input_data[node_id])
 
         # Check for missing required inputs that were expected via edges
@@ -198,29 +225,41 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
 
         try:
             # Execute the node's logic
-            node_outputs = await definition['execute_function'](agent_instance, current_node_inputs)
+            raw_node_outputs = await definition['execute_function'](agent_instance, current_node_inputs)
 
-            if not isinstance(node_outputs, dict):
-                 logger.warning(f"[{run_id}] Node {node_id} execution function did not return a dictionary. Result: {node_outputs}")
+            if not isinstance(raw_node_outputs, dict):
+                 logger.warning(f"[{run_id}] Node {node_id} execution function did not return a dictionary. Result: {raw_node_outputs}")
                  # Attempt to wrap if there's a single logical output defined
                  output_keys = list(definition.get('outputs', {}).keys())
                  if len(output_keys) == 1:
-                      node_outputs = {output_keys[0]: node_outputs}
+                      raw_node_outputs = {output_keys[0]: raw_node_outputs}
                  else:
-                      node_outputs = {"output": str(node_outputs)} # Fallback
+                      # Fallback: wrap in a generic 'output' key
+                      raw_node_outputs = {"output": str(raw_node_outputs)}
+
+            # *** NEW: Strip <think> tags from string outputs ***
+            processed_node_outputs = {}
+            for logical_out_name, out_value in raw_node_outputs.items():
+                if isinstance(out_value, str):
+                    stripped_value = strip_think_tags(out_value)
+                    if stripped_value != out_value: # Log if stripping actually happened
+                         logger.info(f"[{run_id}] Node {node_id}: Stripped <think> tags from output '{logical_out_name}'.")
+                    processed_node_outputs[logical_out_name] = stripped_value
+                else:
+                    processed_node_outputs[logical_out_name] = out_value # Keep non-strings as is
 
 
-            execution_results[node_id] = node_outputs # Store results keyed by logical output name
+            execution_results[node_id] = processed_node_outputs # Store *stripped* results
             executed_nodes.add(node_id)
 
-            # Log success and output
+            # Log success and *stripped* output
             output_log.append(f"Status: Success")
-            for logical_out_name, out_value in node_outputs.items():
-                 output_log.append(f"Output '{logical_out_name}':\n{str(out_value)}") # Log each named output
+            for logical_out_name, stripped_value in processed_node_outputs.items():
+                 output_log.append(f"Output '{logical_out_name}':\n{str(stripped_value)}") # Log each named *stripped* output
 
             logger.info(f"[{run_id}] Node {node_id} execution successful.")
 
-            # Process downstream nodes (pass data and decrement in_degree)
+            # Process downstream nodes (pass *stripped* data and decrement in_degree)
             for target_id, source_handle, target_handle in adj[node_id]:
                  target_node = node_map.get(target_id)
                  target_definition = get_definition(target_node.get('type')) if target_node else None
@@ -231,15 +270,15 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
                     logical_input_name = find_logical_name_for_handle(target_definition, target_handle, 'inputs')
 
                     if logical_output_name and logical_input_name:
-                        # Get the value using the logical output name
-                        output_value = node_outputs.get(logical_output_name)
+                        # Get the *stripped* value using the logical output name
+                        output_value_to_pass = processed_node_outputs.get(logical_output_name)
 
-                        if output_value is not None:
+                        if output_value_to_pass is not None:
                             # Store using the logical input name for the target
-                            node_input_data[target_id][logical_input_name] = output_value
+                            node_input_data[target_id][logical_input_name] = output_value_to_pass # Pass stripped value
                             logger.info(f"[{run_id}] Passing output '{logical_output_name}' from {node_id} (handle '{source_handle}') to input '{logical_input_name}' of {target_id} (handle '{target_handle}')")
                         else:
-                             logger.warning(f"[{run_id}] Logical output '{logical_output_name}' (from handle '{source_handle}') not found in results of node {node_id}. Cannot pass data to {target_id}.")
+                             logger.warning(f"[{run_id}] Logical output '{logical_output_name}' (from handle '{source_handle}') not found in processed results of node {node_id}. Cannot pass data to {target_id}.")
                     else:
                         logger.warning(f"[{run_id}] Could not map handles for edge {node_id}[{source_handle}] -> {target_id}[{target_handle}]. Cannot pass data.")
 
@@ -252,6 +291,7 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
                          for req_logical_name, details in target_reqs.items():
                               is_req = details.get('required', False)
                               was_connected = connected_logical_inputs.get(target_id, {}).get(req_logical_name, False)
+                              # Check node_input_data which now holds the stripped values passed from upstream
                               if is_req and was_connected and req_logical_name not in node_input_data[target_id]:
                                    is_ready = False
                                    logger.debug(f"[{run_id}] Node {target_id} still waiting for required connected input '{req_logical_name}'.")
@@ -288,3 +328,50 @@ async def run_flow(nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> 
     logger.info(f"--- Dynamic Flow Execution Finished ({run_id}) ---")
 
     return "\n".join(output_log)
+
+# Example usage (for testing if run directly, though typically called from elsewhere)
+if __name__ == '__main__':
+    async def main():
+        # Define a simple test flow
+        test_nodes = [
+            {"id": "node_1", "type": "TextInput", "data": {"text": "<think>This is internal thought.</think>Hello World!"}},
+            {"id": "node_2", "type": "ConsoleOutput", "data": {}}, # Requires 'text' input
+        ]
+        test_edges = [
+            {"source": "node_1", "sourceHandle": "text_output", "target": "node_2", "targetHandle": "text_input"}
+        ]
+
+        # Mock agent definitions for testing
+        MOCK_DEFINITIONS = {
+            "TextInput": {
+                "constructor": lambda model: None, # Doesn't need model
+                "execute_function": lambda instance, inputs: {"text_output": inputs.get("text", "Default Text")},
+                "inputs": {"text": {"handle_id": "text_input_unused", "required": False}}, # Input usually set via node data
+                "outputs": {"text_output": {"handle_id": "text_output"}}
+            },
+            "ConsoleOutput": {
+                "constructor": lambda model: None,
+                "execute_function": lambda instance, inputs: {"status": f"Received: {inputs.get('text_input', 'NOTHING')}"},
+                "inputs": {"text_input": {"handle_id": "text_input", "required": True}},
+                "outputs": {"status": {"handle_id": "status_output"}}
+            }
+        }
+
+        original_get_definition = get_definition # Backup
+        def mock_get_definition(node_type: str):
+             return MOCK_DEFINITIONS.get(node_type)
+
+        # Replace get_definition with mock
+        import agent_definitions
+        agent_definitions.get_definition = mock_get_definition
+
+        print("--- Running Test Flow ---")
+        result_log = await run_flow(test_nodes, test_edges)
+        print("\n--- Execution Log ---")
+        print(result_log)
+        print("--- End Test Flow ---")
+
+        # Restore original get_definition
+        agent_definitions.get_definition = original_get_definition
+
+    asyncio.run(main())
