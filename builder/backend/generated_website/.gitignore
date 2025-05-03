@@ -1,9 +1,0 @@
-/node_modules/
-/dist/
-/env/
-*.log
-*.env
-/assets/images/*.png
-/assets/images/*.jpg
-/css/*.css
-/js/*.js
