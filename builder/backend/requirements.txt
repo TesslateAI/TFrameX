@@ -1,0 +1,5 @@
+Flask
+Flask-Cors
+python-dotenv
+tframex # Assuming tframex is installable via pip
+# Add specific versions if needed, e.g., Flask==2.3.0

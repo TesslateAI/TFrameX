@@ -1,0 +1,69 @@
+@import "tailwindcss";
+/* Basic dark theme styles */
+body {
+  @apply bg-gray-900 text-gray-200 font-sans;
+}
+
+/* Style React Flow */
+.react-flow__pane {
+  background-color: #1a202c; /* Slightly lighter dark */
+}
+
+.react-flow__controls button {
+  @apply bg-gray-700 text-gray-200 border-gray-600 hover:bg-gray-600;
+}
+
+.react-flow__minimap {
+   @apply bg-gray-800 border border-gray-600;
+}
+.react-flow__minimap-node {
+   @apply fill-blue-500 stroke-blue-300;
+}
+
+.react-flow__node {
+  /* Add more specific node styles in node components or here */
+  @apply bg-gray-800 border border-gray-600 rounded-lg shadow-md text-gray-200;
+  min-width: 200px; /* Ensure nodes have some minimum width */
+}
+
+.react-flow__handle {
+    @apply bg-blue-500 border-2 border-gray-900;
+    width: 10px;
+    height: 10px;
+}
+
+.react-flow__handle-connecting {
+    @apply bg-green-500;
+}
+
+.react-flow__edge-path {
+  @apply stroke-blue-400;
+   stroke-width: 2;
+}
+
+/* Custom Scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-gray-700 rounded;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-500 rounded;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Input/Textarea Styling */
+.node-input, .node-textarea {
+    @apply block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-1 px-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+    margin-top: 4px; /* Add some space */
+}
+.node-textarea {
+    min-height: 60px; /* Give textareas some default height */
+}
+.node-label {
+    @apply block text-sm font-medium text-gray-300 mb-1;
+}
