@@ -3,8 +3,8 @@ import asyncio
 import logging
 import os
 import math
-from model_logic import BaseModel
-from agents import BasicAgent # Using BasicAgent for summarization/final answer
+from tframex.model.model_logic import BaseModel # NEW
+from tframex.agents.agents import BasicAgent # NEW
 from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)

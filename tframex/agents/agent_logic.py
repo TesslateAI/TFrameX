@@ -1,8 +1,7 @@
 # agent_logic.py
 import logging
 from abc import ABC, abstractmethod
-from model_logic import BaseModel # Import the base model
-# --- MODIFICATION: Added List, Dict for type hint ---
+from tframex.model.model_logic import BaseModel # NEW
 from typing import Any, List, Dict
 # --- END MODIFICATION ---
 

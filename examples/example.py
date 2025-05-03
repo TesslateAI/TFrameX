@@ -9,9 +9,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import Model, Agents, and Systems
-from model_logic import VLLMModel
-from agents import BasicAgent, ContextAgent
-from systems import ChainOfAgents, MultiCallSystem
+from tframex.model.model_logic import VLLMModel # NEW
+from tframex.agents.agents import BasicAgent, ContextAgent # NEW
+from tframex.systems.systems import ChainOfAgents, MultiCallSystem # NEW
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)

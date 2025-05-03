@@ -1,3 +1,16 @@
+# ... existing ignores ...
 .env
 /example_outputs
 /__pycache__
+
+# Python build artifacts
+*.egg-info/
+dist/
+build/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/

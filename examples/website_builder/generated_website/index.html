@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clown Website - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.com/normalize" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="Clown Logo" aria-label="Clown Logo" />
+      </div>
+      <ul class="nav-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+      </ul>
+      <div class="cta-buttons">
+        <button class="cta-button" aria-label="Book Show">
+          <img src="assets/icons/clown-face.svg" alt="Clown Face Icon" />
+        </button>
+        <button class="cta-button" aria-label="See Gallery">
+          <img src="assets/icons/clown-face.svg" alt="Clown Face Icon" />
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1 class="animate-fadeIn">Welcome to the Circus!</h1>
+    </section>
+
+    <section class="featured-events">
+      <button class="carousel-prev" aria-label="Previous Event">❮</button>
+      <div class="carousel-slider">
+        <div class="carousel-slide">Event 1: Circus Spectacular</div>
+        <div class="carousel-slide">Event 2: Magic & Laughter</div>
+        <div class="carousel-slide">Event 3: Clown Showdown</div>
+      </div>
+      <button class="carousel-next" aria-label="Next Event">❯</button>
+    </section>
+
+    <section class="cta-section">
+      <button class="cta-button" aria-label="Book Show">
+        <img src="assets/icons/clown-face.svg" alt="Clown Face Icon" />
+      </button>
+      <button class="cta-button" aria-label="See Gallery">
+        <img src="assets/icons/clown-face.svg" alt="Clown Face Icon" />
+      </button>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2023 Clown Website. All rights reserved.</p>
+      <div class="social-media">
+        <a href="#" aria-label="Facebook"><img src="assets/icons/facebook.svg" alt="Facebook Icon" /></a>
+        <a href="#" aria-label="Instagram"><img src="assets/icons/instagram.svg" alt="Instagram Icon" /></a>
+        <a href="#" aria-label="Email"><img src="assets/icons/email.svg" alt="Email Icon" /></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

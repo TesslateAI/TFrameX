@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About | Clown Website</title>
+    <link rel="stylesheet" href="https://cdnjs.com/normalize" />
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body>
+    <header>
+        <nav aria-label="Main Navigation">
+            <div class="logo">
+                <img src="assets/images/logo.png" alt="Clown Logo" />
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+            </ul>
+            <div class="hamburger" aria-label="Toggle Menu">☰</div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="team-bios" aria-labelledby="team-heading">
+            <h2 id="team-heading">Our Team</h2>
+            <div class="team-grid">
+                <div class="profile-card">
+                    <img src="assets/images/clown1.jpg" alt="Clown 1" />
+                    <h3>John Doe</h3>
+                    <p>Bio text here.</p>
+                </div>
+                <div class="profile-card">
+                    <img src="assets/images/clown2.jpg" alt="Clown 2" />
+                    <h3>Jane Smith</h3>
+                    <p>Bio text here.</p>
+                </div>
+                <div class="profile-card">
+                    <img src="assets/images/clown1.jpg" alt="Clown 3" />
+                    <h3>Mike Johnson</h3>
+                    <p>Bio text here.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="history-timeline" aria-labelledby="history-heading">
+            <h2 id="history-heading">Our History</h2>
+            <div class="timeline">
+                <div class="date-marker">2010 - Founded</div>
+                <div class="date-marker">2015 - First Event</div>
+                <div class="date-marker">2020 - Expanded Team</div>
+            </div>
+        </section>
+
+        <section class="mission-statement" aria-labelledby="mission-heading">
+            <h2 id="mission-heading">Mission Statement</h2>
+            <p>To bring joy and laughter to every event with our vibrant performances and dedicated team.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Clown Website. All rights reserved.</p>
+        <div class="social-icons">
+            <a href="#" aria-label="Facebook"><img src="assets/icons/facebook.svg" alt="Facebook" /></a>
+            <a href="#" aria-label="Instagram"><img src="assets/icons/instagram.svg" alt="Instagram" /></a>
+            <a href="#" aria-label="Email"><img src="assets/icons/email.svg" alt="Email" /></a>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/form.js"></script>
+</body>
+</html>
