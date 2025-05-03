@@ -11,6 +11,7 @@ def create_flow_builder_prompt(user_request: str, available_nodes_str: str, curr
 
     # Define the expected JSON output format explicitly in the prompt
     json_format_description = """
+    /no_think
 Your goal is to understand the user's request and generate an updated flow configuration consisting of nodes and edges.
 You MUST output a valid JSON object *after* your thinking process (outside the <think> tags).
 The JSON object MUST have the following structure:

@@ -1,24 +1,31 @@
 // src/components/ChatbotPanel.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { useStore } from '../store';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area'; // Use shadcn ScrollArea
+import { Send, Trash2, Loader2 } from 'lucide-react'; // Icons
+import { cn } from '@/lib/utils'; // Import cn utility
 
 const ChatbotPanel = () => {
   const [inputMessage, setInputMessage] = useState('');
-
-  // --- CORRECTED STATE SELECTION ---
-  // Select each piece of state or action individually
   const chatHistory = useStore((state) => state.chatHistory);
   const sendChatMessage = useStore((state) => state.sendChatMessage);
   const isChatbotLoading = useStore((state) => state.isChatbotLoading);
   const clearChatHistory = useStore((state) => state.clearChatHistory);
-  // ---------------------------------
+  const messagesEndRef = useRef(null);
+  const scrollAreaViewportRef = useRef(null);
 
-  const messagesEndRef = useRef(null); // To auto-scroll
-
-  // Scroll to bottom when new messages arrive
+  // Scroll to bottom when new messages arrive or loading state changes
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory]); // Dependency is correct
+    const viewport = scrollAreaViewportRef.current;
+    if (viewport) {
+        // Use setTimeout to allow the DOM to update before scrolling
+        setTimeout(() => {
+             viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+        }, 50); // Short delay
+    }
+  }, [chatHistory, isChatbotLoading]); // Trigger on history and loading state
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -29,61 +36,68 @@ const ChatbotPanel = () => {
   };
 
   return (
-    <div className="flex flex-col h-full p-2">
+    <div className="flex flex-col h-full p-3"> {/* Add padding to the panel */}
       {/* Chat History */}
-      <div className="flex-grow overflow-y-auto mb-2 bg-gray-900 rounded p-2 space-y-3">
-        {chatHistory.map((msg, index) => (
-          <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div
-              className={`max-w-[80%] p-2 rounded-lg text-sm whitespace-pre-wrap break-words ${
-                msg.sender === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : msg.type === 'error'
-                  ? 'bg-red-800 text-red-100'
-                  : 'bg-gray-600 text-gray-200'
-              }`}
-            >
-              {msg.message}
-            </div>
-          </div>
-        ))}
-         {isChatbotLoading && (
-             <div className="flex justify-start">
-                 <div className="max-w-[80%] p-2 rounded-lg text-sm bg-gray-600 text-gray-400 animate-pulse">
-                    Thinking...
+      <ScrollArea className="flex-grow mb-3 rounded-md border border-border bg-background">
+         <div ref={scrollAreaViewportRef} className="h-full p-3 space-y-4"> {/* Add padding inside scroll area */}
+            {chatHistory.map((msg, index) => (
+              <div key={index} className={cn('flex', msg.sender === 'user' ? 'justify-end' : 'justify-start')}>
+                <div
+                  className={cn(
+                    'max-w-[80%] p-2.5 rounded-lg text-sm whitespace-pre-wrap break-words shadow-sm', // Added shadow
+                    msg.sender === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : msg.type === 'error'
+                      ? 'bg-destructive text-destructive-foreground'
+                      : 'bg-secondary text-secondary-foreground' // Default bot message
+                  )}
+                >
+                  {msg.message}
+                </div>
+              </div>
+            ))}
+             {isChatbotLoading && (
+                 <div className="flex justify-start">
+                     <div className="max-w-[80%] p-2.5 rounded-lg text-sm bg-secondary text-muted-foreground flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Thinking...
+                     </div>
                  </div>
-             </div>
-         )}
-        <div ref={messagesEndRef} />
-      </div>
+             )}
+            <div ref={messagesEndRef} /> {/* Invisible element to scroll to */}
+         </div>
+      </ScrollArea>
 
       {/* Input Area */}
       <form onSubmit={handleSendMessage} className="flex-shrink-0 flex items-center space-x-2">
-        <input
+        <Input
           type="text"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           placeholder="Describe the flow..."
-          className="flex-grow node-input !mt-0"
+          className="flex-grow" // Removed !mt-0 as margin handled by space-x
           disabled={isChatbotLoading}
           aria-label="Chat input"
         />
-        <button
+        <Button
           type="submit"
+          size="icon"
           disabled={isChatbotLoading || !inputMessage.trim()}
-          className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Send Message"
         >
-          Send
-        </button>
-         <button
+          <Send className="h-4 w-4" />
+          <span className="sr-only">Send</span>
+        </Button>
+         <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={clearChatHistory}
             disabled={isChatbotLoading || chatHistory.length === 0}
-            className="p-2 text-xs font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
             title="Clear Chat"
         >
-            🗑️
-        </button>
+            <Trash2 className="h-4 w-4" />
+            <span className="sr-only">Clear Chat</span>
+        </Button>
       </form>
     </div>
   );

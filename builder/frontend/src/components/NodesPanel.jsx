@@ -1,5 +1,8 @@
 // src/components/NodesPanel.jsx
 import React from 'react';
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"; // Use shadcn Card
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Use shadcn Alert
+import { Loader2, Terminal } from 'lucide-react'; // Icons
 
 const DraggableNode = ({ type, label, description }) => {
   const onDragStart = (event, nodeType, nodeLabel) => {
@@ -9,26 +12,39 @@ const DraggableNode = ({ type, label, description }) => {
   };
 
   return (
-    <div
-      className="p-3 mb-3 border border-gray-600 rounded-md cursor-grab bg-gray-700 hover:bg-gray-600 hover:border-blue-500 transition-colors duration-150 ease-in-out text-left"
+    <Card
+      className="mb-3 cursor-grab hover:border-primary transition-colors duration-150 ease-in-out"
       onDragStart={(event) => onDragStart(event, type, label)}
       draggable
-      title={description}
+      title={description || label} // Tooltip
     >
-      <div className="font-semibold text-sm">{label}</div>
-      {description && <div className="text-xs text-gray-400 mt-1">{description}</div>}
-    </div>
+      <CardHeader className="p-3">
+        <CardTitle className="text-sm font-semibold">{label}</CardTitle>
+        {description && <CardDescription className="text-xs mt-1">{description}</CardDescription>}
+      </CardHeader>
+    </Card>
   );
 };
 
 
 const NodesPanel = ({ agentDefs, isLoading, error }) => {
+    // Container div with padding is now handled in Sidebar for TabsContent
     return (
-        <div className="flex-grow overflow-y-auto p-1"> {/* Add padding */}
-            {isLoading && <div className="text-center text-gray-400 py-4">Loading nodes...</div>}
-            {error && <div className="text-center text-red-400 p-2 bg-red-900/50 rounded mx-2">{error}</div>}
+        <>
+            {isLoading && (
+                <div className="flex items-center justify-center text-muted-foreground py-4">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading nodes...
+                </div>
+            )}
+            {error && (
+                 <Alert variant="destructive" className="mx-1">
+                    <Terminal className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
             {!isLoading && !error && agentDefs.length === 0 && (
-                <div className="text-center text-gray-500 py-4">No nodes available.</div>
+                <div className="text-center text-muted-foreground py-4 text-sm">No nodes available.</div>
             )}
             {!isLoading && !error && agentDefs.map((def) => (
                 <DraggableNode
@@ -38,7 +54,7 @@ const NodesPanel = ({ agentDefs, isLoading, error }) => {
                 description={def.description}
                 />
             ))}
-        </div>
+        </>
     );
 };
 
