@@ -44,6 +44,69 @@ Example Node data content based on type:
 - chainOfAgents: {"label": "System Name", "initialPrompt": "...", "longText": "...", "maxTokens": null, "chunkSize": 2000, "chunkOverlap": 200}
 - multiCallSystem: {"label": "System Name", "prompt": "...", "numCalls": 5, "baseFilename": "output", "maxTokens": 1000}
 
+Example JSON for a website:
+{
+  "nodes": [
+    {
+      "id": "planner-1", // ID can vary
+      "type": "plannerAgent", // Must match agent_definitions.py
+      "position": { "x": 100, "y": 150 }, // Example position
+      "data": {
+        "label": "Plan Software", // Optional label
+        "user_request": "" // Planner node needs this field, initially empty
+      }
+    },
+    {
+      "id": "distributor-1", // ID can vary
+      "type": "distributorAgent", // Must match agent_definitions.py
+      "position": { "x": 400, "y": 150 }, // Example position
+      "data": {
+        "label": "Distribute Tasks" // Optional label
+      }
+    },
+    {
+      "id": "generator-1", // ID can vary
+      "type": "fileGeneratorAgent", // Must match agent_definitions.py
+      "position": { "x": 700, "y": 150 }, // Example position
+      "data": {
+        "label": "Generate Files" // Optional label
+        // Note: run_id is NOT set here, it's added by the executor
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "reactflow__edge-planner-1plan_out-distributor-1plan_in", // ID format convention
+      "source": "planner-1",
+      "target": "distributor-1",
+      "sourceHandle": "plan_out", // Matches plannerAgent output handle
+      "targetHandle": "plan_in", // Matches distributorAgent input handle
+      "type": "smoothstep", // Optional styling
+      "animated": true      // Optional styling
+    },
+    // Edge for Memory output -> input
+    {
+      "id": "reactflow__edge-distributor-1memory_out-generator-1memory_in",
+      "source": "distributor-1",
+      "target": "generator-1",
+      "sourceHandle": "memory_out", // Matches distributorAgent output handle
+      "targetHandle": "memory_in", // Matches fileGeneratorAgent input handle
+      "type": "smoothstep",
+      "animated": true
+    },
+    // Edge for File Prompts output -> input
+    {
+      "id": "reactflow__edge-distributor-1file_prompts_out-generator-1file_prompts_in",
+      "source": "distributor-1",
+      "target": "generator-1",
+      "sourceHandle": "file_prompts_out", // Matches distributorAgent output handle
+      "targetHandle": "file_prompts_in", // Matches fileGeneratorAgent input handle
+      "type": "smoothstep",
+      "animated": true
+    }
+  ]
+}
+
 IMPORTANT:
 - Base your response ENTIRELY on the user's request and the provided context (available nodes, current flow).
 - If the user asks to modify the flow, output the *complete* new JSON structure for the *entire* flow, not just the changes.

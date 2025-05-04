@@ -21,15 +21,19 @@ import ContextAgentNode from './nodes/ContextAgentNode';
 import ChainOfAgentsNode from './nodes/ChainOfAgentsNode';
 import MultiCallSystemNode from './nodes/MultiCallSystemNode';
 // SoftwareBuilderNode is removed
+import PlannerAgentNode from './nodes/PlannerAgentNode'; // Create this file
+import DistributorAgentNode from './nodes/DistributorAgentNode'; // Create this file
+import FileGeneratorAgentNode from './nodes/FileGeneratorAgentNode'; // Create this file
 
-// --- Define node types mapping OUTSIDE the component ---
-// These keys MUST match the `agent_id` used in backend/agent_definitions.py
 const nodeTypes = {
   basicAgent: BasicAgentNode,
   contextAgent: ContextAgentNode,
   chainOfAgents: ChainOfAgentsNode,
   multiCallSystem: MultiCallSystemNode,
-  // softwareBuilder: SoftwareBuilderNode, // Removed
+  // Add new software builder nodes
+  plannerAgent: PlannerAgentNode,
+  distributorAgent: DistributorAgentNode,
+  fileGeneratorAgent: FileGeneratorAgentNode,
 };
 // ----------------------------------------------------
 
