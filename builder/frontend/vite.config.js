@@ -11,4 +11,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    host: true,
+    strictPort: true,
+    cors: true,
+    hmr: {
+      host: "studio.tesslate.com",
+    },
+    allowedHosts: ["studio.tesslate.com"],
+  },
 })

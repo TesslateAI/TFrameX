@@ -10,7 +10,7 @@ version = "0.1.0"  # Start with an initial version
 authors = [
   { name="TesslateAI", email="your.email@example.com" }, # Replace with actual details
 ]
-description = "A framework for interacting with VLLM/OpenAI-compatible LLMs using agents and systems."
+description = "A framework for building agentic systems with large language models."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" } # Assuming MIT based on README badge
