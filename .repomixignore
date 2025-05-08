@@ -1,8 +1,0 @@
-# Add patterns to ignore here, one per line
-# Example:
-# *.log
-# tmp/
-venv/
-__pycache__/
-examples/
-node_modules/
