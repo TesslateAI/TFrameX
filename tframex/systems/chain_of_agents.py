@@ -20,7 +20,7 @@ def chunk_text(text: str, chunk_size: int, chunk_overlap: int = 50) -> List[str]
         if end >= len(text):
              break
     if len(chunks) > 1 and chunks[-1] == chunks[-2][chunk_overlap:]:
-         pass
+        chunks.pop()
     final_chunks = [c for c in chunks if c]
     logger.info(f"Chunked text into {len(final_chunks)} chunks (size={chunk_size}, overlap={chunk_overlap})")
     return final_chunks
