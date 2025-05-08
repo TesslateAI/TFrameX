@@ -3,7 +3,6 @@ import logging
 from abc import ABC, abstractmethod
 from tframex.model.model_logic import BaseModel # NEW
 from typing import Any, List, Dict
-# --- END MODIFICATION ---
 
 logger = logging.getLogger(__name__)
 
@@ -35,14 +34,11 @@ class BaseAgent(ABC):
         """
         Helper to call model's stream (using chat format) and collect the full response.
         """
-        # --- MODIFICATION: Convert prompt string to messages list ---
         messages: List[Dict[str, str]] = [{"role": "user", "content": prompt}]
         full_response = ""
-        # --- MODIFICATION: Pass messages list to model ---
         async for chunk in self.model.call_stream(messages, **kwargs):
             full_response += chunk
         return full_response
-        # --- END MODIFICATION ---
 
 # Potentially add shared utility functions here in the future
 # e.g., parse_xml_tags, format_common_prompts etc.

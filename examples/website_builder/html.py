@@ -359,7 +359,7 @@ if __name__ == "__main__":
     # Ensure artifact directory exists
     if not os.path.exists("build_artifacts"):
         os.makedirs("build_artifacts")
-        print(f"Created build artifacts directory: build_artifacts")
+        print("Created build artifacts directory: build_artifacts")
 
 
     initial_request = input("Enter your software request (e.g., 'a website for a coffee shop frontend'): ")

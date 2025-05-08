@@ -4,8 +4,8 @@ import json
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-# --- MODIFICATION: Added List for messages type hint ---
-from typing import AsyncGenerator, Optional, Dict, Any, List
+
+from typing import AsyncGenerator, Dict, List
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -16,7 +16,6 @@ class BaseModel(ABC):
         self.model_id = model_id
         logger.info(f"Initializing base model structure for ID: {model_id}")
 
-    # --- MODIFICATION: Changed signature and docstring for 'messages' ---
     @abstractmethod
     async def call_stream(self, messages: List[Dict[str, str]], **kwargs) -> AsyncGenerator[str, None]:
         """
@@ -31,7 +30,6 @@ class BaseModel(ABC):
         """
         raise NotImplementedError
         yield "" # Required for async generator typing
-    # --- END MODIFICATION ---
 
     @abstractmethod
     async def close_client(self):
@@ -52,9 +50,7 @@ class VLLMModel(BaseModel):
         super().__init__(model_id=f"vllm_{model_name.replace('/', '_')}")
         self.model_name = model_name
         base_url = api_url.replace('/v1', '').rstrip('/')
-        # --- MODIFICATION: Changed URL name and target endpoint ---
         self.chat_completions_url = f"{base_url}/v1/chat/completions"
-        # --- END MODIFICATION ---
         self.api_key = api_key
         self.default_max_tokens = default_max_tokens
         self.default_temperature = default_temperature
@@ -64,11 +60,8 @@ class VLLMModel(BaseModel):
         }
         timeouts = httpx.Timeout(None, connect=100.0)
         self._client = httpx.AsyncClient(headers=self.headers, timeout=timeouts)
-        # --- MODIFICATION: Updated log message ---
         logger.info(f"VLLMModel '{self.model_id}' initialized for CHAT endpoint {self.chat_completions_url}")
-        # --- END MODIFICATION ---
 
-    # --- MODIFICATION: Method signature now expects 'messages' list ---
     async def call_stream(self, messages: List[Dict[str, str]], max_retries: int = 2, **kwargs) -> AsyncGenerator[str, None]:
         """
         Calls the VLLM CHAT completions endpoint with messages and streams the response.
@@ -84,22 +77,18 @@ class VLLMModel(BaseModel):
         """
         payload = {
             "model": self.model_name,
-            # --- MODIFICATION: Use 'messages' instead of 'prompt' ---
             "messages": messages,
             "max_tokens": kwargs.get('max_tokens', self.default_max_tokens),
             "temperature": kwargs.get('temperature', self.default_temperature),
             "stream": True,
             **{k: v for k, v in kwargs.items() if k not in ['max_tokens', 'temperature', 'max_retries']}
         }
-        # --- END MODIFICATION ---
 
         last_exception = None
         for attempt in range(max_retries + 1):
             try:
-                # --- MODIFICATION: Updated log message and URL variable ---
                 logger.debug(f"[{self.model_id}] Attempt {attempt+1}/{max_retries+1}: Sending request to {self.chat_completions_url}")
                 async with self._client.stream("POST", self.chat_completions_url, json=payload) as response:
-                # --- END MODIFICATION ---
                     if response.status_code == 429: # Specific handling for rate limits
                          retry_after = int(response.headers.get("Retry-After", "5")) # Default to 5s
                          logger.warning(f"[{self.model_id}] Rate limit hit (429). Retrying after {retry_after} seconds.")
@@ -126,7 +115,6 @@ class VLLMModel(BaseModel):
                             try:
                                 json_data = json.loads(data_content)
                                 text_chunk = "" # Initialize empty
-                                # --- MODIFICATION: Parse chat completions stream format ---
                                 if 'choices' in json_data and len(json_data['choices']) > 0:
                                     choice = json_data['choices'][0]
                                     if 'delta' in choice and 'content' in choice['delta']:
@@ -134,7 +122,6 @@ class VLLMModel(BaseModel):
                                          content = choice['delta']['content']
                                          if content is not None:
                                              text_chunk = content
-                                # --- END MODIFICATION ---
 
                                 # Yield chunk even if empty/whitespace
                                 yield text_chunk
@@ -159,12 +146,10 @@ class VLLMModel(BaseModel):
                  last_exception = e
                  logger.warning(f"[{self.model_id}] Attempt {attempt+1} failed with PoolTimeout: {e}. Retrying...")
                  await asyncio.sleep(2 ** attempt)
-            # --- MODIFICATION: Catch RemoteProtocolError specifically for logging/retry ---
             except httpx.RemoteProtocolError as e:
                  last_exception = e
                  logger.warning(f"[{self.model_id}] Attempt {attempt+1} failed with RemoteProtocolError: {e}. Retrying...")
                  await asyncio.sleep(2 ** attempt)
-            # --- END MODIFICATION ---
             except Exception as e:
                  logger.error(f"[{self.model_id}] An unexpected error occurred during streaming attempt {attempt+1}: {e}", exc_info=True)
                  yield f"ERROR: Unexpected error - {e}"
