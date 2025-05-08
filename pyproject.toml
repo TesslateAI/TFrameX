@@ -8,12 +8,14 @@ build-backend = "setuptools.build_meta"
 name = "tframex"
 version = "0.1.0"  # Start with an initial version
 authors = [
-  { name="TesslateAI", email="your.email@example.com" }, # Replace with actual details
+  { name = "Manav Majumdar", email = "manav@tesslate.com" },
+  { name = "Sanjit Verma", email = "sanjitverma@tesslate.com" },
+  { name = "TesslateAI" }
 ]
 description = "A framework for building agentic systems with large language models."
 readme = "README.md"
 requires-python = ">=3.8"
-license = { text = "MIT" } # Assuming MIT based on README badge
+license = { text = "MIT" } 
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
@@ -28,17 +30,13 @@ classifiers = [
 ]
 dependencies = [
     "httpx>=0.25.0",
-    # Add any other CORE library dependencies here
-    # Dependencies ONLY for examples (like python-dotenv) shouldn't strictly be here
-    # but can be for simplicity in this project setup.
 ]
 
 [project.urls]
 Homepage = "https://github.com/TesslateAI/TFrameX"
 # Repository = "https://github.com/TesslateAI/TFrameX"
-# Bug Tracker = "https://github.com/TesslateAI/TFrameX/issues" # Optional
+# Bug Tracker = "https://github.com/TesslateAI/TFrameX/issues" 
 
-# This tells setuptools where to find your package code
 [tool.setuptools.packages.find]
 where = ["."]             # Look for packages in the root directory (where pyproject.toml is)
 include = ["tframex*"]    # Find the 'tframex' package and any subpackages
