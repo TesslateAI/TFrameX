@@ -1,4 +1,8 @@
 # example.py (run with python -m examples.standard.example --example <*> where * is example number)
+# Import Model, Agents, and Systems
+from tframex.model import VLLMModel # NEW
+from tframex.agents import BasicAgent, ContextAgent # NEW
+from tframex.systems import ChainOfAgents, MultiCallSystem # NEW
 import asyncio
 import os
 import logging
@@ -8,10 +12,7 @@ import argparse
 # Load .env into environment
 load_dotenv()
 
-# Import Model, Agents, and Systems
-from tframex.model import VLLMModel # NEW
-from tframex.agents import BasicAgent, ContextAgent # NEW
-from tframex.systems import ChainOfAgents, MultiCallSystem # NEW
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
