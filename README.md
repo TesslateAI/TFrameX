@@ -28,19 +28,20 @@ This project provides a flexible Python framework for interacting with VLLM (or 
 
 ```
 .
-├── tframex/                       # Core library package
-│   ├── __init__.py                # Makes 'tframex' importable
-│   ├── agents/
-│   │   ├── __init__.py            # Exposes agent classes (e.g., BasicAgent)
-│   │   ├── agent_logic.py         # BaseAgent and shared logic
-│   │   └── agents.py              # Concrete agent implementations
-│   ├── model/
-│   │   ├── __init__.py            # Exposes model classes (e.g., VLLMModel)
-│   │   └── model_logic.py         # BaseModel, VLLMModel implementation
-│   └── systems/
-│       ├── __init__.py            # Exposes system classes (e.g., ChainOfAgents, MultiCallSystem)
-│       ├── chain_of_agents.py     # ChainOfAgents: sequential summarization system
-│       └── multi_call_system.py   # MultiCallSystem: parallel sampling/generation system
+├── src/
+│   └── tframex/                   # Core library package
+│       ├── __init__.py           # Makes 'tframex' importable
+│       ├── agents/
+│       │   ├── __init__.py       # Exposes agent classes (e.g., BasicAgent)
+│       │   ├── agent_logic.py    # BaseAgent and shared logic
+│       │   └── agents.py         # Concrete agent implementations
+│       ├── model/
+│       │   ├── __init__.py       # Exposes model classes (e.g., VLLMModel)
+│       │   └── model_logic.py    # BaseModel, VLLMModel implementation
+│       └── systems/
+│           ├── __init__.py       # Exposes system classes (e.g., ChainOfAgents, MultiCallSystem)
+│           ├── chain_of_agents.py    # Sequential summarization system
+│           └── multi_call_system.py  # Parallel sampling/generation system
 │
 ├── examples/                  # Example usage scripts (separate from the library)
 │   ├── website_builder/

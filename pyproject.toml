@@ -38,6 +38,6 @@ Homepage = "https://github.com/TesslateAI/TFrameX"
 # Bug Tracker = "https://github.com/TesslateAI/TFrameX/issues" 
 
 [tool.setuptools.packages.find]
-where = ["."]             # Look for packages in the root directory (where pyproject.toml is)
+where = ["src"]             # Look for packages in the root directory (where pyproject.toml is)
 include = ["tframex*"]    # Find the 'tframex' package and any subpackages
 exclude = ["examples*"]   # Exclude the examples directory from the package itself
