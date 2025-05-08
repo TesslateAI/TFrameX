@@ -1,8 +1,18 @@
+// src/components/TopBar.jsx
 import React, { useState, useCallback } from 'react';
 import { useStore } from '../store';
+import { Button } from '@/components/ui/button'; // Use shadcn Button
+import { Input } from '@/components/ui/input'; // Use shadcn Input
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"; // Use shadcn Select
+import { Save, Play, Trash2, PlusCircle } from 'lucide-react'; // Icons
 
 const TopBar = () => {
-  // --- Option 2: Select individual pieces of state/functions ---
   const projects = useStore((state) => state.projects);
   const currentProjectId = useStore((state) => state.currentProjectId);
   const loadProject = useStore((state) => state.loadProject);
@@ -11,99 +21,123 @@ const TopBar = () => {
   const saveCurrentProject = useStore((state) => state.saveCurrentProject);
   const runFlow = useStore((state) => state.runFlow);
   const isRunning = useStore((state) => state.isRunning);
-  // -------------------------------------------------------------
 
   const [newProjectName, setNewProjectName] = useState('');
 
   const handleCreateProject = useCallback(() => {
-    if (newProjectName.trim()) {
-      createProject(newProjectName.trim());
-      setNewProjectName(''); // Clear input after creation
-    } else {
-        // Optionally create with a default name if empty
-         createProject(); // Create with default name
-    }
-    // Add createProject as dependency if it might change,
-    // but Zustand actions are usually stable references.
+    createProject(newProjectName.trim() || undefined); // Pass undefined for default name
+    setNewProjectName('');
   }, [createProject, newProjectName]);
 
-  const handleProjectChange = (event) => {
-    loadProject(event.target.value);
+  const handleProjectChange = (value) => {
+    // Shadcn Select's onValueChange provides the value directly
+    if (value) {
+      loadProject(value);
+    }
   };
 
    const handleDeleteClick = () => {
         if (currentProjectId) {
+            // Optional: Add a confirmation dialog here
             deleteProject(currentProjectId);
         }
     };
 
-
   return (
-    <div className="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4 shadow-md">
-      {/* Project Controls */}
+    <div className="h-16 bg-card border-b border-border flex items-center justify-between px-4 shadow-sm flex-shrink-0">
+      {/* Left Side: Logo & Project Controls */}
       <div className="flex items-center space-x-4">
-         <span className="text-lg font-semibold text-gray-100">Tesslate Studio</span>
+         {/* Logo and Title Group */}
+         <div className="flex items-center flex-shrink-0"> {/* Grouping element */}
+             <img
+                src="/Tesslate.svg" // Path relative to public folder
+                alt="Tesslate Logo"
+                className="h-6 w-auto mr-2" // Adjust height as needed, add margin between logo and text
+             />
+             <span className="text-lg font-semibold text-foreground whitespace-nowrap">
+                Tesslate Studio
+             </span>
+         </div>
+
         {/* Project Selector */}
-        <select
-          value={currentProjectId || ''}
-          onChange={handleProjectChange}
-          className="bg-gray-700 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
-          disabled={isRunning}
+        <Select
+            value={currentProjectId || ''}
+            onValueChange={handleProjectChange}
+            disabled={isRunning}
         >
-          <option value="" disabled>Select Project</option>
-          {Object.entries(projects).map(([id, project]) => (
-            <option key={id} value={id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
+            <SelectTrigger className="w-[180px] text-sm">
+                <SelectValue placeholder="Select Project" />
+            </SelectTrigger>
+            <SelectContent>
+                {Object.entries(projects).map(([id, project]) => (
+                    <SelectItem key={id} value={id}>
+                        {project.name}
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
 
          {/* Create New Project */}
         <div className="flex items-center space-x-2">
-            <input
+            <Input
                 type="text"
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
-                placeholder="New Project Name"
-                className="bg-gray-700 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 w-40"
+                placeholder="New Project Name..."
+                className="w-40 h-9 text-sm" // Adjusted height and width
                 disabled={isRunning}
             />
-            <button
+            <Button
                 onClick={handleCreateProject}
-                className="px-3 py-2 text-sm font-medium text-center text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 disabled:opacity-50"
+                variant="secondary"
+                size="sm" // Smaller button
                 disabled={isRunning}
+                title="Create New Project"
             >
-                Create
-            </button>
-            <button
+                <PlusCircle className="h-4 w-4 mr-1" /> Create
+            </Button>
+            <Button
                 onClick={handleDeleteClick}
+                variant="destructive"
+                size="icon" // Icon button
                 title="Delete Current Project"
-                className="px-3 py-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 disabled:opacity-50"
-                disabled={isRunning || Object.keys(projects).length <= 1} // Disable if only one project
+                disabled={isRunning || !currentProjectId || Object.keys(projects).length <= 1}
             >
-               🗑️ Delete
-            </button>
+               <Trash2 className="h-4 w-4" />
+               <span className="sr-only">Delete Project</span> {/* Keep for accessibility */}
+            </Button>
         </div>
       </div>
 
-      {/* Action Buttons */}
+      {/* Right Side: Action Buttons */}
       <div className="flex items-center space-x-3">
-         <button
+         <Button
             onClick={saveCurrentProject}
-            className="px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 disabled:opacity-50"
-             disabled={isRunning}
+            variant="outline"
+            size="sm"
+            disabled={isRunning}
         >
-            💾 Save Project
-        </button>
-        <button
+            <Save className="h-4 w-4 mr-2" /> Save Project
+        </Button>
+        <Button
           onClick={runFlow}
-          className={`px-6 py-2 font-semibold text-center text-white rounded-lg focus:ring-4 focus:outline-none focus:ring-purple-300 transition-colors duration-150 ease-in-out ${
-            isRunning ? 'bg-gray-500 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'
-          }`}
+          size="sm"
           disabled={isRunning}
+          className={`font-semibold transition-colors duration-150 ease-in-out ${
+            isRunning ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-primary text-primary-foreground hover:bg-primary/90'
+          }`}
         >
-          {isRunning ? 'Running...' : '▶️ Run Flow'}
-        </button>
+          {isRunning ? (
+             <>
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></span>
+                Running...
+             </>
+          ) : (
+             <>
+                <Play className="h-4 w-4 mr-2 fill-current" /> Run Flow
+             </>
+          )}
+        </Button>
       </div>
     </div>
   );
