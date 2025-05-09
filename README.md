@@ -29,32 +29,41 @@ This project provides a flexible Python framework for interacting with VLLM (or 
 ```
 .
 ├── src/
-│   └── tframex/                   # Core library package
-│       ├── __init__.py           # Makes 'tframex' importable
+│   └── tframex/                     # Core library package
+│       ├── __init__.py
 │       ├── agents/
-│       │   ├── __init__.py       # Exposes agent classes (e.g., BasicAgent)
-│       │   ├── agent_logic.py    # BaseAgent and shared logic
-│       │   └── agents.py         # Concrete agent implementations
+│       │   ├── __init__.py
+│       │   ├── agent_logic.py       # BaseAgent logic
+│       │   └── agents.py            # BasicAgent, ContextAgent
 │       ├── model/
-│       │   ├── __init__.py       # Exposes model classes (e.g., VLLMModel)
-│       │   └── model_logic.py    # BaseModel, VLLMModel implementation
+│       │   ├── __init__.py
+│       │   ├── base.py              # Shared model interfaces
+│       │   ├── model_wrapper.py     # Unified wrapper for model routing
+│       │   ├── openai_model.py      # OpenAI-specific model logic
+│       │   └── vllm_model.py        # vLLM-specific model logic
 │       └── systems/
-│           ├── __init__.py       # Exposes system classes (e.g., ChainOfAgents, MultiCallSystem)
-│           ├── chain_of_agents.py    # Sequential summarization system
-│           └── multi_call_system.py  # Parallel sampling/generation system
+│           ├── __init__.py
+│           ├── chain_of_agents.py   # Chunked summarization system
+│           └── multi_call_system.py # Parallel generation system
 │
-├── examples/                  # Example usage scripts (separate from the library)
+├── examples/
 │   ├── website_builder/
 │   │   └── html.py
-│   ├── context.txt           # Sample input file
-│   ├── example.py            # Main example script
-│   └── longtext.txt          # Sample input file
+│   ├── context.txt
+│   ├── example.py
+│   └── longtext.txt
 │
-├── .env copy                 # Example environment file template
+├── tests/
+│   ├── integration/
+│   └── unit/
+│       └── model/
+│
+├── .env copy
 ├── .gitignore
-├── README.md                 # This file
-├── requirements.txt          # Core library dependencies
-└── pyproject.toml            # Build system and package configuration
+├── README.md
+├── requirements.txt
+└── pyproject.toml
+
 ```
 
 *   **`tframex/`**: The main directory containing the library source code.

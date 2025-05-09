@@ -1,6 +1,6 @@
 # chain_of_agents.py
 import logging
-from tframex.model import BaseModel
+from tframex.model.base import BaseModel
 from tframex.agents import BasicAgent # Using BasicAgent for summarization/final answer
 from typing import List
 
