@@ -1,7 +1,7 @@
 # agent_logic.py
 import logging
 from abc import ABC, abstractmethod
-from tframex.model.model_logic import BaseModel # NEW
+from tframex.model.base import BaseModel # NEW
 from typing import Any, List, Dict
 
 logger = logging.getLogger(__name__)

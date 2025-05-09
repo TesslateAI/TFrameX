@@ -2,7 +2,7 @@
 import asyncio
 import logging
 import os
-from tframex.model import BaseModel
+from tframex.model.base import BaseModel
 from typing import List, Dict
 
 logger = logging.getLogger(__name__)

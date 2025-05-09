@@ -1,7 +1,7 @@
 # agents.py
 import logging
 from tframex.agents.agent_logic import BaseAgent # NEW
-from tframex.model.model_logic import BaseModel # NEWBaseModel
+from tframex.model.base import BaseModel # NEWBaseModel
 
 logger = logging.getLogger(__name__)
 

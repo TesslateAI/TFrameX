@@ -15,3 +15,4 @@ build/
 .venv/
 venv/
 generated/
+.vscode/settings.json
