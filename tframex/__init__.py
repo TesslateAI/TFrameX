@@ -1,5 +1,33 @@
 import os
+
 from dotenv import load_dotenv
+
+from .agents.base import BaseAgent
+from .agents.llm_agent import LLMAgent
+from .agents.tool_agent import ToolAgent  # Ensure ToolAgent is here if used
+from .app import TFrameXApp, TFrameXRuntimeContext
+from .flows.flow_context import FlowContext  # NEW
+from .flows.flows import Flow  # NEW
+from .models.primitives import (
+    FunctionCall,
+    Message,
+    MessageChunk,
+    ToolCall,
+    ToolDefinition,
+    ToolParameterProperty,
+    ToolParameters,
+)
+from .patterns.patterns import (  # NEW
+    BasePattern,
+    DiscussionPattern,
+    ParallelPattern,
+    RouterPattern,
+    SequentialPattern,
+)
+from .util.engine import Engine
+from .util.llms import BaseLLMWrapper, OpenAIChatLLM
+from .util.memory import BaseMemoryStore, InMemoryMemoryStore
+from .util.tools import Tool
 
 # Load .env file at the earliest point if configurations depend on it
 # User's project might also load .env, this ensures library defaults can be set.
@@ -8,20 +36,6 @@ from dotenv import load_dotenv
 # For now, let's assume .env in user's project root or current dir is loaded by user.
 # load_dotenv(find_dotenv(usecwd=True, raise_error_if_not_found=False))
 
-
-from .primitives import Message, MessageChunk, ToolCall, FunctionCall, ToolParameterProperty, ToolParameters, ToolDefinition
-from .llms import BaseLLMWrapper, OpenAIChatLLM
-from .tools import Tool
-from .memory import BaseMemoryStore, InMemoryMemoryStore
-from .agents.base import BaseAgent
-from .agents.llm_agent import LLMAgent
-from .agents.tool_agent import ToolAgent # Ensure ToolAgent is here if used
-
-from .flow_context import FlowContext # NEW
-from .patterns import BasePattern, SequentialPattern, ParallelPattern, RouterPattern, DiscussionPattern # NEW
-from .flows import Flow # NEW
-
-from .app import TFrameXApp, TFrameXRuntimeContext
 
 # Create a default 'app' instance for convenience, users can import and use it directly
 # Or they can instantiate TFrameXApp() themselves for more control.
@@ -39,16 +53,29 @@ from .app import TFrameXApp, TFrameXRuntimeContext
 # So, just exporting TFrameXApp is cleaner for a library.
 
 __all__ = [
-    "Message", "MessageChunk", "ToolCall", "FunctionCall", 
-    "ToolParameterProperty", "ToolParameters", "ToolDefinition",
-    "BaseLLMWrapper", "OpenAIChatLLM",
+    "Message",
+    "MessageChunk",
+    "ToolCall",
+    "FunctionCall",
+    "ToolParameterProperty",
+    "ToolParameters",
+    "ToolDefinition",
+    "BaseLLMWrapper",
+    "OpenAIChatLLM",
     "Tool",
-    "BaseMemoryStore", "InMemoryMemoryStore",
-    "BaseAgent", "LLMAgent", "ToolAgent",
-    
-    "FlowContext", # NEW
-    "BasePattern", "SequentialPattern", "ParallelPattern", "RouterPattern", "DiscussionPattern", # NEW
-    "Flow", # NEW
-    
-    "TFrameXApp", "TFrameXRuntimeContext"
+    "BaseMemoryStore",
+    "InMemoryMemoryStore",
+    "BaseAgent",
+    "LLMAgent",
+    "ToolAgent",
+    "FlowContext",  # NEW
+    "BasePattern",
+    "SequentialPattern",
+    "ParallelPattern",
+    "RouterPattern",
+    "DiscussionPattern",  # NEW
+    "Flow",  # NEW
+    "TFrameXApp",
+    "TFrameXRuntimeContext",
+    "Engine",
 ]

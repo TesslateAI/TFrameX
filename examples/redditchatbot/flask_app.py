@@ -1,17 +1,19 @@
 # flask_app.py
 import asyncio
 import logging
-from flask import Flask, request, jsonify, render_template_string
+
 from dotenv import load_dotenv
+from flask import Flask, jsonify, render_template_string, request
 
 # Import the TFrameX app instance and Message primitive
 from tframex_config import get_tframex_app
-from tframex import Message # Crucial for history management
+
+from tframex import Message  # Crucial for history management
 
 load_dotenv()
 
 flask_app = Flask(__name__)
-tframex_app_instance = get_tframex_app() # Get the configured TFrameXApp instance
+tframex_app_instance = get_tframex_app()  # Get the configured TFrameXApp instance
 
 # Configure Flask logging
 flask_app.logger.setLevel(logging.INFO)
@@ -140,70 +142,100 @@ CHAT_HTML_TEMPLATE = """
 </html>
 """
 
-@flask_app.route('/')
+
+@flask_app.route("/")
 def index():
     return render_template_string(CHAT_HTML_TEMPLATE)
 
-@flask_app.route('/chat', methods=['POST'])
+
+@flask_app.route("/chat", methods=["POST"])
 async def chat():
     try:
         data = request.get_json()
-        user_message_content = data.get('message')
-        session_id = data.get('session_id', 'default_session') # Get session ID from client
+        user_message_content = data.get("message")
+        session_id = data.get(
+            "session_id", "default_session"
+        )  # Get session ID from client
 
         if not user_message_content:
-            return jsonify({'error': 'No message provided'}), 400
+            return jsonify({"error": "No message provided"}), 400
 
-        flask_app.logger.info(f"Received message for session '{session_id}': \"{user_message_content}\"")
+        flask_app.logger.info(
+            f"Received message for session '{session_id}': \"{user_message_content}\""
+        )
 
         async with tframex_app_instance.run_context() as rt:
             # Get the agent instance.
             # The agent name here MUST match the name defined in tframex_config.py
-            agent_name_to_use = "RedditAnalystAgent" # MODIFIED HERE
+            agent_name_to_use = "RedditAnalystAgent"  # MODIFIED HERE
             chatbot_agent = rt._get_agent_instance(agent_name_to_use)
 
             # 1. Load history for the current session into the agent's memory
-            if chatbot_agent.memory: # Ensure agent has a memory store
+            if chatbot_agent.memory:  # Ensure agent has a memory store
                 session_history_data = conversation_history_store.get(session_id, [])
                 if session_history_data:
-                    flask_app.logger.info(f"Loading {len(session_history_data)} messages from history for session '{session_id}' into agent '{agent_name_to_use}' memory.")
+                    flask_app.logger.info(
+                        f"Loading {len(session_history_data)} messages from history for session '{session_id}' into agent '{agent_name_to_use}' memory."
+                    )
                     for msg_data in session_history_data:
                         try:
                             message_obj = Message.model_validate(msg_data)
                             await chatbot_agent.memory.add_message(message_obj)
                         except Exception as e:
-                            flask_app.logger.error(f"Error rehydrating message for session '{session_id}': {msg_data}, error: {e}")
+                            flask_app.logger.error(
+                                f"Error rehydrating message for session '{session_id}': {msg_data}, error: {e}"
+                            )
                 else:
-                    flask_app.logger.info(f"No prior history found for session '{session_id}'. Starting fresh for agent '{agent_name_to_use}'.")
+                    flask_app.logger.info(
+                        f"No prior history found for session '{session_id}'. Starting fresh for agent '{agent_name_to_use}'."
+                    )
             else:
-                flask_app.logger.warning(f"Agent '{agent_name_to_use}' does not have a memory store. History will not be maintained across calls.")
-
+                flask_app.logger.warning(
+                    f"Agent '{agent_name_to_use}' does not have a memory store. History will not be maintained across calls."
+                )
 
             # 2. Call the agent with the new user message.
             bot_response_message = await rt.call_agent(
-                agent_name_to_use, # MODIFIED HERE
-                user_message_content
+                agent_name_to_use, user_message_content  # MODIFIED HERE
             )
 
             # 3. Save updated history
             if chatbot_agent.memory:
                 updated_full_history = await chatbot_agent.memory.get_history()
-                conversation_history_store[session_id] = [msg.model_dump(exclude_none=True) for msg in updated_full_history]
-                flask_app.logger.info(f"Saved {len(updated_full_history)} total messages to history for session '{session_id}' (Agent: {agent_name_to_use}).")
+                conversation_history_store[session_id] = [
+                    msg.model_dump(exclude_none=True) for msg in updated_full_history
+                ]
+                flask_app.logger.info(
+                    f"Saved {len(updated_full_history)} total messages to history for session '{session_id}' (Agent: {agent_name_to_use})."
+                )
 
-        bot_reply_content = bot_response_message.content if bot_response_message else "Sorry, I couldn't process that."
-        
+        bot_reply_content = (
+            bot_response_message.content
+            if bot_response_message
+            else "Sorry, I couldn't process that."
+        )
+
         if bot_response_message and bot_response_message.tool_calls:
-            flask_app.logger.warning(f"Bot response for session '{session_id}' unexpectedly included tool calls: {bot_response_message.tool_calls}")
+            flask_app.logger.warning(
+                f"Bot response for session '{session_id}' unexpectedly included tool calls: {bot_response_message.tool_calls}"
+            )
 
-        flask_app.logger.info(f"Bot reply for session '{session_id}': \"{bot_reply_content}\"")
-        return jsonify({'reply': bot_reply_content})
+        flask_app.logger.info(
+            f"Bot reply for session '{session_id}': \"{bot_reply_content}\""
+        )
+        return jsonify({"reply": bot_reply_content})
 
     except Exception as e:
         flask_app.logger.error(f"Error in /chat endpoint: {e}", exc_info=True)
-        return jsonify({'error': f"An internal server error occurred: {type(e).__name__}"}), 500
+        return (
+            jsonify(
+                {"error": f"An internal server error occurred: {type(e).__name__}"}
+            ),
+            500,
+        )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # For robust async, use an ASGI server like Uvicorn:
     # import uvicorn
     # uvicorn.run(flask_app, host="0.0.0.0", port=5001, log_level="info", reload=True)

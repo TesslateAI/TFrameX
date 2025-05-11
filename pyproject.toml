@@ -1,0 +1,63 @@
+# TAF/pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tframex"
+version = "0.1.0"  # Start with an initial version
+authors = [
+  { name = "Manav Majumdar", email = "manav@tesslate.com" },
+  { name = "Sanjit Verma", email = "sanjitverma@tesslate.com" },
+  { name = "Prajwal Moharana", email = "pmoharana@tesslate.com" },
+  { name = "TesslateAI" }
+]
+description = "A framework for building agentic systems with large language models."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" } 
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "httpx>=0.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/TesslateAI/TFrameX"
+# Repository = "https://github.com/TesslateAI/TFrameX"
+# Bug Tracker = "https://github.com/TesslateAI/TFrameX/issues" 
+
+[tool.setuptools.packages.find]
+where = ["src"]             # Look for packages in the root directory (where pyproject.toml is)
+include = ["tframex*"]    # Find the 'tframex' package and any subpackages
+exclude = ["examples*"]   # Exclude the examples directory from the package itself
+
+# pyproject.toml
+[tool.black]
+line-length = 88
+target-version = ['py38']
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+known_first_party = ["tframex"]
