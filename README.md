@@ -12,6 +12,7 @@
 
 
 **Find our Agent Builder Framework Here**: [Tesslate Studio Agent Builder](https://github.com/TesslateAI/Studio)
+![image](https://github.com/user-attachments/assets/8e5b0689-38e6-4832-8de5-07ea03ed1c25)
 
 ---
 
