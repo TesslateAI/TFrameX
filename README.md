@@ -464,4 +464,3 @@ Contributions are welcome! We're excited to see how the community extends and bu
 ## 📜 License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
-(You'll need to add a `LICENSE` file to your repository, typically containing the MIT License text.)
