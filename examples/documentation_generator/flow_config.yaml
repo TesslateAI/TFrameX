@@ -1,0 +1,56 @@
+flow:
+  name: GreetingAndCalculationFlow
+  description: A flow that greets, uses a tool via an agent, and then says goodbye.
+  steps:
+  - type: LLMAgent
+    name: GreeterAgent
+    description: Greets the user.
+    system_prompt: You are a friendly greeter.
+    strip_think_tags: false
+    llm: Uses context/app default LLM
+  - type: pattern
+    pattern_type: SequentialPattern
+    name: CalculationSequence
+    steps:
+    - type: LLMAgent
+      name: EchoerAgent
+      description: Echoes input using echo_tool.
+      system_prompt: Use the echo_tool.
+      strip_think_tags: false
+      llm: Uses context/app default LLM
+      tools:
+      - name: echo_tool
+        description: A simple echo tool.
+        parameters:
+          properties:
+            text:
+              type: string
+              description: Parameter 'text'
+          required:
+          - text
+    - type: LLMAgent
+      name: CalculatorAgent
+      description: Uses tools to perform calculations.
+      system_prompt: 'You are a calculator. Use your tools. Available tools: {available_tools_descriptions}'
+      strip_think_tags: false
+      llm: Uses context/app default LLM
+      tools:
+      - name: add_numbers_tool
+        description: Adds two numbers.
+        parameters:
+          properties:
+            a:
+              type: integer
+              description: Parameter 'a'
+            b:
+              type: integer
+              description: Parameter 'b'
+          required:
+          - a
+          - b
+  - type: LLMAgent
+    name: FarewellAgent
+    description: Says goodbye.
+    system_prompt: Bid the user farewell.
+    strip_think_tags: false
+    llm: Uses context/app default LLM

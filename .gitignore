@@ -1,17 +1,70 @@
-# ... existing ignores ...
 .env
-/example_outputs
-/__pycache__
+.repomixignore
+repomix-output.xml
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Python build artifacts
-*.egg-info/
-dist/
-build/
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache/
-.mypy_cache/
-.venv/
+# Virtual environments
 venv/
+.env/
+.env.bak/
+.venv/
+*.env
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+MANIFEST
+
+# Test and coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.xml
+.cache
+.pytest_cache/
+nosetests.xml
+test-results/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# MyPy, Pyre, pytype
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# VS Code / IDE configs
+.vscode/
+.idea/
+*.swp
+
+# PyInstaller
+*.spec
+
+# Output folders
+example_outputs/
 generated/
+logs/
+
+# System files
+.DS_Store
+Thumbs.db
+repomix-output.xml
+newenv/
