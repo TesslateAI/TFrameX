@@ -9,6 +9,7 @@
 
 
 **TFrameX** empowers you to build sophisticated, multi-agent LLM applications with unparalleled ease and flexibility. Move beyond simple prompt-response interactions and construct complex, dynamic workflows where intelligent agents collaborate, use tools, and adapt to intricate tasks.
+**Find our Agent Builder Framework Here**: [Tesslate Studio Agent Builder](https://github.com/TesslateAI/Studio)
 
 ---
 
@@ -26,6 +27,17 @@
 ---
 
 ## 💡 Core Concepts
+
+**TFrameX** is designed to orchestrate complex agent interactions using its powerful `Flow` system, which controls the sequence and logic of operations.
+
+Within a `Flow`, you define reusable collaboration structures called **Patterns**—such as `SequentialPattern`, `RouterPattern`, or `DiscussionPattern`. These patterns can be **nested** inside one another. For example, a `ParallelPattern` may contain several `SequentialPattern`s, enabling hierarchical task breakdowns.
+
+TFrameX also supports the **agent-as-tool** paradigm: `LLMAgent`s can directly call other registered agents. This enables supervisor-worker relationships and task delegation between agents.
+
+Together, **nested patterns** and **inter-agent calling** allow for sophisticated designs—including recursive or cyclical flows. For example, a `DiscussionPattern` creates a controlled loop of interaction. However, to avoid infinite loops, flows must be carefully structured with clear **termination conditions** or managed by **moderator agents**.
+
+These entire `Flows`—along with their patterns and agent configurations—can be defined declaratively in **YAML** files. This makes it easy to version, share, and modify agent behaviors programmatically, giving you maximum flexibility in building adaptive, interconnected agent systems.
+
 
 TFrameX revolves around a few key concepts:
 
