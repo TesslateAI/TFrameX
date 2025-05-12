@@ -22,8 +22,7 @@ from ..util.tools import Tool, ToolDefinition, ToolParameterProperty, ToolParame
 if TYPE_CHECKING:
     from ..agents.base import BaseAgent
     from ..agents.llm_agent import LLMAgent
-    from ..app import TFrameXApp  # Assuming app type for better hinting
-    from ..runtime import RuntimeContext # Assuming context type for better hinting
+    from ..app import TFrameXApp, TFrameXRuntimeContext
 
 
 logger = logging.getLogger("tframex.engine")
@@ -33,13 +32,13 @@ class Engine:
     """
     Manages agent instantiation and execution within a TFrameX runtime context.
 
-    An Engine instance is typically created per request or session (via RuntimeContext)
+    An Engine instance is typically created per request or session (via TFrameXRuntimeContext)
     and provides the necessary environment for agents to run, resolving dependencies
     like LLMs, memory stores, and tools based on application defaults, context
     overrides, and agent-specific configurations.
     """
 
-    def __init__(self, app: 'TFrameXApp', runtime_context: 'RuntimeContext'):
+    def __init__(self, app: "TFrameXApp", runtime_context: "TFrameXRuntimeContext"):
         """
         Initializes the Engine.
 
@@ -52,9 +51,9 @@ class Engine:
         self._runtime_context = runtime_context
         # Use string literal for type hint to avoid import at class definition time
         # Stores agent instances, keyed by agent name. Instantiated lazily.
-        self._agent_instances: Dict[str, 'BaseAgent'] = {}
+        self._agent_instances: Dict[str, "BaseAgent"] = {}
 
-    def _get_agent_instance(self, agent_name: str) -> 'BaseAgent':
+    def _get_agent_instance(self, agent_name: str) -> "BaseAgent":
         """
         Retrieves or lazily instantiates an agent based on its registered configuration.
 
@@ -90,24 +89,18 @@ class Engine:
         if agent_name not in self._agent_instances:
             # --- Agent Registration Lookup ---
             if agent_name not in self._app._agents:
-                raise ValueError(
-                    f"Agent '{agent_name}' not registered with the TFrameXApp."
-                )
+                raise ValueError(f"Agent '{agent_name}' not registered with the TFrameXApp.")
             reg_info = self._app._agents[agent_name]
-            agent_config = reg_info["config"] # Use a shorter alias
+            agent_config = reg_info["config"]  # Use a shorter alias
 
             # --- Dependency Resolution ---
             # Resolve LLM: Agent-specific config > Context > App default
-            agent_llm = (
-                agent_config.get("llm_instance_override")
-                or self._runtime_context.llm
-                or self._app.default_llm
-            )
+            agent_llm = agent_config.get("llm_instance_override") or self._runtime_context.llm or self._app.default_llm
 
             # Resolve Memory: Agent-specific config > App default factory
             agent_memory = (
                 agent_config.get("memory_override")
-                or self._app.default_memory_store_factory() # Ensure factory provides a new instance
+                or self._app.default_memory_store_factory()  # Ensure factory provides a new instance
             )
 
             # Resolve Tools: Look up tools by name from app registry
@@ -127,7 +120,7 @@ class Engine:
             # --- Agent Configuration ---
             agent_description = agent_config.get("description")
             strip_think_tags_for_agent = agent_config.get(
-                "strip_think_tags", False # Default to False if not specified in config
+                "strip_think_tags", False  # Default to False if not specified in config
             )
 
             # --- Callable Agent Definitions ---
@@ -164,7 +157,7 @@ class Engine:
                     ToolDefinition(
                         type="function",
                         function={
-                            "name": sub_agent_name, # The name the primary agent uses to call
+                            "name": sub_agent_name,  # The name the primary agent uses to call
                             "description": sub_agent_description,
                             "parameters": agent_tool_params.model_dump(exclude_none=True),
                         },
@@ -177,15 +170,16 @@ class Engine:
 
             # Identify keys used internally for setup vs. those passed to the constructor
             internal_config_keys = {
-                "llm_instance_override", "memory_override", "tool_names",
-                "system_prompt_template", "agent_class_ref", "description",
-                "callable_agent_names", "strip_think_tags"
+                "llm_instance_override",
+                "memory_override",
+                "tool_names",
+                "system_prompt_template",
+                "agent_class_ref",
+                "description",
+                "callable_agent_names",
+                "strip_think_tags",
             }
-            additional_constructor_args = {
-                k: v
-                for k, v in agent_config.items()
-                if k not in internal_config_keys
-            }
+            additional_constructor_args = {k: v for k, v in agent_config.items() if k not in internal_config_keys}
 
             # Runtime check: LLMAgent requires an LLM
             if issubclass(AgentClassToInstantiate, LLMAgent) and not agent_llm:
@@ -205,13 +199,13 @@ class Engine:
                 "system_prompt_template": agent_config.get("system_prompt_template"),
                 "callable_agent_definitions": callable_agent_definitions,
                 "strip_think_tags": strip_think_tags_for_agent,
-                **additional_constructor_args, # Include any other config values
+                **additional_constructor_args,  # Include any other config values
             }
 
             # Inject engine dependency specifically for LLMAgents (if needed by their impl)
             # Check inheritance dynamically using the imported LLMAgent class
             if issubclass(AgentClassToInstantiate, LLMAgent):
-                agent_init_kwargs["engine"] = self # Pass self (the engine)
+                agent_init_kwargs["engine"] = self  # Pass self (the engine)
 
             # Create the agent instance
             self._agent_instances[agent_name] = AgentClassToInstantiate(**agent_init_kwargs)
@@ -229,9 +223,7 @@ class Engine:
         # Return the existing or newly created instance
         return self._agent_instances[agent_name]
 
-    async def call_agent(
-        self, agent_name: str, input_message: Union[str, Message], **kwargs: Any
-    ) -> Message:
+    async def call_agent(self, agent_name: str, input_message: Union[str, Message], **kwargs: Any) -> Message:
         """
         Executes a registered agent with the given input.
 
@@ -259,7 +251,7 @@ class Engine:
             input_msg_obj = input_message
         else:
             # Add type checking for clarity, though Union hint covers it
-             raise TypeError(f"input_message must be str or Message, not {type(input_message).__name__}")
+            raise TypeError(f"input_message must be str or Message, not {type(input_message).__name__}")
 
         # Get the agent instance (will create if first time for this engine)
         agent_instance = self._get_agent_instance(agent_name)
@@ -286,20 +278,17 @@ class Engine:
         """
         tool = self._app.get_tool(tool_name)
         if not tool:
-            logger.error(
-                f"Engine requested to call tool '{tool_name}', but it was not "
-                f"found in the app registry."
-            )
+            logger.error(f"Engine requested to call tool '{tool_name}', but it was not " f"found in the app registry.")
             # Return a consistent error format that agents might handle
             return {"error": f"Tool '{tool_name}' not found."}
 
         logger.debug(f"Engine executing tool '{tool_name}' with args: {arguments_json_str}")
         # Execute the tool
         try:
-             result = await tool.execute(arguments_json_str)
-             logger.debug(f"Tool '{tool_name}' executed successfully.")
-             return result
+            result = await tool.execute(arguments_json_str)
+            logger.debug(f"Tool '{tool_name}' executed successfully.")
+            return result
         except Exception as e:
-             logger.error(f"Error executing tool '{tool_name}': {e}", exc_info=True)
-             # Propagate error in a structured way if possible
-             return {"error": f"Error executing tool '{tool_name}': {str(e)}"}
+            logger.error(f"Error executing tool '{tool_name}': {e}", exc_info=True)
+            # Propagate error in a structured way if possible
+            return {"error": f"Error executing tool '{tool_name}': {str(e)}"}
