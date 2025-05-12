@@ -51,7 +51,6 @@ target/
 cython_debug/
 
 # VS Code / IDE configs
-.vscode/
 .idea/
 *.swp
 
