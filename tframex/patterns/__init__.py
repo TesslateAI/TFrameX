@@ -1,10 +1,10 @@
 # tframex/patterns/__init__.py
 from .patterns import (
     BasePattern,
-    SequentialPattern,
+    DiscussionPattern,
     ParallelPattern,
     RouterPattern,
-    DiscussionPattern,
+    SequentialPattern,
 )
 
 __all__ = [
