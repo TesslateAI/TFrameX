@@ -1,13 +1,12 @@
 import asyncio
-import os
 import logging
+import os
+
 from dotenv import load_dotenv
 
 # Assuming tframex is installed and your environment is set up
-from tframex import (
-    TFrameXApp, OpenAIChatLLM, Flow,
-    SequentialPattern, ParallelPattern # Import patterns if you use them
-)
+from tframex import ParallelPattern  # Import patterns if you use them
+from tframex import Flow, OpenAIChatLLM, SequentialPattern, TFrameXApp
 
 # --- Environment and Logging Setup (Optional for just docs, but good practice) ---
 load_dotenv()
@@ -20,8 +19,10 @@ logging.getLogger("tframex").setLevel(logging.INFO)
 # For robustness, provide a minimal configuration.
 default_llm_config = OpenAIChatLLM(
     model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-3.5-turbo"),
-    api_base_url=os.getenv("OPENAI_API_BASE", "http://localhost:11434/v1"), # Ollama example
-    api_key=os.getenv("OPENAI_API_KEY", "ollama")
+    api_base_url=os.getenv(
+        "OPENAI_API_BASE", "http://localhost:11434/v1"
+    ),  # Ollama example
+    api_key=os.getenv("OPENAI_API_KEY", "ollama"),
 )
 
 # --- Initialize TFrameX Application ---
@@ -33,21 +34,31 @@ app = TFrameXApp(default_llm=default_llm_config)
 async def echo_tool(text: str) -> str:
     return f"Tool echoed: {text}"
 
+
 @app.tool(description="Adds two numbers.")
 async def add_numbers_tool(a: int, b: int) -> int:
     return a + b
 
+
 # --- Define some Agents ---
-@app.agent(name="GreeterAgent", description="Greets the user.", system_prompt="You are a friendly greeter.")
-async def greeter_agent_placeholder(): pass
+@app.agent(
+    name="GreeterAgent",
+    description="Greets the user.",
+    system_prompt="You are a friendly greeter.",
+)
+async def greeter_agent_placeholder():
+    pass
+
 
 @app.agent(
     name="CalculatorAgent",
     description="Uses tools to perform calculations.",
     system_prompt="You are a calculator. Use your tools. Available tools: {available_tools_descriptions}",
-    tools=["add_numbers_tool"]
+    tools=["add_numbers_tool"],
 )
-async def calculator_agent_placeholder(): pass
+async def calculator_agent_placeholder():
+    pass
+
 
 @app.agent(
     name="EchoerAgent",
@@ -57,24 +68,30 @@ async def calculator_agent_placeholder(): pass
     # Example of an agent calling another agent (if SupervisorAgent was defined and callable)
     # callable_agents=["GreeterAgent"] # For demonstration, let's assume GreeterAgent could be called
 )
-async def echoer_agent_placeholder(): pass
+async def echoer_agent_placeholder():
+    pass
 
-@app.agent(name="FarewellAgent", description="Says goodbye.", system_prompt="Bid the user farewell.")
-async def farewell_agent_placeholder(): pass
+
+@app.agent(
+    name="FarewellAgent",
+    description="Says goodbye.",
+    system_prompt="Bid the user farewell.",
+)
+async def farewell_agent_placeholder():
+    pass
 
 
 # --- Create a Flow ---
 my_complex_flow = Flow(
     flow_name="GreetingAndCalculationFlow",
-    description="A flow that greets, uses a tool via an agent, and then says goodbye."
+    description="A flow that greets, uses a tool via an agent, and then says goodbye.",
 )
 
 # Add steps to the flow
 my_complex_flow.add_step("GreeterAgent")
 my_complex_flow.add_step(
     SequentialPattern(
-        pattern_name="CalculationSequence",
-        steps=["EchoerAgent", "CalculatorAgent"]
+        pattern_name="CalculationSequence", steps=["EchoerAgent", "CalculatorAgent"]
     )
 )
 my_complex_flow.add_step("FarewellAgent")
@@ -85,16 +102,20 @@ app.register_flow(my_complex_flow)
 
 # --- Generate Documentation ---
 def generate_and_save_documentation():
-    flow_to_document = app.get_flow("GreetingAndCalculationFlow") # Or use my_complex_flow directly
+    flow_to_document = app.get_flow(
+        "GreetingAndCalculationFlow"
+    )  # Or use my_complex_flow directly
 
     if not flow_to_document:
         print("Flow not found!")
         return
 
     print(f"Generating documentation for flow: '{flow_to_document.flow_name}'...")
-    
+
     # The core call:
-    mermaid_diagram_string, yaml_config_string = flow_to_document.generate_documentation(app)
+    mermaid_diagram_string, yaml_config_string = (
+        flow_to_document.generate_documentation(app)
+    )
 
     # --- Output or Save the Documentation ---
 
@@ -117,6 +138,7 @@ def generate_and_save_documentation():
         print("YAML configuration saved to flow_config.yaml")
     except IOError as e:
         print(f"Error saving files: {e}")
+
 
 # Run the documentation generation
 if __name__ == "__main__":

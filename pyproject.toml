@@ -1,0 +1,83 @@
+# tframex/pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tframex"
+version = "0.1.3"
+authors = [
+  { name = "Manav Majumdar", email = "manav@tesslate.com" },
+  { name = "Sanjit Verma", email = "sanjitverma@tesslate.com" },
+  { name = "Prajwal Moharana", email = "pmoharana@tesslate.com" },
+  { name = "TesslateAI" }
+]
+description = "A framework for building agentic systems with large language models."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" } # Updated license specification format
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "httpx>=0.25.0",         # For OpenAIChatLLM and general HTTP
+    "python-dotenv>=1.0.0",  # For .env loading in examples
+    "PyYAML>=6.0.1",         # For YAML parsing (e.g., flow_config.yaml)
+    "openai>=1.0.0",         # Core for OpenAIChatLLM interacting with OpenAI spec
+    "pydantic>=2.0.0",       # For data models (Message, ToolDefinition, etc.)
+    # aiohttp is used by the Reddit example tool.
+    # If you want all examples to work out-of-the-box, include it here.
+    # Otherwise, consider making it an optional dependency.
+    "aiohttp>=3.0.0",
+]
+
+[project.optional-dependencies]
+# Dependencies needed to run all provided examples
+examples = [
+    "Flask>=3.0.0"           # For the Reddit chatbot web example
+]
+# Dependencies for development (linting, formatting, pre-commit hooks)
+dev = [
+    "black>=24.3.0",         # From .pre-commit-config.yaml
+    "isort>=5.13.2",          # From .pre-commit-config.yaml
+    "pre-commit>=3.3.0"
+    # If you add pytest or other testing tools, list them here
+    # "pytest>=7.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/TesslateAI/TFrameX"
+Repository = "https://github.com/TesslateAI/TFrameX"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tframex*"]
+exclude = ["examples*", "tests*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+known_first_party = ["tframex"]
