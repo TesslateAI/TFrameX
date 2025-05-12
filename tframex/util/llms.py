@@ -98,7 +98,7 @@ class OpenAIChatLLM(BaseLLMWrapper):
             api_base_url=api_base_url,
             client_kwargs=kwargs,
         )
-        self.chat_completions_url = f"{self.api_base_url}/v1/chat/completions"
+        self.chat_completions_url = f"{self.api_base_url}/chat/completions"
         self.default_max_tokens = default_max_tokens
         self.default_temperature = default_temperature
 
