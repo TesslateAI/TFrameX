@@ -28,6 +28,8 @@ logging.basicConfig(
 logging.getLogger("tframex").setLevel(logging.INFO)
 # For more detailed logs:
 logging.getLogger("tframex.agents.llm_agent").setLevel(logging.DEBUG)
+logging.getLogger("llm_interaction").setLevel(logging.DEBUG)
+
 # logging.getLogger("tframex.agents.base").setLevel(logging.DEBUG)
 # logging.getLogger("tframex.app").setLevel(logging.DEBUG)
 
@@ -240,7 +242,7 @@ For **each** `<file ...>` block found:
 
 Your response must **only** contain the necessary `write_file` tool calls. If the input contains multiple `<file>` blocks, make a separate tool call for each.
 
-If no valid `<file ...>` blocks are found, respond with: "No files found to write."
+If no valid `<file ...>` blocks are found or files have already been written, respond with: "No files found to write."
 
 **Do not include any other text or explanations in your response.**
 """,

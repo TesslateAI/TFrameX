@@ -1,4 +1,4 @@
 # tframex/util/logging/__init__.py
-from .logging_config import ColoredFormatter, setup_logging
+from tframex.util.logging.logging_config import LLMInteraction, setup_logging
 
-__all__ = ["setup_logging", "ColoredFormatter"]
+__all__ = ["setup_logging", "LLMInteraction"]
