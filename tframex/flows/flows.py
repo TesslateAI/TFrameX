@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import yaml  # NEW IMPORT
 
 from ..models.primitives import Message
-from ..patterns.patterns import (
+from ..patterns import (
     BasePattern,
     DiscussionPattern,
     ParallelPattern,
@@ -14,6 +14,10 @@ from ..patterns.patterns import (
 )
 from ..util.engine import Engine
 from .flow_context import FlowContext
+
+if TYPE_CHECKING:
+    from ..app import TFrameXApp
+
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +72,7 @@ class Flow:
         for i, step in enumerate(self.steps):
             step_name = str(step) if isinstance(step, BasePattern) else step
             logger.info(
-                f"Flow '{self.flow_name}' - Step {i+1}/{len(self.steps)}: Executing '{step_name}'. Current input: {str(flow_ctx.current_message.content)[:50]}..."
+                f"Flow '{self.flow_name}' - Step {i + 1}/{len(self.steps)}: Executing '{step_name}'. Current input: {str(flow_ctx.current_message.content)[:50]}..."
             )
 
             try:
@@ -89,7 +93,7 @@ class Flow:
                     )
 
                 logger.info(
-                    f"Flow '{self.flow_name}' - Step {i+1} ('{step_name}') completed. Output: {str(flow_ctx.current_message.content)[:50]}..."
+                    f"Flow '{self.flow_name}' - Step {i + 1} ('{step_name}') completed. Output: {str(flow_ctx.current_message.content)[:50]}..."
                 )
 
                 if flow_ctx.shared_data.get("STOP_FLOW", False):
@@ -453,7 +457,7 @@ class Flow:
                     # Simplified router agent node definition:
                     router_agent_name = router_agent_data.get("name", "RouterAgent")
                     router_agent_node_id = (
-                        f"{current_node_id}_{router_agent_name.replace(' ','_')}"
+                        f"{current_node_id}_{router_agent_name.replace(' ', '_')}"
                     )
                     mermaid_lines.append(
                         f"        {router_agent_node_id}[{escape_mermaid_label(f'Router: {router_agent_name}')}]"
