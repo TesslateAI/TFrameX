@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from typing import Optional
 
@@ -47,8 +48,20 @@ def setup_logging(
     for handler in root_logger.handlers[:]:
         root_logger.removeHandler(handler)
 
-    # Create console handler
+    # Create logs directory if it doesn't exist
+    os.makedirs("logs", exist_ok=True)
+
+    # Delete existing log file if it exists
+    log_file = "logs/tframex.log"
+    if os.path.exists(log_file):
+        os.remove(log_file)
+
+    # Create new empty log file
+    open(log_file, "a").close()
+
+    # Create console and file handler
     console_handler = logging.StreamHandler(sys.stdout)
+    file_handler = logging.FileHandler("logs/tframex.log")
 
     # Set format
     if log_format is None:
@@ -60,4 +73,9 @@ def setup_logging(
         formatter = logging.Formatter(log_format, datefmt="%Y-%m-%d %H:%M:%S")
 
     console_handler.setFormatter(formatter)
+    file_handler.setFormatter(
+        logging.Formatter(log_format, datefmt="%Y-%m-%d %H:%M:%S")
+    )
+
     root_logger.addHandler(console_handler)
+    root_logger.addHandler(file_handler)
