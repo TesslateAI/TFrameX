@@ -136,7 +136,7 @@ class OpenAIChatLLM(BaseLLMWrapper):
         for attempt in range(max_retries + 1):
             try:
                 logger.debug(
-                    f"OpenAIChatLLM: Attempt {attempt+1} to {self.chat_completions_url}. Stream: {stream}. Model: {self.model_id}"
+                    f"OpenAIChatLLM: Attempt {attempt + 1} to {self.chat_completions_url}. Stream: {stream}. Model: {self.model_id}"
                 )
                 if stream:
                     return self._stream_response(client, self.chat_completions_url, payload)  # type: ignore
@@ -159,7 +159,10 @@ class OpenAIChatLLM(BaseLLMWrapper):
                 try:
                     err_detail = e.response.json().get("error", {}).get("message", "")
                     err_content += f" - {err_detail}" if err_detail else ""
-                except:
+                except Exception as e:
+                    logger.error(
+                        f"Error parsing LLM API error response: {e}", exc_info=True
+                    )
                     pass
                 if stream:
 
@@ -177,7 +180,7 @@ class OpenAIChatLLM(BaseLLMWrapper):
             ) as e:
                 last_exception = e
                 logger.warning(
-                    f"LLM Call Attempt {attempt+1} for {self.model_id} failed with {type(e).__name__}: {e}. Retrying..."
+                    f"LLM Call Attempt {attempt + 1} for {self.model_id} failed with {type(e).__name__}: {e}. Retrying..."
                 )
                 if attempt < max_retries:
                     await asyncio.sleep(1 * (2**attempt))
@@ -235,9 +238,9 @@ class OpenAIChatLLM(BaseLLMWrapper):
                         chunk_data = json.loads(data_content)
                         delta = chunk_data.get("choices", [{}])[0].get("delta", {})
 
-                        role_chunk = delta.get(
-                            "role"
-                        )  # Will be "assistant" on first useful chunk
+                        # role_chunk = delta.get(
+                        #     "role"
+                        # )  # Will be "assistant" on first useful chunk
                         content_chunk = delta.get("content")
                         tool_calls_chunk = delta.get("tool_calls")
 

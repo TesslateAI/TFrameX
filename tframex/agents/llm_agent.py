@@ -94,7 +94,7 @@ class LLMAgent(BaseAgent):
 
             logger.debug(
                 f"Agent '{self.agent_id}' (LLM: {self.llm.model_id}) calling LLM "  # UPDATED LOG
-                f"(Iter {iteration_count+1}/{self.max_tool_iterations+1}). "
+                f"(Iter {iteration_count + 1}/{self.max_tool_iterations + 1}). "
                 f"History depth: {len(history)}. "
                 f"Regular Tools defined: {len(self.tools)}. "
                 f"Callable Agents as Tools defined: {len(self.callable_agent_definitions)}."
@@ -110,7 +110,7 @@ class LLMAgent(BaseAgent):
                 or iteration_count >= self.max_tool_iterations
             ):
                 logger.info(
-                    f"Agent '{self.agent_id}' concluding with textual response. Iter: {iteration_count+1}."
+                    f"Agent '{self.agent_id}' concluding with textual response. Iter: {iteration_count + 1}."
                 )
                 # NEW: Post-process before returning
                 return self._post_process_llm_response(assistant_response_message)

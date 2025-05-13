@@ -196,8 +196,8 @@ async def chat():
 
             # 2. Call the agent with the new user message.
             bot_response_message = await rt.call_agent(
-                agent_name_to_use, user_message_content  # MODIFIED HERE
-            )
+                agent_name_to_use, user_message_content
+            )  # MODIFIED HERE
 
             # 3. Save updated history
             if chatbot_agent.memory:

@@ -33,5 +33,12 @@
         "reportUndefinedVariable": "none"
     },
 
-    "isort.args": ["--profile", "black"],
+    "isort.args": [
+        "--profile",
+        "black",
+    ],
+    "flake8.args": [
+        "--ignore=E203,W503,F401,E501,E704"
+    ],
+    "liveServer.settings.port": 5501,
 }

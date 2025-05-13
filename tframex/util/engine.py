@@ -84,7 +84,7 @@ class Engine:
         # Import agent classes here, INSIDE the method, only when needed for instantiation
         # This prevents module-level circular dependencies.
         from ..agents.base import BaseAgent
-        from ..agents.llm_agent import LLMAgent
+        from ..agents.llm_agent import LLMAgent  # noqa: F811
 
         if agent_name not in self._agent_instances:
             # --- Agent Registration Lookup ---
