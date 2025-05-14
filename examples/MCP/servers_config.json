@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "math_server": {
+      "type": "streamable-http",
+      "url": "http://localhost:8000/mcp/"
+    },
+    "sqlite_bi_tool": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-sqlite", "--db-path", "./business_data.db"],
+      "env": {}
+    }
+  }
+}

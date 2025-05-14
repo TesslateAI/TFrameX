@@ -1,69 +1,56 @@
-# tframex/__init__.py (NEW VERSION)
+# tframex/__init__.py
 import os
-from dotenv import load_dotenv
-
-# It's generally better for applications to handle dotenv loading.
+# from dotenv import load_dotenv # Application should handle this
 # load_dotenv()
 
-# Import from subpackages
 from .agents import BaseAgent, LLMAgent, ToolAgent
-from .app import TFrameXApp, TFrameXRuntimeContext # TFrameXRuntimeContext is now defined in app.py
+from .app import TFrameXApp, TFrameXRuntimeContext 
 from .flows import FlowContext, Flow
-from .models.primitives import ( # Note the .models path
-    FunctionCall,
-    Message,
-    MessageChunk,
-    ToolCall,
-    ToolDefinition,
-    ToolParameterProperty,
-    ToolParameters,
+from .models.primitives import (
+    FunctionCall, Message, MessageChunk, ToolCall,
+    ToolDefinition, ToolParameterProperty, ToolParameters,
 )
-from .patterns import ( # Note the .patterns path
-    BasePattern,
-    DiscussionPattern,
-    ParallelPattern,
-    RouterPattern,
-    SequentialPattern,
+from .patterns import (
+    BasePattern, DiscussionPattern, ParallelPattern,
+    RouterPattern, SequentialPattern,
 )
-from .util.engine import Engine # Engine is now directly under util
+from .util.engine import Engine 
 from .util.llms import BaseLLMWrapper, OpenAIChatLLM
 from .util.memory import BaseMemoryStore, InMemoryMemoryStore
 from .util.tools import Tool
-# setup_logging might be called by TFrameXApp itself, not typically part of public API to re-export
-# from .util.logging import setup_logging
+from .util.logging import setup_logging # Make setup_logging available if users want to call it
 
+# --- MCP Integration Exports ---
+from .mcp import (
+    MCPManager,
+    MCPConnectedServer,
+    MCPConfigError,
+    load_mcp_server_configs,
+    # Meta tools are usually not called directly by library users, but by agents.
+    # No harm in exporting if they might be useful for direct use in advanced scenarios.
+    tframex_list_mcp_servers,
+    tframex_list_mcp_resources,
+    tframex_read_mcp_resource,
+    tframex_list_mcp_prompts,
+    tframex_use_mcp_prompt,
+)
 
 __all__ = [
-    # Agents
-    "BaseAgent",
-    "LLMAgent",
-    "ToolAgent",
-    # App & Runtime
-    "TFrameXApp",
-    "TFrameXRuntimeContext", # This was TFrameXRuntimeContext in the old __init__
-    "Engine", # New public component
-    # Flows
-    "FlowContext",
-    "Flow",
-    # Models (Primitives)
-    "FunctionCall",
-    "Message",
-    "MessageChunk",
-    "ToolCall",
-    "ToolDefinition",
-    "ToolParameterProperty",
-    "ToolParameters",
-    # Patterns
-    "BasePattern",
-    "DiscussionPattern",
-    "ParallelPattern",
-    "RouterPattern",
-    "SequentialPattern",
-    # Utilities
-    "BaseLLMWrapper",
-    "OpenAIChatLLM",
-    "BaseMemoryStore",
-    "InMemoryMemoryStore",
+    "BaseAgent", "LLMAgent", "ToolAgent",
+    "TFrameXApp", "TFrameXRuntimeContext", 
+    "Engine", 
+    "FlowContext", "Flow",
+    "FunctionCall", "Message", "MessageChunk", "ToolCall",
+    "ToolDefinition", "ToolParameterProperty", "ToolParameters",
+    "BasePattern", "DiscussionPattern", "ParallelPattern",
+    "RouterPattern", "SequentialPattern",
+    "BaseLLMWrapper", "OpenAIChatLLM",
+    "BaseMemoryStore", "InMemoryMemoryStore",
     "Tool",
-    # "setup_logging", # Decide if this should be public
+    "setup_logging", # Export logging setup
+
+    # MCP Integration
+    "MCPManager", "MCPConnectedServer", "MCPConfigError", "load_mcp_server_configs",
+    "tframex_list_mcp_servers", "tframex_list_mcp_resources",
+    "tframex_read_mcp_resource", "tframex_list_mcp_prompts", "tframex_use_mcp_prompt",
 ]
