@@ -29,15 +29,18 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "httpx>=0.25.0",         # For OpenAIChatLLM and general HTTP
-    "python-dotenv>=1.0.0",  # For .env loading in examples
-    "PyYAML>=6.0.1",         # For YAML parsing (e.g., flow_config.yaml)
-    "openai>=1.0.0",         # Core for OpenAIChatLLM interacting with OpenAI spec
-    "pydantic>=2.0.0",       # For data models (Message, ToolDefinition, etc.)
+    "httpx>=0.25.0", # For OpenAIChatLLM and general HTTP
+    "python-dotenv>=1.0.0", # For .env loading in examples
+    "PyYAML>=6.0.1", # For YAML parsing (e.g., flow_config.yaml)
+    "openai>=1.0.0", # Core for OpenAIChatLLM interacting with OpenAI spec
+    "pydantic>=2.0.0", # For data models (Message, ToolDefinition, etc.)
     # aiohttp is used by the Reddit example tool.
     # If you want all examples to work out-of-the-box, include it here.
     # Otherwise, consider making it an optional dependency.
     "aiohttp>=3.0.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.24.0",
+    "pytest-mock>=3.14.0",
 ]
 
 [project.optional-dependencies]

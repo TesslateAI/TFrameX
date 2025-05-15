@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 from ..flows.flow_context import FlowContext
 from ..models.primitives import Message
 from ..util.engine import Engine
-from .base_pattern import BasePattern
+from .base_pattern import BasePattern # Adjusted for direct import from base_pattern
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +42,16 @@ class ParallelPattern(BasePattern):
                     )
                 )
             elif isinstance(task_item, BasePattern):
+                # Create a distinct FlowContext for each parallel branch to avoid interference
+                # This is crucial if nested patterns modify shared_data or history in ways
+                # not intended to be seen by sibling parallel branches.
                 branch_flow_ctx = FlowContext(
-                    initial_input=initial_input_msg,
-                    shared_data=flow_ctx.shared_data.copy(),
+                    initial_input=initial_input_msg, # Each branch gets the same initial input
+                    shared_data=flow_ctx.shared_data.copy(), # And a copy of shared_data
                 )
                 coroutines.append(
                     task_item.execute(
-                        branch_flow_ctx,
+                        branch_flow_ctx, # Pass the isolated context
                         engine,
                         agent_call_kwargs=effective_agent_call_kwargs,
                     )
@@ -72,7 +75,7 @@ class ParallelPattern(BasePattern):
             if isinstance(res_item, Exception):
                 logger.error(
                     f"ParallelPattern '{self.pattern_name}' - Task '{task_id}' failed: {res_item}",
-                    exc_info=False,
+                    exc_info=False, # exc_info=res_item to log the exception details
                 )
                 aggregated_content_parts.append(
                     f"Task '{task_id}' failed: {str(res_item)}"
@@ -83,7 +86,7 @@ class ParallelPattern(BasePattern):
                         "parts": [{"type": "text", "text": f"Error: {str(res_item)}"}],
                     }
                 )
-            elif isinstance(res_item, FlowContext):
+            elif isinstance(res_item, FlowContext): # Result from a nested pattern
                 logger.info(
                     f"ParallelPattern '{self.pattern_name}' - Task '{task_id}' (pattern) completed. Output: {str(res_item.current_message.content)[:50]}..."
                 )
@@ -103,7 +106,12 @@ class ParallelPattern(BasePattern):
                         ],
                     }
                 )
-            elif isinstance(res_item, Message):
+                # Merge shared_data from branch context back to main context if needed.
+                # This needs careful consideration based on desired behavior (e.g., last-write-wins, specific merge strategy)
+                # For now, we'll merge, prioritizing data from the branches.
+                flow_ctx.shared_data.update(res_item.shared_data)
+
+            elif isinstance(res_item, Message): # Result from a direct agent call
                 logger.info(
                     f"ParallelPattern '{self.pattern_name}' - Task '{task_id}' (agent) completed. Output: {str(res_item.content)[:50]}..."
                 )
@@ -145,3 +153,11 @@ class ParallelPattern(BasePattern):
 
         logger.info(f"ParallelPattern '{self.pattern_name}' completed.")
         return flow_ctx
+
+    async def reset_agents(self, engine: Engine) -> None:
+        logger.debug(f"Resetting agents for ParallelPattern '{self.pattern_name}'")
+        for task_item in self.tasks:
+            if isinstance(task_item, BasePattern):
+                await task_item.reset_agents(engine)
+            elif isinstance(task_item, str): # Agent name
+                await engine.reset_agent(task_item)

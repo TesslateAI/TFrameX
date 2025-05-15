@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Union
 from ..flows.flow_context import FlowContext
 from ..models.primitives import Message
 from ..util.engine import Engine
-from .base_pattern import BasePattern
+from .base_pattern import BasePattern # Adjusted for direct import from base_pattern
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +78,9 @@ class SequentialPattern(BasePattern):
         return flow_ctx
 
     async def reset_agents(self, engine: Engine) -> None:
+        logger.debug(f"Resetting agents for SequentialPattern '{self.pattern_name}'")
         for step in self.steps:
             if isinstance(step, BasePattern):
                 await step.reset_agents(engine)
-            elif isinstance(step, str):
+            elif isinstance(step, str): # Agent name
                 await engine.reset_agent(step)

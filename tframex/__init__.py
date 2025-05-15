@@ -1,16 +1,16 @@
-# tframex/__init__.py (NEW VERSION)
+# tframex/__init__.py
 import os
 
 from dotenv import load_dotenv
 
 # Import from subpackages
 from .agents import BaseAgent, LLMAgent, ToolAgent
-from .app import (  # TFrameXRuntimeContext is now defined in app.py
+from .app import (
     TFrameXApp,
     TFrameXRuntimeContext,
 )
 from .flows import Flow, FlowContext
-from .models.primitives import (  # Note the .models path
+from .models.primitives import (
     FunctionCall,
     Message,
     MessageChunk,
@@ -19,25 +19,23 @@ from .models.primitives import (  # Note the .models path
     ToolParameterProperty,
     ToolParameters,
 )
-from .patterns import (  # Note the .patterns path
+from .patterns import ( # Updated import style
     BasePattern,
     DiscussionPattern,
     ParallelPattern,
     RouterPattern,
     SequentialPattern,
+    DelegatePattern,    # Added
+    ProcessingMode,     # Added
 )
-from .util.engine import Engine  # Engine is now directly under util
+from .util.engine import Engine
 from .util.llms import BaseLLMWrapper, OpenAIChatLLM
 from .util.memory import BaseMemoryStore, InMemoryMemoryStore
 from .util.tools import Tool
+from .util.logging import setup_logging, LLMInteraction # Expose setup_logging and LLMInteraction
 
 # It's generally better for applications to handle dotenv loading.
 # load_dotenv()
-
-
-# setup_logging might be called by TFrameXApp itself, not typically part of public API to re-export
-# from .util.logging import setup_logging
-
 
 __all__ = [
     # Agents
@@ -46,8 +44,8 @@ __all__ = [
     "ToolAgent",
     # App & Runtime
     "TFrameXApp",
-    "TFrameXRuntimeContext",  # This was TFrameXRuntimeContext in the old __init__
-    "Engine",  # New public component
+    "TFrameXRuntimeContext",
+    "Engine",
     # Flows
     "FlowContext",
     "Flow",
@@ -65,11 +63,14 @@ __all__ = [
     "ParallelPattern",
     "RouterPattern",
     "SequentialPattern",
+    "DelegatePattern",    # Added
+    "ProcessingMode",     # Added
     # Utilities
     "BaseLLMWrapper",
     "OpenAIChatLLM",
     "BaseMemoryStore",
     "InMemoryMemoryStore",
     "Tool",
-    # "setup_logging", # Decide if this should be public
+    "setup_logging", # Expose setup_logging
+    "LLMInteraction",# Expose LLMInteraction for type hinting or direct use
 ]

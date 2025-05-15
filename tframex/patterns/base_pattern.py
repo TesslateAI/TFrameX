@@ -23,7 +23,12 @@ class BasePattern(ABC):
         pass
 
     @abstractmethod
-    def reset_agents(self, engine: Engine) -> None:
+    async def reset_agents(self, engine: Engine) -> None:
+        """
+        Resets the memory of all agents managed by this pattern.
+        This should be called if the pattern instance is reused and needs a fresh start
+        for its agents' memories.
+        """
         pass
 
     def __str__(self):

@@ -3,864 +3,402 @@
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Custom Agents](#custom-agents)
+   - [Creating a Custom Agent Class](#creating-a-custom-agent-class)
+   - [Overriding Behavior in Existing Agent Types](#overriding-behavior-in-existing-agent-types)
 3. [Custom Patterns](#custom-patterns)
+   - [Creating a Custom Pattern Class](#creating-a-custom-pattern-class)
 4. [Custom LLM Wrappers](#custom-llm-wrappers)
+   - [Implementing `BaseLLMWrapper`](#implementing-basellmwrapper)
 5. [Custom Memory Stores](#custom-memory-stores)
-6. [Custom Tools](#custom-tools)
-7. [Best Practices](#best-practices)
+   - [Implementing `BaseMemoryStore`](#implementing-basememorystore)
+6. [Custom Tools (Advanced)](#custom-tools-advanced)
+   - [Tools with Complex Initialization](#tools-with-complex-initialization)
+7. [Best Practices for Extensions](#best-practices-for-extensions)
 
-## Introduction
+## 1. Introduction
 
-TFrameX is designed to be highly extensible, allowing developers to customize and expand its capabilities. This guide covers the key extension points and best practices for extending TFrameX to meet your specific requirements.
+TFrameX is built with extensibility in mind. This guide provides instructions and best practices for developers looking to create custom components or integrate TFrameX with other systems. The primary extension points are custom agents, patterns, LLM wrappers, and memory stores.
 
-## Custom Agents
+## 2. Custom Agents
 
-Agents are the building blocks of TFrameX applications. You can extend the base agent functionality in several ways:
+While `LLMAgent` and `ToolAgent` cover many use cases, you might need agents with unique logic, state management, or different ways of interacting with LLMs or external services.
 
-### 1. Creating a Custom Agent Class
-
-To create a custom agent type with specialized behavior, extend the `BaseAgent` class:
+### Creating a Custom Agent Class
+Inherit from `tframex.agents.base.BaseAgent` and implement the abstract `run` method.
 
 ```python
 from tframex.agents.base import BaseAgent
 from tframex.models.primitives import Message
+from tframex.util.llms import BaseLLMWrapper # If your custom agent uses an LLM
+from tframex.util.engine import Engine # If it needs to call other agents/tools
+from typing import Union, Optional, List, Dict, Any
 
-class MyCustomAgent(BaseAgent):
-    def __init__(
-        self, 
-        name: str, 
-        description: str = None, 
-        system_prompt_template: str = None,
-        custom_param: Any = None
-    ):
-        super().__init__(name, description, system_prompt_template)
-        self.custom_param = custom_param
+class MyRuleBasedAgent(BaseAgent):
+    def __init__(self, agent_id: str, rules: Dict[str, str], **kwargs):
+        # Pass through common BaseAgent params, even if not directly used by this simple agent
+        super().__init__(agent_id=agent_id, **kwargs)
+        self.rules = rules # Custom parameter for this agent type
 
-    async def process(self, input_message: Message, engine_ref=None, **kwargs) -> Message:
-        # Custom logic here
-        processed_content = f"Custom processing: {input_message.content}"
+    async def run(self, input_message: Union[str, Message], **kwargs: Any) -> Message:
+        content = input_message.content if isinstance(input_message, Message) else input_message
         
-        return Message(
-            role="assistant",
-            content=processed_content
-        )
+        response_content = "I don't have a rule for that."
+        for pattern, response in self.rules.items():
+            if pattern.lower() in content.lower():
+                response_content = response
+                break
+        
+        return Message(role="assistant", content=response_content)
 
-# Register the agent with the application
-@app.agent(
-    name="CustomAgentInstance",
-    description="My specialized agent",
-    agent_class=MyCustomAgent,
-    custom_param="extra_config"  # Additional params passed to constructor
-)
-async def custom_agent_placeholder():
-    pass
+# Registering your custom agent:
+# app = TFrameXApp(...)
+# @app.agent(
+#     name="RuleAgent1",
+#     agent_class=MyRuleBasedAgent,
+#     rules={"hello": "Hi there!", "bye": "Goodbye!"} # Custom params are passed via **agent_config
+# )
+# async def rule_agent_placeholder(): # Placeholder is still needed for @app.agent
+#     pass 
 ```
+**Key points for custom agents:**
+- The `agent_id` (which includes a context suffix) is passed by the `Engine`.
+- Other parameters like `llm`, `tools`, `memory`, `system_prompt_template`, etc., are resolved by the `Engine` and passed if the custom agent's `__init__` accepts them.
+- The `run` method must accept `input_message: Union[str, Message]` and `**kwargs` and return a `Message`.
+- If your agent needs to call other agents or tools, it will need an `Engine` instance, typically passed during instantiation (as `LLMAgent` does).
 
-### 2. Adding Agent Capabilities
-
-You can also extend existing agent classes like `LLMAgent` to add new capabilities:
-
+### Overriding Behavior in Existing Agent Types
+You can also subclass `LLMAgent` or `ToolAgent` to modify their behavior.
 ```python
 from tframex.agents.llm_agent import LLMAgent
 from tframex.models.primitives import Message
 
-class EnhancedLLMAgent(LLMAgent):
-    async def process(self, input_message: Message, engine_ref=None, **kwargs) -> Message:
-        # Pre-processing
-        enhanced_input = self._preprocess_input(input_message)
+class MyEnhancedLLMAgent(LLMAgent):
+    async def run(self, input_message: Union[str, Message], **kwargs: Any) -> Message:
+        # Custom pre-processing of input
+        if isinstance(input_message, Message) and input_message.content:
+            input_message.content = f"[ENHANCED PREAMBLE] {input_message.content}"
         
-        # Use parent's processing
-        result = await super().process(enhanced_input, engine_ref, **kwargs)
+        response = await super().run(input_message, **kwargs)
         
-        # Post-processing
-        enhanced_result = self._postprocess_output(result)
-        
-        return enhanced_result
-    
-    def _preprocess_input(self, message: Message) -> Message:
-        # Add preprocessing logic here
-        return message
-    
-    def _postprocess_output(self, message: Message) -> Message:
-        # Add postprocessing logic here
-        return message
+        # Custom post-processing of output
+        if response.content:
+            response.content = f"{response.content} [ENHANCED POSTAMBLE]"
+        return response
+
+# @app.agent(name="EnhancedLLMAgent1", agent_class=MyEnhancedLLMAgent, system_prompt="...")
+# async def enhanced_llm_placeholder(): pass
 ```
 
-### 3. Agent State Management
+## 3. Custom Patterns
 
-For agents that need to maintain state across invocations:
+Patterns define reusable interaction logic within flows.
 
-```python
-class StatefulAgent(BaseAgent):
-    def __init__(self, name, description=None, system_prompt_template=None):
-        super().__init__(name, description, system_prompt_template)
-        self.state = {}
-    
-    async def process(self, input_message: Message, engine_ref=None, **kwargs) -> Message:
-        # Access and update state
-        if 'counter' not in self.state:
-            self.state['counter'] = 0
-        self.state['counter'] += 1
-        
-        return Message(
-            role="assistant",
-            content=f"Processed message. I've been called {self.state['counter']} times."
-        )
-```
-
-## Custom Patterns
-
-Patterns define how agents interact with each other. You can create custom patterns to implement specialized agent interaction flows:
-
-### 1. Creating a Custom Pattern
-
-Extend `BasePattern` to create a custom interaction pattern:
+### Creating a Custom Pattern Class
+Inherit from `tframex.patterns.base_pattern.BasePattern` and implement `execute()` and `reset_agents()`.
 
 ```python
+import asyncio
+import logging
 from tframex.patterns.base_pattern import BasePattern
 from tframex.flows.flow_context import FlowContext
 from tframex.util.engine import Engine
-import logging
+from tframex.models.primitives import Message
+from typing import List, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
 
-class IterativeRefinementPattern(BasePattern):
-    def __init__(
-        self, 
-        pattern_name: str, 
-        creator_agent: str, 
-        refiner_agent: str, 
-        iterations: int = 3
-    ):
+class RequestResponseRetryPattern(BasePattern):
+    def __init__(self, pattern_name: str, request_agent: str, validator_agent: str, max_retries: int = 3):
         super().__init__(pattern_name)
-        self.creator_agent = creator_agent
-        self.refiner_agent = refiner_agent
-        self.iterations = iterations
-    
+        self.request_agent = request_agent
+        self.validator_agent = validator_agent
+        self.max_retries = max_retries
+        self.agents_to_reset = [request_agent, validator_agent]
+
     async def execute(
-        self, 
-        flow_ctx: FlowContext, 
-        engine: Engine, 
-        agent_call_kwargs=None
+        self,
+        flow_ctx: FlowContext,
+        engine: Engine,
+        agent_call_kwargs: Optional[Dict[str, Any]] = None,
     ) -> FlowContext:
-        logger.info(f"Starting IterativeRefinementPattern '{self.pattern_name}' with {self.iterations} iterations")
-        
-        # Initial creation
-        try:
-            creator_result = await engine.call_agent(
-                self.creator_agent, 
-                flow_ctx.current_message,
-                **(agent_call_kwargs or {})
+        logger.info(f"Executing RequestResponseRetryPattern '{self.pattern_name}'")
+        current_input = flow_ctx.current_message
+
+        for attempt in range(self.max_retries + 1):
+            logger.info(f"Attempt {attempt + 1}/{self.max_retries + 1}")
+            
+            # 1. Call request agent
+            response_message = await engine.call_agent(
+                self.request_agent, current_input, **(agent_call_kwargs or {})
             )
-            flow_ctx.update_current_message(creator_result)
+            flow_ctx.history.append(response_message) # Log request agent's response
+
+            # 2. Call validator agent with the response from request_agent
+            validation_input = Message(
+                role="user", # Validator typically expects user role for the content to validate
+                content=f"Please validate the following content: {response_message.content}"
+            )
+            validation_result_msg = await engine.call_agent(
+                self.validator_agent, validation_input, **(agent_call_kwargs or {})
+            )
+            flow_ctx.history.append(validation_result_msg) # Log validator's response
+
+            if "valid" in (validation_result_msg.content or "").lower():
+                logger.info(f"Validation successful for '{self.pattern_name}' on attempt {attempt + 1}.")
+                flow_ctx.update_current_message(response_message) # Final output is the validated response
+                return flow_ctx
             
-            # Iterative refinement
-            for i in range(self.iterations):
-                logger.info(f"IterativeRefinementPattern '{self.pattern_name}' - Iteration {i+1}/{self.iterations}")
-                refiner_result = await engine.call_agent(
-                    self.refiner_agent,
-                    flow_ctx.current_message,
-                    **(agent_call_kwargs or {})
-                )
-                flow_ctx.update_current_message(refiner_result)
-                
-                # Optional: Store intermediate results in shared data
-                flow_ctx.update_shared_data({
-                    f"iteration_{i+1}_result": refiner_result.content
-                })
-                
-        except Exception as e:
-            logger.error(f"Error in IterativeRefinementPattern '{self.pattern_name}': {e}", exc_info=True)
-            # Handle error case
-            
+            logger.warning(f"Validation failed on attempt {attempt + 1}. Validator said: {validation_result_msg.content}")
+            # For next retry, the input to request_agent could be modified based on validator's feedback
+            # For simplicity, we'll reuse the original input or could use validator's feedback
+            current_input = Message(
+                role=current_input.role, # Keep original role
+                content=f"Previous attempt was invalid. Validator said: '{validation_result_msg.content}'. Please try generating again based on the original request: '{flow_ctx.history[0].content}'"
+            )
+            # Reset agents for a fresh attempt if they are stateful (or their memory influences retries)
+            await self.reset_agents(engine)
+
+
+        logger.error(f"Pattern '{self.pattern_name}' failed after {self.max_retries + 1} attempts.")
+        error_message = Message(role="assistant", content="Failed to get a valid response after multiple retries.")
+        flow_ctx.update_current_message(error_message)
         return flow_ctx
+
+    async def reset_agents(self, engine: Engine) -> None:
+        logger.debug(f"Resetting agents for {self.pattern_name}: {self.agents_to_reset}")
+        for agent_name in self.agents_to_reset:
+            await engine.reset_agent(agent_name)
+
+# Using the custom pattern in a Flow:
+# my_retry_pattern = RequestResponseRetryPattern(
+#     pattern_name="GenerateAndValidate",
+#     request_agent="ContentGeneratorAgent",
+#     validator_agent="ContentValidatorAgent",
+#     max_retries=2
+# )
+# my_flow.add_step(my_retry_pattern)
 ```
 
-### 2. Using the Custom Pattern
+## 4. Custom LLM Wrappers
+
+To integrate with LLM providers not covered by `OpenAIChatLLM`, implement `BaseLLMWrapper`.
+
+### Implementing `BaseLLMWrapper`
+Inherit from `tframex.util.llms.BaseLLMWrapper`.
 
 ```python
-from tframex import Flow, TFrameXApp
+from tframex.util.llms import BaseLLMWrapper
+from tframex.models.primitives import Message, MessageChunk, ToolCall # And other primitives
+from typing import List, Dict, Any, Optional, Union, AsyncGenerator, Coroutine
+import httpx # Or your preferred HTTP client
 
-app = TFrameXApp(...)
+class MyCustomLLM(BaseLLMWrapper):
+    def __init__(self, model_id: str, api_endpoint: str, custom_api_key: str, **kwargs):
+        super().__init__(model_id=model_id, api_key=custom_api_key, api_base_url=api_endpoint, **kwargs)
+        self.endpoint = api_endpoint # Or construct full endpoint from api_base_url
 
-# Define agents
-@app.agent(name="ContentCreator", system_prompt="Create initial content based on the request.")
-async def creator_placeholder():
-    pass
+    async def chat_completion(
+        self,
+        messages: List[Message],
+        stream: bool = False,
+        **kwargs: Any,
+    ) -> Coroutine[Any, Any, Union[Message, AsyncGenerator[MessageChunk, None]]]:
+        client = await self._get_client() # Gets an httpx.AsyncClient from BaseLLMWrapper
+        
+        # 1. Transform tframex.Message list to your LLM's expected format
+        payload_messages = [{"role": msg.role, "content": msg.content} for msg in messages]
+        
+        api_payload = {
+            "model": self.model_id,
+            "messages": payload_messages,
+            "stream": stream,
+            **kwargs # Pass through other LLM params like temperature, max_tokens
+        }
+        
+        # Add tool definitions if present and supported by your LLM
+        if "tools" in kwargs and kwargs["tools"]:
+            # Adapt tframex.ToolDefinition to your LLM's format
+            api_payload["tools"] = self._adapt_tools_for_my_llm(kwargs["tools"])
+            if "tool_choice" in kwargs:
+                api_payload["tool_choice"] = kwargs["tool_choice"] # Adapt if necessary
 
-@app.agent(name="ContentRefiner", system_prompt="Refine and improve the content.")
-async def refiner_placeholder():
-    pass
+        if stream:
+            return self._handle_streaming_response(client, self.endpoint, api_payload)
+        else:
+            return await self._handle_non_streaming_response(client, self.endpoint, api_payload)
 
-# Create a flow with the custom pattern
-refinement_pattern = IterativeRefinementPattern(
-    "ContentRefinement",
-    creator_agent="ContentCreator",
-    refiner_agent="ContentRefiner",
-    iterations=3
-)
+    async def _handle_non_streaming_response(self, client: httpx.AsyncClient, url: str, payload: Dict) -> Message:
+        try:
+            response = await client.post(url, json=payload)
+            response.raise_for_status()
+            response_data = response.json()
+            
+            # 2. Parse your LLM's response back into tframex.Message format
+            # Example parsing (highly dependent on your LLM's API)
+            assistant_content = response_data.get("choices", [{}])[0].get("message", {}).get("content")
+            
+            tool_calls_data = response_data.get("choices", [{}])[0].get("message", {}).get("tool_calls")
+            parsed_tool_calls = []
+            if tool_calls_data:
+                for tc_data in tool_calls_data:
+                    # Adapt your LLM's tool call format to tframex.ToolCall
+                    parsed_tool_calls.append(
+                        ToolCall(id=tc_data.get("id"), type="function", 
+                                 function={"name": tc_data.get("function_name"), 
+                                           "arguments": tc_data.get("function_args_json_string")})
+                    )
+            
+            return Message(role="assistant", content=assistant_content, tool_calls=parsed_tool_calls or None)
+        except httpx.HTTPStatusError as e:
+            # Handle API errors, return an error Message
+            return Message(role="assistant", content=f"LLM API Error: {e.response.status_code} - {e.response.text}")
+        except Exception as e:
+            return Message(role="assistant", content=f"Error during LLM call: {str(e)}")
 
-refinement_flow = Flow("RefinementFlow", refinement_pattern)
-app.register_flow(refinement_flow)
+    async def _handle_streaming_response(self, client: httpx.AsyncClient, url: str, payload: Dict) -> AsyncGenerator[MessageChunk, None]:
+        try:
+            async with client.stream("POST", url, json=payload) as response:
+                response.raise_for_status() # Check for initial errors
+                async for line in response.aiter_lines():
+                    if line.startswith("data:"): # Assuming SSE
+                        data_content = line[len("data:") :].strip()
+                        if data_content == "[DONE]": break
+                        chunk_json = json.loads(data_content)
+                        
+                        # 3. Parse stream chunk and yield tframex.MessageChunk
+                        delta = chunk_json.get("choices", [{}])[0].get("delta", {})
+                        content_chunk = delta.get("content")
+                        # Handle tool call streaming if your LLM supports it
+                        
+                        if content_chunk:
+                             yield MessageChunk(role="assistant", content=content_chunk)
+                        # ... handle other parts of the chunk like tool_calls delta ...
+        except httpx.HTTPStatusError as e:
+            yield MessageChunk(role="assistant", content=f"LLM Stream Error: {e.response.status_code} - {await e.response.aread()}")
+        except Exception as e:
+            yield MessageChunk(role="assistant", content=f"Stream error: {str(e)}")
+            
+    def _adapt_tools_for_my_llm(self, tframex_tools: List[Dict]) -> List[Dict]:
+        # Convert from tframex.ToolDefinition.model_dump() format to your LLM's expected format
+        adapted_tools = []
+        for tool_def_dict in tframex_tools:
+            # Assuming tframex_tools is a list of dicts from ToolDefinition.model_dump()
+            # Example: tool_def_dict['function']['name'], tool_def_dict['function']['description'], etc.
+            adapted_tools.append({
+                "toolName": tool_def_dict.get("function", {}).get("name"),
+                "toolDescription": tool_def_dict.get("function", {}).get("description"),
+                "parametersSchema": tool_def_dict.get("function", {}).get("parameters") 
+                # Further adaptation of parametersSchema might be needed
+            })
+        return adapted_tools
+
+
+# Usage:
+# custom_llm_instance = MyCustomLLM(model_id="my-model-v1", api_endpoint="...", custom_api_key="...")
+# app = TFrameXApp(default_llm=custom_llm_instance)
 ```
 
-### 3. Combining Multiple Patterns
+## 5. Custom Memory Stores
 
-You can create complex flows by nesting patterns within each other:
+To persist conversation history in a database or other storage, implement `BaseMemoryStore`.
+
+### Implementing `BaseMemoryStore`
+Inherit from `tframex.util.memory.BaseMemoryStore`.
 
 ```python
-from tframex import Flow, SequentialPattern, ParallelPattern, RouterPattern
+import asyncio
+from tframex.util.memory import BaseMemoryStore
+from tframex.models.primitives import Message
+from typing import List, Optional
+# Example: using a dummy list for a "database"
+dummy_db: Dict[str, List[Message]] = {} # conversation_id -> List[Message]
 
-# Create component patterns
-initial_analysis = ParallelPattern(
-    "InitialAnalysis",
-    agents=["DataAnalyst", "InsightGenerator"],
-    aggregator_agent="AnalysisAggregator"
-)
+class MyDatabaseMemoryStore(BaseMemoryStore):
+    async def add_message(self, message: Message, conversation_id: str = "default_conv") -> None:
+        if conversation_id not in dummy_db:
+            dummy_db[conversation_id] = []
+        dummy_db[conversation_id].append(message)
+        # In a real scenario, persist to DB here
 
-content_generation = SequentialPattern(
-    "ContentGeneration",
-    steps=["Outliner", "ContentWriter", "Editor"]
-)
+    async def get_history(
+        self,
+        conversation_id: str = "default_conv",
+        limit: Optional[int] = None,
+        offset: int = 0,
+        roles: Optional[List[str]] = None,
+    ) -> List[Message]:
+        history = dummy_db.get(conversation_id, [])
+        
+        if roles:
+            history = [msg for msg in history if msg.role in roles]
+        
+        # Apply offset and limit (basic implementation)
+        start = offset
+        end = len(history) if limit is None else offset + limit
+        return history[start:end]
 
-feedback_collection = DiscussionPattern(
-    "FeedbackCollection",
-    participants=["CriticA", "CriticB", "CriticC"],
-    moderator="FeedbackModerator",
-    rounds=1
-)
+    async def clear(self, conversation_id: str = "default_conv") -> None:
+        if conversation_id in dummy_db:
+            dummy_db[conversation_id] = []
+            
+# Usage:
+# db_memory_factory = lambda: MyDatabaseMemoryStore()
+# app = TFrameXApp(default_memory_store_factory=db_memory_factory)
+# Or for a specific agent:
+# my_agent_memory = MyDatabaseMemoryStore()
+# @app.agent(name="PersistentAgent", memory_store=my_agent_memory)
+```
 
-# Combine patterns into a main flow
-main_workflow = Flow(
-    "CompleteWorkflow",
-    SequentialPattern(
-        "MainSequence",
-        steps=[initial_analysis, content_generation, feedback_collection]
+## 6. Custom Tools (Advanced)
+
+While `@app.tool` is convenient, you can manually create `Tool` instances if you need more control, for example, if your tool requires complex initialization or state.
+
+### Tools with Complex Initialization
+```python
+from tframex.util.tools import Tool, ToolParameters, ToolParameterProperty
+from tframex import TFrameXApp
+
+class MyComplexToolService:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        # ... other setup ...
+
+    async def perform_action(self, item_id: str, quantity: int) -> Dict:
+        # Actual logic using self.api_key
+        return {"status": "success", "item_id": item_id, "processed_quantity": quantity}
+
+# Instantiate your service
+my_service = MyComplexToolService(api_key="your_complex_service_key")
+
+# Create the TFrameX Tool instance, wrapping a method of your service
+complex_tool = Tool(
+    name="process_item_complex",
+    func=my_service.perform_action, # Bind to the instance method
+    description="Processes an item using the complex service.",
+    parameters_schema=ToolParameters(
+        properties={
+            "item_id": ToolParameterProperty(type="string", description="The ID of the item."),
+            "quantity": ToolParameterProperty(type="integer", description="The quantity to process.")
+        },
+        required=["item_id", "quantity"]
     )
 )
 
-app.register_flow(main_workflow)
+# Register it with the app manually (if not using @app.tool)
+# app = TFrameXApp(...)
+# app._tools[complex_tool.name] = complex_tool 
+# Make sure the agent that uses this tool refers to it by "process_item_complex".
 ```
 
-## Custom LLM Wrappers
+## 7. Best Practices for Extensions
 
-TFrameX allows you to integrate with different LLM providers by creating custom LLM wrappers:
+- **Type Hinting:** Use Python type hints extensively. TFrameX relies on them for schema inference (e.g., for tools).
+- **Asynchronous Operations:** Design custom components to be async (`async def`) if they involve I/O operations (network requests, file access, database calls) to leverage TFrameX's asyncio-based nature.
+- **Immutability (where possible):** For data objects passed around (like `Message`), treat them as immutable if possible to avoid side effects. Pydantic models are generally immutable by default unless configured otherwise.
+- **Clear Naming:** Use descriptive names for custom agents, patterns, tools, etc.
+- **Error Handling:** Implement robust error handling in your custom components. Return informative `Message` objects in case of agent/pattern failures.
+- **Logging:** Utilize Python's `logging` module within your extensions for better observability. TFrameX sets up a global logger.
+- **Configuration:** For custom components requiring configuration (API keys, endpoints), consider using environment variables (loaded via `python-dotenv`) or pass configuration during instantiation.
+- **Testing:** Write unit tests for your custom components, mocking external dependencies as needed.
 
-### 1. Creating a Custom LLM Wrapper
-
-Extend `BaseLLMWrapper` to support a new LLM provider:
-
-```python
-from tframex.util.llms import BaseLLMWrapper
-from tframex.models.primitives import ToolCall, ToolDefinition
-from typing import List, Dict, Any, Tuple, Optional, Union, AsyncIterator
-import aiohttp
-import json
-import logging
-
-logger = logging.getLogger(__name__)
-
-class CustomLLMWrapper(BaseLLMWrapper):
-    def __init__(
-        self,
-        api_url: str,
-        api_key: str,
-        model_name: str = "default-model"
-    ):
-        super().__init__()
-        self.api_url = api_url
-        self.api_key = api_key
-        self.model_name = model_name
-        self.model_id = f"custom-{model_name}"  # For logging/identification
-    
-    async def generate_response(
-        self,
-        messages: List[Dict[str, str]],
-        temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        tools: Optional[List[ToolDefinition]] = None,
-        **kwargs
-    ) -> Tuple[str, Optional[List[ToolCall]]]:
-        """Generate a response from the custom LLM service."""
-        try:
-            # Prepare request payload for your API
-            payload = {
-                "messages": messages,
-                "temperature": temperature,
-                "model": self.model_name
-            }
-            
-            if max_tokens:
-                payload["max_tokens"] = max_tokens
-                
-            if tools:
-                # Convert tools to the format expected by your API
-                payload["tools"] = [self._convert_tool_def(tool) for tool in tools]
-            
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            }
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    self.api_url,
-                    headers=headers,
-                    json=payload
-                ) as response:
-                    if response.status != 200:
-                        error_text = await response.text()
-                        logger.error(f"LLM API error: {response.status} - {error_text}")
-                        return f"Error: Failed to generate response ({response.status})", None
-                    
-                    result = await response.json()
-                    
-                    # Extract content and tool calls based on your API's response format
-                    content = result.get("content", "")
-                    
-                    # Parse tool calls if present
-                    tool_calls = []
-                    if "tool_calls" in result:
-                        for tc in result["tool_calls"]:
-                            tool_calls.append(
-                                ToolCall(
-                                    id=tc.get("id", "unknown"),
-                                    name=tc.get("name", ""),
-                                    arguments=tc.get("arguments", {})
-                                )
-                            )
-                    
-                    return content, tool_calls if tool_calls else None
-                    
-        except Exception as e:
-            logger.error(f"Error generating response: {str(e)}", exc_info=True)
-            return f"Error: {str(e)}", None
-    
-    async def generate_response_stream(
-        self,
-        messages: List[Dict[str, str]],
-        temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        tools: Optional[List[ToolDefinition]] = None,
-        **kwargs
-    ) -> AsyncIterator[Union[str, ToolCall]]:
-        """Generate a streaming response from the custom LLM service."""
-        # Implement streaming logic for your API
-        # This will depend on how your API handles streaming
-        # Yield string content chunks or ToolCall objects
-        pass
-    
-    def _convert_tool_def(self, tool_def: ToolDefinition) -> Dict[str, Any]:
-        """Convert TFrameX tool definition to API-specific format."""
-        # Implement conversion logic specific to your API
-        return {
-            "name": tool_def.name,
-            "description": tool_def.description,
-            "parameters": {
-                # Convert parameters based on your API's expected format
-            }
-        }
-```
-
-### 2. Using the Custom LLM Wrapper
-
-```python
-from tframex import TFrameXApp
-
-# Initialize with custom LLM
-custom_llm = CustomLLMWrapper(
-    api_url="https://api.customllmprovider.com/generate",
-    api_key="your-api-key",
-    model_name="large-language-model"
-)
-
-app = TFrameXApp(default_llm=custom_llm)
-
-# Or use it for specific agents
-@app.agent(
-    name="SpecializedAgent",
-    description="Uses the custom LLM provider",
-    llm=custom_llm
-)
-async def specialized_agent_placeholder():
-    pass
-```
-
-## Custom Memory Stores
-
-Memory stores in TFrameX manage conversation history. You can create custom memory stores to integrate with different storage backends:
-
-### 1. Creating a Custom Memory Store
-
-Extend `BaseMemoryStore` to implement custom memory storage:
-
-```python
-from tframex.util.memory import BaseMemoryStore
-from tframex.models.primitives import Message
-from typing import Dict, List, Optional, Union
-import aioredis
-import json
-import uuid
-
-class RedisMemoryStore(BaseMemoryStore):
-    def __init__(self, redis_url: str, ttl_seconds: int = 3600):
-        self.redis_url = redis_url
-        self.ttl_seconds = ttl_seconds
-        self.redis = None
-    
-    async def initialize(self):
-        """Initialize Redis connection."""
-        self.redis = await aioredis.from_url(self.redis_url)
-    
-    async def add_message(
-        self, 
-        message: Union[Dict, Message], 
-        conversation_id: Optional[str] = None
-    ) -> None:
-        """Add a message to the Redis store."""
-        if self.redis is None:
-            await self.initialize()
-        
-        # Generate conversation ID if not provided
-        if not conversation_id:
-            conversation_id = str(uuid.uuid4())
-        
-        # Convert Message object to dict if needed
-        if isinstance(message, Message):
-            message_dict = {
-                "role": message.role,
-                "content": message.content,
-                "message_type": message.message_type,
-                "metadata": message.metadata
-            }
-        else:
-            message_dict = message
-        
-        # Add timestamp if not present
-        if "timestamp" not in message_dict:
-            message_dict["timestamp"] = time.time()
-        
-        # Store message in Redis
-        message_key = f"conversation:{conversation_id}:messages"
-        await self.redis.rpush(message_key, json.dumps(message_dict))
-        
-        # Set expiration if not already set
-        await self.redis.expire(message_key, self.ttl_seconds)
-    
-    async def get_messages(
-        self, 
-        conversation_id: Optional[str] = None,
-        limit: Optional[int] = None
-    ) -> List[Dict]:
-        """Retrieve messages from Redis store."""
-        if self.redis is None:
-            await self.initialize()
-        
-        if not conversation_id:
-            return []
-        
-        message_key = f"conversation:{conversation_id}:messages"
-        
-        # Get all messages
-        message_count = await self.redis.llen(message_key)
-        if message_count == 0:
-            return []
-        
-        # Apply limit if specified
-        start_idx = 0
-        end_idx = -1
-        if limit and limit > 0:
-            start_idx = max(0, message_count - limit)
-        
-        # Retrieve messages
-        message_jsons = await self.redis.lrange(message_key, start_idx, end_idx)
-        
-        # Parse and return
-        return [json.loads(msg) for msg in message_jsons]
-    
-    async def clear_conversation(self, conversation_id: str) -> None:
-        """Clear a conversation's messages."""
-        if self.redis is None:
-            await self.initialize()
-        
-        message_key = f"conversation:{conversation_id}:messages"
-        await self.redis.delete(message_key)
-    
-    async def close(self):
-        """Close Redis connection."""
-        if self.redis:
-            await self.redis.close()
-```
-
-### 2. Using the Custom Memory Store
-
-```python
-from tframex import TFrameXApp
-
-# Create memory store factory function
-def redis_memory_store_factory():
-    return RedisMemoryStore(redis_url="redis://localhost:6379")
-
-# Use as default memory store
-app = TFrameXApp(
-    default_llm=your_llm,
-    default_memory_store_factory=redis_memory_store_factory
-)
-
-# Or use for a specific agent
-redis_store = RedisMemoryStore(redis_url="redis://localhost:6379")
-
-@app.agent(
-    name="PersistentAgent",
-    memory_store=redis_store
-)
-async def persistent_agent_placeholder():
-    pass
-```
-
-## Custom Tools
-
-Tools allow agents to interact with external systems. You can create custom tools to extend the capabilities of your agents:
-
-### 1. Creating Basic Tools
-
-The simplest way to create tools is using the `@app.tool` decorator:
-
-```python
-from tframex import TFrameXApp
-import requests
-
-app = TFrameXApp(...)
-
-@app.tool(
-    name="fetch_stock_price",
-    description="Fetches current stock price for a given ticker symbol",
-    parameters_schema={
-        "properties": {
-            "ticker": {
-                "type": "string",
-                "description": "Stock ticker symbol (e.g., AAPL, MSFT)"
-            },
-            "exchange": {
-                "type": "string",
-                "description": "Stock exchange (default: NASDAQ)"
-            }
-        },
-        "required": ["ticker"]
-    }
-)
-async def fetch_stock_price(ticker: str, exchange: str = "NASDAQ") -> str:
-    """Fetch stock price from an API."""
-    try:
-        # In a real implementation, use a proper financial API
-        response = requests.get(
-            f"https://api.example.com/stocks/{exchange}/{ticker}"
-        )
-        data = response.json()
-        return f"Current price of {ticker} on {exchange}: ${data['price']:.2f}"
-    except Exception as e:
-        return f"Error fetching stock price: {str(e)}"
-```
-
-### 2. Creating Tool Classes
-
-For more complex tools, you can create dedicated tool classes:
-
-```python
-from tframex.util.tools import Tool, ToolParameters, ToolParameterProperty
-from typing import Dict, Any, Optional, Callable
-import logging
-
-logger = logging.getLogger(__name__)
-
-class DatabaseQueryTool(Tool):
-    def __init__(
-        self,
-        name: str,
-        db_connection,
-        description: Optional[str] = None,
-    ):
-        # Define parameters schema
-        parameters = ToolParameters(
-            properties={
-                "query": ToolParameterProperty(
-                    type="string",
-                    description="SQL query to execute (SELECT only)"
-                ),
-                "limit": ToolParameterProperty(
-                    type="integer",
-                    description="Maximum number of rows to return"
-                )
-            },
-            required=["query"]
-        )
-        
-        # Create executor function
-        async def execute_query(query: str, limit: int = 100) -> str:
-            try:
-                # Safety check (basic - would need more robust validation)
-                if not query.lower().strip().startswith("select"):
-                    return "Error: Only SELECT queries are allowed"
-                
-                # Add limit if not already in query
-                if "limit" not in query.lower():
-                    query = f"{query} LIMIT {limit}"
-                
-                # Execute query
-                cursor = db_connection.cursor()
-                cursor.execute(query)
-                results = cursor.fetchall()
-                
-                # Format results
-                if not results:
-                    return "Query returned no results"
-                
-                columns = [desc[0] for desc in cursor.description]
-                result_str = "Results:\n"
-                result_str += " | ".join(columns) + "\n"
-                result_str += "-" * len(result_str) + "\n"
-                
-                for row in results:
-                    result_str += " | ".join(str(cell) for cell in row) + "\n"
-                
-                return result_str
-                
-            except Exception as e:
-                logger.error(f"Database query error: {str(e)}", exc_info=True)
-                return f"Error executing query: {str(e)}"
-        
-        # Initialize the tool with the function and parameters
-        super().__init__(
-            name=name,
-            func=execute_query,
-            description=description or "Execute a database query",
-            parameters_schema=parameters
-        )
-
-# Register with the app
-db_connection = get_database_connection()  # Your database connection logic
-db_tool = DatabaseQueryTool(
-    name="query_database",
-    db_connection=db_connection,
-    description="Query the application database (read-only)"
-)
-
-# Register manually instead of using decorator
-app._tools["query_database"] = db_tool
-
-# Then use in an agent
-@app.agent(
-    name="DatabaseAnalyst",
-    description="Analyzes data from the database",
-    tools=["query_database"],
-    system_prompt="You are a database analyst. Use the query_database tool to retrieve and analyze data."
-)
-async def db_analyst_placeholder():
-    pass
-```
-
-## Best Practices
-
-### Modular Design
-
-- **Separation of Concerns**: Keep agent definitions, tool implementations, and pattern logic separate.
-- **Reusable Components**: Design patterns and agents to be reusable across different flows.
-- **Configuration Over Code**: Use template variables and shared data to configure behavior instead of hardcoding.
-
-### Error Handling
-
-- **Graceful Degradation**: Have fallback strategies when agents or tools fail.
-- **Comprehensive Logging**: Log important events and errors for debugging.
-- **Validate Inputs**: Validate inputs to tools and agents to prevent unexpected behavior.
-
-```python
-# Example of defensive tool implementation
-@app.tool(description="Process sensitive data")
-async def process_data(data_id: str, options: Optional[Dict[str, Any]] = None) -> str:
-    try:
-        # Validate input
-        if not data_id or not isinstance(data_id, str):
-            return "Error: Invalid data_id provided"
-        
-        # Validate options if provided
-        if options and not isinstance(options, dict):
-            return "Error: Options must be a dictionary"
-            
-        # Process with appropriate error handling
-        result = await actual_processing_function(data_id, options)
-        return result
-    except Exception as e:
-        logging.error(f"Error processing data: {str(e)}", exc_info=True)
-        # Return user-friendly error without exposing internals
-        return "An error occurred while processing the data. Please try again or contact support."
-```
-
-### Performance Optimization
-
-- **Minimize LLM Calls**: LLM calls are often the bottleneck, so minimize unnecessary calls.
-- **Parallel Processing**: Use ParallelPattern when tasks can be executed independently.
-- **Caching**: Consider implementing caching for expensive operations or frequent LLM queries.
-
-```python
-# Example of a caching decorator for tools
-import functools
-import asyncio
-from typing import Any, Callable, Dict, Tuple, Awaitable
-
-# Simple cache implementation
-cache = {}
-cache_lock = asyncio.Lock()
-
-def cached_tool(ttl_seconds: int = 300):
-    """Decorator to cache tool results."""
-    def decorator(func: Callable[..., Awaitable[Any]]):
-        @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
-            # Create cache key from args and kwargs
-            key_parts = [str(arg) for arg in args]
-            key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()))
-            cache_key = func.__name__ + ":" + ":".join(key_parts)
-            
-            # Check cache
-            async with cache_lock:
-                if cache_key in cache:
-                    entry_time, result = cache[cache_key]
-                    # Check if entry is still valid
-                    if time.time() - entry_time < ttl_seconds:
-                        return result
-            
-            # Execute function if not in cache or expired
-            result = await func(*args, **kwargs)
-            
-            # Store in cache
-            async with cache_lock:
-                cache[cache_key] = (time.time(), result)
-            
-            return result
-        return wrapper
-    return decorator
-
-# Usage example
-@app.tool(description="Fetch external data")
-@cached_tool(ttl_seconds=60)  # Cache for 1 minute
-async def fetch_external_data(query: str) -> str:
-    # Expensive external API call
-    response = await make_api_request(query)
-    return response
-```
-
-### Security
-
-- **Input Validation**: Always validate and sanitize inputs for tools.
-- **Least Privilege**: Give tools only the permissions they need.
-- **Safe Defaults**: Use safe defaults for optional parameters.
-- **Content Safety**: Implement content filtering or validation where appropriate.
-
-```python
-# Example of input sanitization for a file operation tool
-import os
-import re
-from pathlib import Path
-
-@app.tool(description="Read file content")
-async def read_file_safe(file_path: str) -> str:
-    # Sanitize the path to prevent directory traversal
-    file_path = os.path.normpath(file_path)
-    
-    # Ensure the path is within the allowed directory
-    allowed_dir = "/app/safe_files"
-    full_path = os.path.join(allowed_dir, file_path)
-    
-    # Verify it's still within the allowed directory
-    if not Path(full_path).resolve().is_relative_to(Path(allowed_dir).resolve()):
-        return "Error: Access denied. Path is outside the allowed directory."
-    
-    # Check file extension
-    allowed_extensions = ['.txt', '.md', '.csv']
-    if not any(full_path.endswith(ext) for ext in allowed_extensions):
-        return f"Error: Only files with extensions {', '.join(allowed_extensions)} are allowed."
-    
-    # Check if file exists
-    if not os.path.isfile(full_path):
-        return f"Error: File not found."
-    
-    # Now it's safe to read the file
-    try:
-        with open(full_path, 'r') as f:
-            content = f.read()
-        return content
-    except Exception as e:
-        return f"Error reading file: {str(e)}"
-```
-
-### Testing
-
-- **Unit Testing**: Test individual components (agents, tools, patterns) in isolation.
-- **Integration Testing**: Test how components work together.
-- **Mocking LLMs**: Use mock LLMs for testing to avoid API costs and ensure deterministic results.
-
-```python
-# Example of a mock LLM for testing
-from tframex.util.llms import BaseLLMWrapper
-from tframex.models.primitives import ToolCall
-
-class MockLLMWrapper(BaseLLMWrapper):
-    def __init__(self, responses=None):
-        super().__init__()
-        self.model_id = "mock-llm"
-        self.responses = responses or {}
-        self.call_history = []
-    
-    async def generate_response(self, messages, **kwargs):
-        # Record the call
-        self.call_history.append({"messages": messages, "kwargs": kwargs})
-        
-        # Get the last user message to use as the key
-        last_message = None
-        for msg in reversed(messages):
-            if msg["role"] == "user":
-                last_message = msg["content"]
-                break
-        
-        # Check if we have a predefined response
-        if last_message in self.responses:
-            resp = self.responses[last_message]
-            if isinstance(resp, tuple):
-                return resp  # (content, tool_calls)
-            return resp, None
-        
-        # Default mock response
-        return f"MOCK RESPONSE: I received: {last_message}", None
-    
-    async def generate_response_stream(self, messages, **kwargs):
-        content, tool_calls = await self.generate_response(messages, **kwargs)
-        yield content
-        if tool_calls:
-            for tc in tool_calls:
-                yield tc
-
-# Usage in tests
-import unittest
-from tframex import TFrameXApp, Message
-
-class TestAgentFlow(unittest.TestCase):
-    def setUp(self):
-        # Set up mock responses
-        mock_responses = {
-            "What's the weather?": ("It's sunny today!", None),
-            "Calculate 2+2": ("", [ToolCall(id="1", name="calculate", arguments={"expression": "2+2"})])
-        }
-        
-        self.mock_llm = MockLLMWrapper(responses=mock_responses)
-        self.app = TFrameXApp(default_llm=self.mock_llm)
-        
-        # Register test agents and flows
-        # ...
-    
-    async def test_weather_agent(self):
-        async with self.app.run_context() as ctx:
-            result = await ctx.run_flow(
-                "TestFlow",
-                Message(role="user", content="What's the weather?")
-            )
-            self.assertEqual(result.current_message.content, "It's sunny today!") 
+By following these guidelines, you can effectively extend TFrameX to build powerful and tailored AI agentic systems.

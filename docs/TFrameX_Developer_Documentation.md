@@ -4,539 +4,263 @@
 1. [Introduction](#introduction)
 2. [Core Concepts](#core-concepts)
 3. [Getting Started](#getting-started)
+   - [Installation](#installation)
+   - [Basic Example](#basic-example)
 4. [Architecture Overview](#architecture-overview)
-5. [Components](#components)
-   - [App](#app)
-   - [Agents](#agents)
-   - [Flows](#flows)
-   - [Patterns](#patterns)
+5. [Key Components In-Depth](#key-components-in-depth)
+   - [TFrameXApp](#tframexapp)
+   - [TFrameXRuntimeContext](#tframexruntimecontext)
+   - [Engine](#engine)
+   - [Agents (BaseAgent, LLMAgent, ToolAgent)](#agents)
    - [Tools](#tools)
-   - [LLM Integration](#llm-integration)
-   - [Memory Management](#memory-management)
-6. [Creating Agentic Flows](#creating-agentic-flows)
+   - [Flows](#flows)
+   - [FlowContext](#flowcontext)
+   - [Patterns](#patterns)
+     - [SequentialPattern](#sequentialpattern)
+     - [ParallelPattern](#parallelpattern)
+     - [RouterPattern](#routerpattern)
+     - [DiscussionPattern](#discussionpattern)
+     - [DelegatePattern](#delegatepattern)
+   - [LLM Integration (BaseLLMWrapper, OpenAIChatLLM)](#llm-integration)
+   - [Memory Management (BaseMemoryStore, InMemoryMemoryStore)](#memory-management)
+   - [Logging](#logging)
+6. [Building Agentic Systems](#building-agentic-systems)
+   - [Defining Agents](#defining-agents)
+   - [Defining Tools](#defining-tools)
+   - [Orchestrating with Flows and Patterns](#orchestrating-with-flows-and-patterns)
+   - [Agent-as-Tool (Supervisor Agents)](#agent-as-tool-supervisor-agents)
+   - [Managing Agent Memory](#managing-agent-memory)
+   - [Using Template Variables](#using-template-variables)
 7. [Extending TFrameX](#extending-tframex)
-8. [Example Applications](#example-applications)
+   - [Custom Agents](#custom-agents)
+   - [Custom Patterns](#custom-patterns)
+   - [Custom LLM Wrappers](#custom-llm-wrappers)
+   - [Custom Memory Stores](#custom-memory-stores)
+8. [Testing](#testing)
+9. [Examples](#examples)
 
-## Introduction
+## 1. Introduction
 
-TFrameX is a framework for building complex, multi-agent AI systems. It enables developers to create sophisticated agentic flows by composing LLM-powered agents with different interaction patterns. The framework provides a structured approach to organizing communication between AI components, making it easier to build applications that leverage multiple AI agents working together.
+TFrameX is a Python framework designed for building complex, multi-agent applications powered by Large Language Models (LLMs). It provides a structured way to define intelligent agents, equip them with tools, and orchestrate their interactions through flexible workflows called "Flows" and "Patterns." TFrameX aims to simplify the development of sophisticated AI systems where multiple agents collaborate to achieve complex goals.
 
-## Core Concepts
+Key features include:
+- Modular agent definition with customizable prompts, tools, and LLMs.
+- Seamless integration of custom Python functions as tools for agents.
+- Powerful flow and pattern system for orchestrating agent interactions (sequential, parallel, routing, discussions, delegation).
+- Agent-as-Tool paradigm for hierarchical agent structures.
+- Pluggable LLM wrappers and memory stores.
+- Enhanced logging for observability, including detailed LLM interaction traces.
 
-- **Agents**: Individual AI entities with specific roles and capabilities
-- **Flows**: Sequences of interactions between agents 
-- **Patterns**: Reusable structures for organizing agent interactions
-- **Tools**: Functions that agents can use to interact with external systems
-- **Messages**: The basic unit of communication
+## 2. Core Concepts
 
-## Getting Started
+- **Agent:** An autonomous entity, typically powered by an LLM, capable of reasoning, using tools, and communicating.
+- **Tool:** A Python function that an agent can call to interact with external systems or perform specific computations.
+- **Flow:** A defined sequence or graph of operations, orchestrating how agents and patterns interact to process an initial input and produce a final output.
+- **Pattern:** A reusable template for common multi-agent interaction structures (e.g., `SequentialPattern`, `DelegatePattern`). Patterns are steps within a Flow.
+- **Message:** The primary data structure for communication between agents and components, based on an OpenAI-like schema.
+- **FlowContext:** An object that holds the state (`current_message`, `history`, `shared_data`) during a single execution of a Flow.
+- **Engine:** The core execution mechanism within a `TFrameXRuntimeContext` that instantiates and runs agents.
+- **LLM Wrapper:** An abstraction layer for interacting with different LLM APIs.
+- **Memory Store:** A component responsible for storing and retrieving conversation history for agents.
+
+## 3. Getting Started
 
 ### Installation
+Install TFrameX using pip:
+```bash
+pip install tframex
+```
+Ensure you have Python 3.8+ installed. Core dependencies are listed in `pyproject.toml`. For examples, you might need additional packages like `aiohttp` or `Flask`.
 
-```python
-# You can install TFrameX from pip
-pip install tframex  # Hypothetical, based on the repository structure
+For development, clone the repository and install in editable mode:
+```bash
+# Using uv (recommended)
+uv venv
+source .venv/bin/activate # or .venv\Scripts\Activate.ps1
+uv pip install -e ".[examples,dev]"
+
+# Or using pip
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[examples,dev]"
+```
+
+Set up your LLM environment variables (e.g., in a `.env` file):
+```env
+OPENAI_API_BASE="http://localhost:11434/v1" # For Ollama
+OPENAI_API_KEY="ollama"
+OPENAI_MODEL_NAME="llama3"
 ```
 
 ### Basic Example
 
 ```python
 import asyncio
+import os
 from dotenv import load_dotenv
-from tframex import (
-    TFrameXApp, 
-    OpenAIChatLLM, 
-    Message, 
-    SequentialPattern,
-    Flow
-)
+from tframex import TFrameXApp, OpenAIChatLLM, Message, Flow, SequentialPattern
 
-# Load environment variables
 load_dotenv()
 
-# Initialize LLM
-llm = OpenAIChatLLM(
-    model_name="gpt-3.5-turbo",
-    api_key="your_api_key"  # Or from environment: os.getenv("OPENAI_API_KEY")
+# 1. Initialize LLM (uses environment variables if not passed explicitly)
+my_llm = OpenAIChatLLM(
+    model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-3.5-turbo"),
+    api_base_url=os.getenv("OPENAI_API_BASE"),
+    api_key=os.getenv("OPENAI_API_KEY")
 )
 
-# Create application
-app = TFrameXApp(default_llm=llm)
+# 2. Initialize TFrameXApp
+app = TFrameXApp(default_llm=my_llm)
 
-# Define agents
-@app.agent(
-    name="Summarizer",
-    description="Summarizes text",
-    system_prompt="Summarize the following text concisely."
+# 3. Define Agents
+@app.agent(name="Greeter", system_prompt="Greet the user warmly.")
+async def greeter_placeholder(): pass
+
+@app.agent(name="Responder", system_prompt="Respond to the user's greeting.")
+async def responder_placeholder(): pass
+
+# 4. Define a Flow
+greeting_flow = Flow(flow_name="SimpleGreeting")
+greeting_flow.add_step(
+    SequentialPattern(pattern_name="GreetAndRespond", steps=["Greeter", "Responder"])
 )
-async def summarizer_agent_placeholder():
-    pass
-
-@app.agent(
-    name="Critic",
-    description="Critiques summaries",
-    system_prompt="Review the summary and provide constructive feedback."
-)
-async def critic_agent_placeholder():
-    pass
-
-# Create a flow using sequential pattern
-summary_flow = Flow(
-    "SummaryReviewFlow",
-    SequentialPattern(
-        "SummarizeAndCritique",
-        steps=["Summarizer", "Critic"]
-    )
-)
-
-# Register flow
-app.register_flow(summary_flow)
-
-# Run the flow
-async def main():
-    async with app.run_context() as ctx:
-        input_message = Message(role="user", content="The quick brown fox jumps over the lazy dog.")
-        result = await ctx.run_flow("SummaryReviewFlow", input_message)
-        print(result.current_message.content)
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-## Architecture Overview
-
-TFrameX follows a modular architecture centered around the core `TFrameXApp` class, which manages agent registrations, tools, and flows. The framework uses asyncio for asynchronous operation and provides several key components:
-
-- **TFrameXApp**: The main application container
-- **TFrameXRuntimeContext**: The runtime environment for executing flows
-- **Flow**: Defines a sequence of agent interactions
-- **FlowContext**: Maintains state during flow execution
-- **BaseAgent/LLMAgent/ToolAgent**: Agent implementations
-- **Patterns**: Flow organization structures
-
-## Components
-
-### App
-
-The `TFrameXApp` class is the central container for your application:
-
-```python
-from tframex import TFrameXApp, OpenAIChatLLM
-
-llm = OpenAIChatLLM(model_name="gpt-3.5-turbo", api_key="your-api-key")
-app = TFrameXApp(default_llm=llm)
-```
-
-Key features:
-- Register agents and tools
-- Create and manage flows
-- Provides runtime context
-
-### Agents
-
-Agents are the core AI entities in TFrameX:
-
-#### Types of Agents
-- **BaseAgent**: Abstract base class for all agents
-- **LLMAgent**: Default agent powered by an LLM
-- **ToolAgent**: Agent that can use registered tools
-
-#### Creating Agents
-
-```python
-@app.agent(
-    name="WeatherAgent",
-    description="Provides weather information",
-    system_prompt="You are a weather assistant. Answer questions about weather only.",
-    tools=["get_weather"],  # Optional tools this agent can use
-    llm=special_llm  # Optional override for specific LLM
-)
-async def weather_agent_placeholder():
-    pass
-```
-
-### Flows
-
-Flows define sequences of actions using agents and patterns:
-
-```python
-from tframex import Flow, SequentialPattern
-
-# Create a flow with a sequential pattern
-my_flow = Flow(
-    "MyProcessingFlow",
-    SequentialPattern(
-        "ProcessSequence",
-        steps=["AgentA", "AgentB", "AgentC"]
-    )
-)
-
-# Register the flow
-app.register_flow(my_flow)
-
-# Run the flow
-async with app.run_context() as ctx:
-    result = await ctx.run_flow(
-        "MyProcessingFlow", 
-        initial_input=Message(role="user", content="Process this information")
-    )
-```
-
-### Patterns
-
-Patterns are reusable structures for organizing agent interactions:
-
-#### Available Patterns
-- **SequentialPattern**: Executes agents in sequence, piping output to input
-- **ParallelPattern**: Runs multiple agents concurrently with the same input
-- **RouterPattern**: Dynamically selects which agent to run based on input
-- **DiscussionPattern**: Creates multi-agent discussions with turns and moderators
-- **DelegatePattern**: Allows a supervisor agent to assign other agents tasks
-
-#### Example: Sequential Pattern
-
-```python
-from tframex import SequentialPattern
-
-sequence = SequentialPattern(
-    "ProcessingSequence",
-    steps=["Analyzer", "Enhancer", "Formatter"]
-)
-```
-
-#### Example: Router Pattern
-
-```python
-from tframex import RouterPattern
-
-router = RouterPattern(
-    "QueryRouter",
-    router_agent="RouterAgent",
-    routes={
-        "weather": "WeatherAgent",
-        "news": "NewsAgent",
-        "general": "GeneralAgent"
-    },
-    default_route="GeneralAgent"
-)
-```
-
-### Tools
-
-Tools are functions that agents can call to perform actions:
-
-```python
-@app.tool(
-    name="get_weather", 
-    description="Gets current weather for a location",
-    parameters_schema={
-        "properties": {
-            "location": {"type": "string", "description": "City name"},
-            "unit": {"type": "string", "description": "Temperature unit (celsius/fahrenheit)"}
-        },
-        "required": ["location"]
-    }
-)
-async def get_weather(location: str, unit: str = "celsius") -> str:
-    # Implementation to fetch weather
-    return f"The weather in {location} is sunny, 25°{unit[0].upper()}"
-```
-
-### LLM Integration
-
-TFrameX supports different LLM providers through a common interface:
-
-```python
-from tframex import OpenAIChatLLM
-
-# Default LLM for general use
-default_llm = OpenAIChatLLM(
-    model_name="gpt-3.5-turbo",
-    api_key="your-api-key"
-)
-
-# Special LLM for specific tasks
-special_llm = OpenAIChatLLM(
-    model_name="gpt-4",
-    api_key="your-api-key"
-)
-
-# Use in app
-app = TFrameXApp(default_llm=default_llm)
-
-# Or override for specific agents
-@app.agent(
-    name="ComplexReasoningAgent",
-    description="Handles complex reasoning tasks",
-    system_prompt="You solve complex problems with detailed reasoning.",
-    llm=special_llm  # This agent uses the more powerful model
-)
-async def complex_reasoning_placeholder():
-    pass
-```
-
-### Memory Management
-
-TFrameX includes memory management for storing conversation history:
-
-```python
-from tframex import InMemoryMemoryStore, TFrameXApp
-
-# Use default in-memory store
-app = TFrameXApp(default_memory_store_factory=InMemoryMemoryStore)
-
-# Or create custom memory stores by extending BaseMemoryStore
-from tframex import BaseMemoryStore
-
-class CustomMemoryStore(BaseMemoryStore):
-    # Implement required methods
-    async def add_message(self, message, conversation_id=None):
-        pass
-    
-    async def get_messages(self, conversation_id=None):
-        pass
-```
-
-## Creating Agentic Flows
-
-### Basic Flow Creation
-
-1. Define agents with specific capabilities
-2. Create patterns to organize agent interactions
-3. Compose a flow using the patterns
-4. Register the flow with the application
-5. Run the flow with initial input
-
-### Flow with Template Variables
-
-```python
-# Create a flow with template variables
-greeting_flow = Flow(
-    "GreetingFlow",
-    SequentialPattern(
-        "GreetAndRespond",
-        steps=["GreetingAgent"]
-    )
-)
-
-# Register the flow
 app.register_flow(greeting_flow)
 
-# Run with template variables
-async with app.run_context() as ctx:
-    result = await ctx.run_flow(
-        "GreetingFlow",
-        initial_input=Message(role="user", content="Hello there"),
-        flow_template_vars={
-            "user_name": "Alice",
-            "user_query": "How to use TFrameX"
-        }
-    )
+# 5. Run the Flow
+async def main():
+    async with app.run_context() as rt: # TFrameXRuntimeContext
+        initial_msg = Message(role="user", content="Hello")
+        flow_context = await rt.run_flow("SimpleGreeting", initial_msg)
+        print(f"Final Response: {flow_context.current_message.content}")
+
+if __name__ == "__main__":
+    if not my_llm.api_base_url:
+        print("LLM not configured. Check .env or OpenAIChatLLM parameters.")
+    else:
+        asyncio.run(main())
 ```
 
-### Using Shared Data
+## 4. Architecture Overview
 
-```python
-# Run flow with shared data across steps
-async with app.run_context() as ctx:
-    result = await ctx.run_flow(
-        "AnalysisFlow",
-        initial_input=Message(role="user", content="Analyze this data"),
-        initial_shared_data={
-            "source_document": "Important research paper",
-            "analysis_level": "detailed"
-        }
-    )
-```
+TFrameX's architecture is designed for modularity and extensibility:
+- **`TFrameXApp`**: Central registry and configuration hub.
+- **`TFrameXRuntimeContext`**: Session-specific environment, creating an `Engine`.
+- **`Engine`**: Handles agent instantiation (resolving LLMs, memory, tools based on app, context, and agent configs) and execution.
+- **`Flow`**: Contains a list of steps (agent names or `BasePattern` instances).
+- **`BasePattern` subclasses**: Implement specific interaction logic, calling agents via the `Engine`.
+- **`BaseAgent` subclasses**: Define agent behavior, with `LLMAgent` being the primary LLM-driven actor.
+- **`Message`**: Data model for all communication.
+- **Utilities**: `BaseLLMWrapper`, `BaseMemoryStore`, `Tool` provide abstractions.
 
-## Extending TFrameX
+## 5. Key Components In-Depth
 
-### Creating Custom Agents
+Refer to the [TFrameX API Reference](./TFrameX_API_Reference.md) for detailed API specifications of each component.
 
-Extend `BaseAgent` to create custom agent types:
+### `TFrameXApp`
+Manages global configurations (default LLM, memory factory) and registries for tools, agents, and flows.
 
-```python
-from tframex.agents.base import BaseAgent
-from tframex.models.primitives import Message
+### `TFrameXRuntimeContext`
+Provides an isolated environment for a single execution run (e.g., a user session or a single request). It's an async context manager.
 
-class MyCustomAgent(BaseAgent):
-    async def process(self, input_message: Message, **kwargs) -> Message:
-        # Custom processing logic
-        return Message(
-            role="assistant",
-            content=f"Processed: {input_message.content}"
-        )
+### `Engine`
+Created by `TFrameXRuntimeContext`. Responsible for:
+- Lazily instantiating agent objects.
+- Resolving an agent's LLM (Agent Config > Context LLM > App Default LLM).
+- Resolving an agent's memory (Agent Config > App Default Memory Factory).
+- Providing registered tools to agents.
+- Defining callable sub-agents as tools for a primary agent.
+- Executing `agent.run()` and `tool.execute()`.
+- Resetting agent memory via `engine.reset_agent()`.
 
-# Register with custom class
-@app.agent(
-    name="CustomAgent",
-    description="My specialized agent",
-    agent_class=MyCustomAgent
-)
-async def custom_agent_placeholder():
-    pass
-```
+### Agents (`BaseAgent`, `LLMAgent`, `ToolAgent`)
+- **`BaseAgent`**: Abstract class defining the agent interface (`run()`, `reset_memory()`). Handles system prompt rendering and `<think>` tag stripping.
+- **`LLMAgent`**: The workhorse. Interacts with an LLM, manages conversation history (via its `memory` attribute), can use `tools`, and can call other `callable_agents`. Features `max_tool_iterations`.
+- **`ToolAgent`**: A simple agent that directly executes one specific tool. Useful for direct, non-LLM-mediated tool calls within a flow.
 
-### Creating Custom Patterns
+### Tools
+Python functions (sync or async) decorated with `@app.tool`. Schemas are auto-inferred or can be explicitly defined.
 
-Extend `BasePattern` to create custom interaction patterns:
+### Flows
+Instances of the `Flow` class. Define a multi-step process. Each step is an agent name or a `BasePattern` instance.
 
-```python
-from tframex.patterns.base_pattern import BasePattern
-from tframex.flows.flow_context import FlowContext
-from tframex.util.engine import Engine
+### `FlowContext`
+Carries the `current_message`, `history` of all messages in the flow, and `shared_data` dictionary through flow execution.
 
-class MyCustomPattern(BasePattern):
-    def __init__(self, pattern_name: str, custom_config):
-        super().__init__(pattern_name)
-        self.custom_config = custom_config
-        
-    async def execute(
-        self,
-        flow_ctx: FlowContext,
-        engine: Engine,
-        agent_call_kwargs=None
-    ) -> FlowContext:
-        # Implementation of custom pattern execution
-        # ...
-        return flow_ctx
-```
+### Patterns
+Subclasses of `BasePattern`. They implement specific multi-agent interaction logic. All patterns must implement `execute()` and `reset_agents()`.
+- **`SequentialPattern`**: Linear execution.
+- **`ParallelPattern`**: Concurrent execution of tasks on the same input. Branched `FlowContexts` are used for isolation.
+- **`RouterPattern`**: A router agent's output determines the next step.
+- **`DiscussionPattern`**: Manages conversational turns between participants, with an optional moderator.
+- **`DelegatePattern`**: A delegator agent generates tasks (strings) which are then processed by a delegatee agent or pattern. Supports `SEQUENTIAL` or `PARALLEL` processing of tasks and an optional "Chain of Agents" (CoA) style summarization for sequential tasks. Can extract a `shared_context` for all delegatees.
 
-### Creating Custom LLM Wrappers
+### LLM Integration (`BaseLLMWrapper`, `OpenAIChatLLM`)
+`OpenAIChatLLM` supports OpenAI-compatible APIs, including features like tool calling and streaming.
 
-Extend `BaseLLMWrapper` to integrate with other LLM providers:
+### Memory Management (`BaseMemoryStore`, `InMemoryMemoryStore`)
+Agents get their own memory instances. `InMemoryMemoryStore` is the default.
 
-```python
-from tframex.util.llms import BaseLLMWrapper
-from tframex.models.primitives import Message
+### Logging
+- `setup_logging()`: Configures console and optional file logging.
+- `logs/tframex.log`: General application logs.
+- `logs/llm_interactions.log`: Detailed traces of LLM calls (messages, responses, tools called) using `LLMInteractionFormatter` if `save_to_file=True` in `setup_logging`.
 
-class MyCustomLLM(BaseLLMWrapper):
-    # Implement required methods
-    async def generate_response(self, messages, **kwargs):
-        # Custom LLM integration
-        pass
-        
-    async def generate_response_stream(self, messages, **kwargs):
-        # Custom streaming implementation
-        pass
-```
+## 6. Building Agentic Systems
 
-## Example Applications
+### Defining Agents
+Use `@app.agent`. Key parameters:
+- `name`: Unique identifier.
+- `system_prompt`: Can include `{template_vars}`, `{available_tools_descriptions}`, `{available_agents_descriptions}`.
+- `tools`: List of tool names this agent can use.
+- `callable_agents`: List of other agent names this agent can call as tools.
+- `llm`: Override default LLM.
+- `strip_think_tags`: Default `True`. Set `False` to keep `<think>...</think>` blocks in output.
 
-TFrameX can be used to build various agentic applications:
+### Defining Tools
+Use `@app.tool`. Provide clear `description` and type hints for auto-schema generation.
 
-### Multi-Agent Discussion System
+### Orchestrating with Flows and Patterns
+1. Instantiate `Flow("flow_name")`.
+2. Instantiate `Pattern` objects (e.g., `SequentialPattern(...)`).
+3. Use `flow.add_step("AgentName")` or `flow.add_step(pattern_instance)`.
+4. Register flow: `app.register_flow(my_flow)`.
+5. Execute: `await rt.run_flow("flow_name", initial_message)`.
 
-```python
-from tframex import (
-    TFrameXApp, 
-    DiscussionPattern, 
-    Flow, 
-    Message, 
-    OpenAIChatLLM
-)
+### Agent-as-Tool (Supervisor Agents)
+An `LLMAgent` can supervise others by listing them in its `callable_agents` parameter. TFrameX makes these callable agents appear as tools to the supervisor. The supervisor's system prompt should guide it on when and how to delegate (e.g., using `{available_agents_descriptions}`).
 
-app = TFrameXApp(default_llm=OpenAIChatLLM(...))
+### Managing Agent Memory
+- Each agent instance within an `Engine` gets its own memory store.
+- `InMemoryMemoryStore` is default, configurable via `TFrameXApp` or per-agent.
+- Call `await engine.reset_agent("AgentName")` to clear a specific agent's memory.
+- Patterns that manage agents should implement `reset_agents(engine)` to allow recursive memory reset (e.g., before rerunning a flow with persistent agent instances within a long-lived `RuntimeContext`).
 
-# Define discussant agents
-@app.agent(name="OptimistAgent", system_prompt="You are optimistic about everything.")
-async def optimist_placeholder():
-    pass
+### Using Template Variables
+Pass `template_vars` to `engine.call_agent()` or `flow_template_vars` to `rt.run_flow()`. These are substituted into system prompts.
 
-@app.agent(name="PessimistAgent", system_prompt="You see problems in everything.")
-async def pessimist_placeholder():
-    pass
+## 7. Extending TFrameX
 
-@app.agent(name="ModeratorAgent", system_prompt="Summarize and moderate discussions.")
-async def moderator_placeholder():
-    pass
+Refer to the [TFrameX Extension Guide](./TFrameX_Extension_Guide.md) for detailed instructions on creating custom components.
+- **Custom Agents**: Inherit from `BaseAgent` or `LLMAgent`.
+- **Custom Patterns**: Inherit from `BasePattern`.
+- **Custom LLM Wrappers**: Inherit from `BaseLLMWrapper`.
+- **Custom Memory Stores**: Inherit from `BaseMemoryStore`.
 
-# Create discussion pattern
-discussion = DiscussionPattern(
-    "ProblemDiscussion",
-    participants=["OptimistAgent", "PessimistAgent"],
-    moderator="ModeratorAgent",
-    rounds=2
-)
+## 8. Testing
+TFrameX is designed to be testable.
+- Use `pytest` with `pytest-asyncio` and `pytest-mock`.
+- **Unit tests**: Mock LLM responses and tool execution to test agent logic, pattern orchestration, etc.
+- **Integration tests**: Test interactions between components.
+- The `conftest.py` in the repository provides examples of mock LLM fixtures and app setup for testing.
+- See `tests/` directory for example test structures.
 
-# Create and register flow
-discussion_flow = Flow("DiscussionFlow", discussion)
-app.register_flow(discussion_flow)
+## 9. Examples
+The `examples/` directory in the TFrameX repository showcases various use cases:
+- `all_design_patterns/`: Demonstrates all core patterns.
+- `documentation_generator/`: Shows how to use `flow.generate_documentation()`.
+- `redditchatbot/`: A Flask web application with a Reddit analyst agent.
+- `website_designer/`:
+    - `designer.py`: A sequential flow for designing a website.
+    - `designer-updated.py`: An advanced example using the `DelegatePattern` for page-by-page website generation.
 
-# Run discussion
-async with app.run_context() as ctx:
-    result = await ctx.run_flow(
-        "DiscussionFlow", 
-        Message(role="user", content="Discuss the impact of AI on society")
-    )
-```
-
-### Dynamic Task Router
-
-```python
-from tframex import TFrameXApp, RouterPattern, Flow, Message
-
-app = TFrameXApp(...)
-
-# Define router and handler agents
-@app.agent(name="RouterAgent", system_prompt="Classify the query type.")
-async def router_placeholder():
-    pass
-
-@app.agent(name="WeatherAgent", tools=["get_weather"])
-async def weather_placeholder():
-    pass
-
-@app.agent(name="NewsAgent", tools=["fetch_news"])
-async def news_placeholder():
-    pass
-
-# Create router pattern
-router = RouterPattern(
-    "QueryRouter",
-    router_agent="RouterAgent",
-    routes={
-        "weather": "WeatherAgent",
-        "news": "NewsAgent",
-        "general": "GeneralAssistantAgent"
-    }
-)
-
-# Create and register flow
-router_flow = Flow("RoutingFlow", router)
-app.register_flow(router_flow)
-```
-
-### Supervisor with Delegate Pattern
-
-```python
-from tframex import TFrameXApp, Flow, Message
-
-app = TFrameXApp(...)
-
-# Define specialist agents
-@app.agent(name="ResearchAgent", system_prompt="You research topics in depth.")
-async def research_placeholder():
-    pass
-
-@app.agent(name="WritingAgent", system_prompt="You write high-quality content.")
-async def writing_placeholder():
-    pass
-
-# Define supervisor agent that can call other agents
-@app.agent(
-    name="SupervisorAgent",
-    system_prompt="Delegate tasks to specialist agents as needed.",
-    callable_agents=["ResearchAgent", "WritingAgent"]
-)
-async def supervisor_placeholder():
-    pass
-
-# Create a flow with the supervisor
-supervisor_flow = Flow("SupervisedTaskFlow", "SupervisorAgent")
-app.register_flow(supervisor_flow)
-```
-
----
-
-This documentation provides an overview of the TFrameX framework and its capabilities. For more detailed examples, see the examples directory in the repository. 
+This documentation provides a developer-focused overview. For API specifics, consult the [TFrameX API Reference](./TFrameX_API_Reference.md).
