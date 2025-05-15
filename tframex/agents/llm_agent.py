@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from tframex.models.primitives import FunctionCall, Message, ToolCall
 from tframex.util.llms import BaseLLMWrapper
+from tframex.util.logging import LLMInteraction
 from tframex.util.memory import BaseMemoryStore
 from tframex.util.tools import Tool, ToolDefinition
 
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
     from tframex.util.engine import Engine
 
 logger = logging.getLogger(__name__)
+llm_logger = logging.getLogger("llm_interaction")
 
 
 class LLMAgent(BaseAgent):
@@ -94,7 +96,7 @@ class LLMAgent(BaseAgent):
 
             logger.debug(
                 f"Agent '{self.agent_id}' (LLM: {self.llm.model_id}) calling LLM "  # UPDATED LOG
-                f"(Iter {iteration_count+1}/{self.max_tool_iterations+1}). "
+                f"(Iter {iteration_count + 1}/{self.max_tool_iterations + 1}). "
                 f"History depth: {len(history)}. "
                 f"Regular Tools defined: {len(self.tools)}. "
                 f"Callable Agents as Tools defined: {len(self.callable_agent_definitions)}."
@@ -103,6 +105,19 @@ class LLMAgent(BaseAgent):
             assistant_response_message = await self.llm.chat_completion(
                 messages_for_llm, stream=False, **llm_call_kwargs
             )
+
+            llm_logger.debug(
+                "LLM Interaction Log",  # Standard message string
+                extra={
+                    "llm_interaction": LLMInteraction(
+                        agent_name=self.agent_id,
+                        messages=messages_for_llm,
+                        response=assistant_response_message,
+                        tools_called=assistant_response_message.tool_calls or [],
+                    )
+                },
+            )
+
             await self.memory.add_message(assistant_response_message)
 
             if (
@@ -110,7 +125,7 @@ class LLMAgent(BaseAgent):
                 or iteration_count >= self.max_tool_iterations
             ):
                 logger.info(
-                    f"Agent '{self.agent_id}' concluding with textual response. Iter: {iteration_count+1}."
+                    f"Agent '{self.agent_id}' concluding with textual response. Iter: {iteration_count + 1}."
                 )
                 # NEW: Post-process before returning
                 return self._post_process_llm_response(assistant_response_message)

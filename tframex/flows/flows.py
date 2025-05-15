@@ -2,18 +2,25 @@ import inspect
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
-import yaml  # NEW IMPORT
+import yaml
 
 from ..models.primitives import Message
-from ..patterns.patterns import (
+from ..patterns import (  # Updated to import from the patterns package
     BasePattern,
     DiscussionPattern,
     ParallelPattern,
     RouterPattern,
     SequentialPattern,
+    DelegatePattern, # Added DelegatePattern
 )
 from ..util.engine import Engine
 from .flow_context import FlowContext
+
+if TYPE_CHECKING:
+    from ..app import TFrameXApp
+    # If ProcessingMode enum needs to be type hinted here, import it too
+    # from ..patterns import ProcessingMode
+
 
 logger = logging.getLogger(__name__)
 
@@ -68,18 +75,16 @@ class Flow:
         for i, step in enumerate(self.steps):
             step_name = str(step) if isinstance(step, BasePattern) else step
             logger.info(
-                f"Flow '{self.flow_name}' - Step {i+1}/{len(self.steps)}: Executing '{step_name}'. Current input: {str(flow_ctx.current_message.content)[:50]}..."
+                f"Flow '{self.flow_name}' - Step {i + 1}/{len(self.steps)}: Executing '{step_name}'. Current input: {str(flow_ctx.current_message.content)[:50]}..."
             )
 
             try:
-                if isinstance(step, str):
+                if isinstance(step, str): # Agent name
                     output_message = await engine.call_agent(
                         step, flow_ctx.current_message, **agent_call_kwargs
                     )
                     flow_ctx.update_current_message(output_message)
-                elif isinstance(step, BasePattern):
-                    # Patterns need to be aware of flow_template_vars if they call agents directly
-                    # Pass agent_call_kwargs to pattern's execute method
+                elif isinstance(step, BasePattern): # Pattern instance
                     flow_ctx = await step.execute(
                         flow_ctx, engine, agent_call_kwargs=agent_call_kwargs
                     )
@@ -89,7 +94,7 @@ class Flow:
                     )
 
                 logger.info(
-                    f"Flow '{self.flow_name}' - Step {i+1} ('{step_name}') completed. Output: {str(flow_ctx.current_message.content)[:50]}..."
+                    f"Flow '{self.flow_name}' - Step {i + 1} ('{step_name}') completed. Output: {str(flow_ctx.current_message.content)[:50]}..."
                 )
 
                 if flow_ctx.shared_data.get("STOP_FLOW", False):
@@ -108,7 +113,7 @@ class Flow:
                     content=f"Error in flow '{self.flow_name}' at step '{step_name}': {e}",
                 )
                 flow_ctx.update_current_message(error_msg)
-                return flow_ctx
+                return flow_ctx # Halt flow on error
 
         logger.info(
             f"Flow '{self.flow_name}' completed. Final output: {str(flow_ctx.current_message.content)[:50]}..."
@@ -126,10 +131,10 @@ class Flow:
             from ..agents.llm_agent import LLMAgent
             from ..models.primitives import ToolDefinition
             from ..util.tools import ToolParameterProperty, ToolParameters
+            # DelegatePattern and ProcessingMode might be needed if used by type hints inside,
+            # but for runtime isinstance checks, the top-level import is sufficient.
 
         yaml_data = self._generate_yaml_data(app)
-        # Pass yaml_data to Mermaid generation to reuse processed structure and IDs if needed,
-        # though current Mermaid generator re-traverses for simplicity.
         mermaid_string = self._generate_mermaid_string(app, yaml_data)
 
         yaml_string = yaml.dump(
@@ -140,10 +145,8 @@ class Flow:
     def _get_tool_details_for_yaml(
         self, tool_name: str, app: "TFrameXApp"
     ) -> Dict[str, Any]:
-        from ..util.tools import (  # Ensure available at runtime
-            ToolParameterProperty,
-            ToolParameters,
-        )
+        # This import is fine here as it's only at runtime of this method
+        from ..util.tools import ToolParameterProperty, ToolParameters
 
         tool_obj = app.get_tool(tool_name)
         if not tool_obj:
@@ -152,7 +155,6 @@ class Flow:
         params_repr = {}
         if tool_obj.parameters and tool_obj.parameters.properties:
             for p_name, p_prop_model in tool_obj.parameters.properties.items():
-                # p_prop_model is ToolParameterProperty instance
                 params_repr[p_name] = {
                     "type": p_prop_model.type,
                     "description": p_prop_model.description,
@@ -177,9 +179,9 @@ class Flow:
     def _get_agent_details_for_yaml(
         self, agent_name: str, app: "TFrameXApp"
     ) -> Dict[str, Any]:
-        from ..agents.llm_agent import LLMAgent  # For default type
-        from ..models.primitives import ToolDefinition
-        from ..util.tools import ToolParameterProperty, ToolParameters
+        from ..agents.llm_agent import LLMAgent # For default type determination
+        from ..models.primitives import ToolDefinition # For callable agent tool defs
+        from ..util.tools import ToolParameterProperty, ToolParameters # For callable agent tool defs
 
         if agent_name not in app._agents:
             return {"name": agent_name, "error": "Agent not registered in app"}
@@ -187,7 +189,6 @@ class Flow:
         reg_info = app._agents[agent_name]
         config = reg_info["config"]
 
-        # Determine agent class, defaulting to LLMAgent if not specified or not a class
         agent_class_ref = config.get("agent_class_ref", LLMAgent)
         agent_type_name = (
             agent_class_ref.__name__
@@ -218,53 +219,44 @@ class Flow:
                 self._get_tool_details_for_yaml(tn, app) for tn in tool_names
             ]
 
-        callable_agent_names_for_this_agent = config.get("callable_agent_names", [])
-        if callable_agent_names_for_this_agent:
+        callable_agent_names = config.get("callable_agent_names", [])
+        if callable_agent_names:
             callable_agents_tool_defs = []
-            for ca_name_to_call in callable_agent_names_for_this_agent:
-                if ca_name_to_call in app._agents:
-                    called_agent_reg_info = app._agents[ca_name_to_call]
-                    called_agent_desc = (
-                        called_agent_reg_info["config"].get("description")
-                        or f"Agent '{ca_name_to_call}' performing its designated role."
+            for ca_name in callable_agent_names:
+                if ca_name in app._agents:
+                    called_agent_reg = app._agents[ca_name]
+                    desc = (
+                        called_agent_reg["config"].get("description")
+                        or f"Agent '{ca_name}' performing its designated role."
                     )
-
-                    agent_tool_params_dict = ToolParameters(
+                    params = ToolParameters(
                         properties={
                             "input_message": ToolParameterProperty(
                                 type="string",
-                                description=f"The specific query, task, or input content to pass to the '{ca_name_to_call}' agent.",
+                                description=f"Input to the '{ca_name}' agent.",
                             ),
                         },
                         required=["input_message"],
                     ).model_dump(exclude_none=True)
-
-                    tool_def_for_ca = ToolDefinition(
+                    tool_def = ToolDefinition(
                         type="function",
-                        function={
-                            "name": ca_name_to_call,
-                            "description": called_agent_desc,
-                            "parameters": agent_tool_params_dict,
-                        },
+                        function={"name": ca_name, "description": desc, "parameters": params},
                     )
-                    callable_agents_tool_defs.append(tool_def_for_ca.model_dump())
+                    callable_agents_tool_defs.append(tool_def.model_dump())
                 else:
                     callable_agents_tool_defs.append(
-                        {
-                            "name": ca_name_to_call,
-                            "error": "Callable agent not registered",
-                        }
+                        {"name": ca_name, "error": "Callable agent not registered"}
                     )
-            if callable_agents_tool_defs:  # Only add if not empty
+            if callable_agents_tool_defs:
                 agent_details["callable_agents_as_tools"] = callable_agents_tool_defs
         return agent_details
 
     def _generate_yaml_data_recursive(
         self, step_or_task: Union[str, BasePattern], app: "TFrameXApp"
     ) -> Dict[str, Any]:
-        if isinstance(step_or_task, str):
+        if isinstance(step_or_task, str): # Agent name
             return {
-                "type": "agent",
+                "type": "agent", # Explicitly mark as agent type
                 **self._get_agent_details_for_yaml(step_or_task, app),
             }
         elif isinstance(step_or_task, BasePattern):
@@ -288,10 +280,8 @@ class Flow:
                     step_or_task.router_agent_name, app
                 )
                 routes_yaml = {}
-                for key, target_step in step_or_task.routes.items():
-                    routes_yaml[key] = self._generate_yaml_data_recursive(
-                        target_step, app
-                    )
+                for key, target in step_or_task.routes.items():
+                    routes_yaml[key] = self._generate_yaml_data_recursive(target, app)
                 pattern_data["routes"] = routes_yaml
                 if step_or_task.default_route:
                     pattern_data["default_route"] = self._generate_yaml_data_recursive(
@@ -308,6 +298,28 @@ class Flow:
                     )
                 pattern_data["rounds"] = step_or_task.discussion_rounds
                 pattern_data["stop_phrase"] = step_or_task.stop_phrase
+            elif isinstance(step_or_task, DelegatePattern):
+                pattern_data["delegator_agent"] = self._get_agent_details_for_yaml(
+                    step_or_task.delegator_agent, app
+                )
+                if isinstance(step_or_task.delegatee_agent, str):
+                    pattern_data["delegatee_agent"] = self._get_agent_details_for_yaml(
+                        step_or_task.delegatee_agent, app
+                    )
+                else: # It's a BasePattern instance
+                    pattern_data["delegatee_agent"] = self._generate_yaml_data_recursive(
+                        step_or_task.delegatee_agent, app
+                    )
+                pattern_data["processing_mode"] = step_or_task.processing_mode.value
+                pattern_data["chain_of_agents"] = step_or_task.chain_of_agents
+                if step_or_task.summary_agent: # summary_agent is a string (name)
+                    pattern_data["summary_agent"] = self._get_agent_details_for_yaml(
+                        step_or_task.summary_agent, app
+                    )
+                pattern_data["task_extraction_regex"] = step_or_task.task_extraction_regex
+                if step_or_task.shared_memory_extraction_regex:
+                    pattern_data["shared_memory_extraction_regex"] = step_or_task.shared_memory_extraction_regex
+
             return pattern_data
         else:
             return {"error": f"Unknown step type: {type(step_or_task)}"}
@@ -327,220 +339,136 @@ class Flow:
     def _generate_mermaid_string(
         self, app: "TFrameXApp", yaml_data_for_ids: Dict[str, Any]
     ) -> str:
-        # yaml_data_for_ids is passed but not explicitly used to re-fetch IDs in this version.
-        # The traversal logic for Mermaid is self-contained here.
-
         mermaid_lines = ["graph TD"]
-        node_counter = 0  # Used for unique node IDs
+        node_counter = 0
 
         def escape_mermaid_label(label: str) -> str:
-            """Escapes characters in labels and wraps in quotes."""
-            if not label:
-                return '""'
-            # Replace quotes with HTML entity, backticks with spaces (or other entity if preferred)
-            escaped = (
-                label.replace('"', "#quot;").replace("`", "`").replace("\n", "\\n")
-            )
-            return f'"{escaped}"'
+            if not label: return '""'
+            return f'"{label.replace("\"", "#quot;").replace("`", "`").replace("\n", "\\n")}"'
 
-        def get_item_name(item_data_dict_or_str: Union[str, Dict[str, Any]]) -> str:
-            if isinstance(item_data_dict_or_str, str):  # Agent name string
-                return item_data_dict_or_str
-            # For dicts (parsed YAML structure for an item)
-            name = item_data_dict_or_str.get("name", "UnnamedItem")
-            if item_data_dict_or_str.get("type") == "pattern":
-                name = f"{item_data_dict_or_str.get('pattern_type', 'Pattern')}_{name}"
+        def get_item_name(item_data: Union[str, Dict[str, Any]]) -> str:
+            if isinstance(item_data, str): return item_data # Agent name
+            name = item_data.get("name", "UnnamedItem")
+            if item_data.get("type") == "pattern":
+                name = f"{item_data.get('pattern_type', 'Pattern')}_{name}"
             return name
 
-        # Main recursive function to add elements to Mermaid
         def add_mermaid_element(
-            element_data: Union[
-                str, Dict[str, Any]
-            ],  # Can be agent name string or dict from YAML parse
+            element_data: Dict[str, Any], # Expects dict from YAML structure
             parent_id_prefix: str,
             prev_node_id_in_sequence: str,
             edge_label: Optional[str] = None,
         ) -> str:
             nonlocal node_counter
-
-            # If element_data is a string, it's an agent name. Fetch its details.
-            if isinstance(element_data, str):
-                element_name_for_id = element_data
-                # This agent's details are not yet fetched in this path, but we need them for the label.
-                # For Mermaid, we might not need full YAML details, just name and type.
-                # This implies _generate_mermaid_string should probably traverse the *original* flow steps,
-                # not the YAML data, to have access to BasePattern instances etc.
-                # Let's adjust: _generate_mermaid_string should call a new recursive helper that works on flow.steps directly.
-                # For now, I will adapt to use the YAML structure that `yaml_data_for_ids` provides.
-                # The `element_data` will be the dict from the YAML structure.
-                if not isinstance(
-                    element_data, dict
-                ):  # Should not happen if called with YAML structure
-                    logger.error(
-                        f"Mermaid generator expected dict, got {type(element_data)}: {element_data}"
-                    )
-                    return prev_node_id_in_sequence
-            else:  # It's a dict
-                element_name_for_id = get_item_name(element_data)
-
+            element_name_for_id = get_item_name(element_data)
             current_node_id = f"{parent_id_prefix}_{element_name_for_id.replace(' ', '_')}_{node_counter}"
             node_counter += 1
 
             label_text = ""
-            if element_data.get("type") == "agent":
-                label_text = f"Agent: {element_data.get('name', 'UnknownAgent')}"
-                if element_data.get("tools"):
-                    label_text += f"\\nTools: {len(element_data['tools'])}"
-                if element_data.get("callable_agents_as_tools"):
-                    label_text += (
-                        f"\\nCalls: {len(element_data['callable_agents_as_tools'])}"
-                    )
-                mermaid_lines.append(
-                    f"    {current_node_id}[{escape_mermaid_label(label_text)}]"
-                )
+            item_type = element_data.get("type")
 
-            elif element_data.get("type") == "pattern":
+            if item_type == "agent":
+                label_text = f"Agent: {element_data.get('name', 'UnknownAgent')}"
+                if element_data.get("tools"): label_text += f"\\nTools: {len(element_data['tools'])}"
+                if element_data.get("callable_agents_as_tools"): label_text += f"\\nCalls: {len(element_data['callable_agents_as_tools'])}"
+                mermaid_lines.append(f"    {current_node_id}[{escape_mermaid_label(label_text)}]")
+            
+            elif item_type == "pattern":
                 pattern_type = element_data.get("pattern_type", "UnknownPattern")
                 pattern_name = element_data.get("name", "UnnamedPattern")
                 label_text = f"Pattern: {pattern_type}\\n({pattern_name})"
+                
+                if pattern_type == "DelegatePattern":
+                    mode = element_data.get("processing_mode", "N/A")
+                    coa = element_data.get("chain_of_agents", False)
+                    label_text += f"\\nMode: {mode}, CoA: {coa}"
 
-                # Define subgraph for the pattern
-                mermaid_lines.append(
-                    f"    subgraph {current_node_id}_sub [{escape_mermaid_label(label_text)}]"
-                )
-                mermaid_lines.append("        direction LR")  # Default for patterns
 
+                mermaid_lines.append(f"    subgraph {current_node_id}_sub [{escape_mermaid_label(label_text)}]")
+                mermaid_lines.append("        direction LR") 
                 pattern_internal_start_id = f"{current_node_id}_start"
                 pattern_internal_end_id = f"{current_node_id}_end"
-                mermaid_lines.append(
-                    f"        {pattern_internal_start_id}((:))"
-                )  # Smaller start/end for pattern internals
+                mermaid_lines.append(f"        {pattern_internal_start_id}((:))")
                 mermaid_lines.append(f"        {pattern_internal_end_id}((:))")
 
-                # Link from previous sequence node to pattern's internal start
-                connection_str = (
-                    f" -->|{escape_mermaid_label(edge_label)}|"
-                    if edge_label
-                    else " -->"
-                )
-                mermaid_lines.append(
-                    f"    {prev_node_id_in_sequence}{connection_str} {pattern_internal_start_id}"
-                )
+                connection_str = f" -->|{escape_mermaid_label(edge_label)}|" if edge_label else " -->"
+                mermaid_lines.append(f"    {prev_node_id_in_sequence}{connection_str} {pattern_internal_start_id}")
 
-                # Process pattern-specific content
+                last_internal_node = pattern_internal_start_id
+
                 if pattern_type == "SequentialPattern":
-                    prev_in_pattern = pattern_internal_start_id
                     for sub_step_data in element_data.get("steps", []):
-                        prev_in_pattern = add_mermaid_element(
-                            sub_step_data, current_node_id, prev_in_pattern
-                        )
-                    mermaid_lines.append(
-                        f"        {prev_in_pattern} --> {pattern_internal_end_id}"
-                    )
-
+                        last_internal_node = add_mermaid_element(sub_step_data, current_node_id, last_internal_node)
                 elif pattern_type == "ParallelPattern":
                     for task_data in element_data.get("tasks", []):
-                        task_output_node = add_mermaid_element(
-                            task_data, current_node_id, pattern_internal_start_id
-                        )
-                        mermaid_lines.append(
-                            f"        {task_output_node} --> {pattern_internal_end_id}"
-                        )
-
+                        task_output_node = add_mermaid_element(task_data, current_node_id, pattern_internal_start_id)
+                        mermaid_lines.append(f"        {task_output_node} --> {pattern_internal_end_id}")
+                    last_internal_node = pattern_internal_start_id # No single last node for parallel, start connects to all, all connect to end
                 elif pattern_type == "RouterPattern":
                     router_agent_data = element_data.get("router_agent", {})
-                    # router_agent_node_id = add_mermaid_element(router_agent_data, current_node_id, pattern_internal_start_id)
-                    # Simplified router agent node definition:
                     router_agent_name = router_agent_data.get("name", "RouterAgent")
-                    router_agent_node_id = (
-                        f"{current_node_id}_{router_agent_name.replace(' ','_')}"
-                    )
-                    mermaid_lines.append(
-                        f"        {router_agent_node_id}[{escape_mermaid_label(f'Router: {router_agent_name}')}]"
-                    )
-                    mermaid_lines.append(
-                        f"        {pattern_internal_start_id} --> {router_agent_node_id}"
-                    )
-
-                    for route_key, target_data in element_data.get(
-                        "routes", {}
-                    ).items():
-                        target_output_node = add_mermaid_element(
-                            target_data,
-                            current_node_id,
-                            router_agent_node_id,
-                            edge_label=route_key,
-                        )
-                        mermaid_lines.append(
-                            f"        {target_output_node} --> {pattern_internal_end_id}"
-                        )
+                    router_node_id = f"{current_node_id}_{router_agent_name.replace(' ','_')}"
+                    mermaid_lines.append(f"        {router_node_id}[{escape_mermaid_label(f'Router: {router_agent_name}')}]")
+                    mermaid_lines.append(f"        {pattern_internal_start_id} --> {router_node_id}")
+                    for route_key, target_data in element_data.get("routes", {}).items():
+                        target_output_node = add_mermaid_element(target_data, current_node_id, router_node_id, edge_label=route_key)
+                        mermaid_lines.append(f"        {target_output_node} --> {pattern_internal_end_id}")
                     if element_data.get("default_route"):
-                        default_target_output = add_mermaid_element(
-                            element_data["default_route"],
-                            current_node_id,
-                            router_agent_node_id,
-                            edge_label="Default",
-                        )
-                        mermaid_lines.append(
-                            f"        {default_target_output} --> {pattern_internal_end_id}"
-                        )
-
+                        default_out = add_mermaid_element(element_data["default_route"], current_node_id, router_node_id, edge_label="Default")
+                        mermaid_lines.append(f"        {default_out} --> {pattern_internal_end_id}")
+                    last_internal_node = router_node_id # End of routing logic leads to pattern end implicitly
                 elif pattern_type == "DiscussionPattern":
-                    # Simplified: Just list participants and moderator if any
+                    participants_data = element_data.get("participants", [])
+                    # Simplified: show moderator then participants connecting to end
                     if element_data.get("moderator"):
                         mod_data = element_data.get("moderator")
-                        mod_output = add_mermaid_element(
-                            mod_data,
-                            current_node_id,
-                            pattern_internal_start_id,
-                            edge_label="Moderates",
-                        )
-                        mermaid_lines.append(
-                            f"        {mod_output} --> {pattern_internal_end_id}"
-                        )  # Moderator leads to end
-                    for p_data in element_data.get("participants", []):
-                        p_output = add_mermaid_element(
-                            p_data, current_node_id, pattern_internal_start_id
-                        )  # All participants start from beginning
-                        mermaid_lines.append(
-                            f"        {p_output} --> {pattern_internal_end_id}"
-                        )  # And contribute to end
+                        mod_node_id = add_mermaid_element(mod_data, current_node_id, pattern_internal_start_id, edge_label="Moderator")
+                        # For simplicity, moderator can be seen as the one leading to the end after rounds.
+                        last_internal_node = mod_node_id 
+                    
+                    # Show participants branching from start, conceptually they all contribute to the discussion
+                    for p_data in participants_data:
+                         p_node_id = add_mermaid_element(p_data, current_node_id, last_internal_node if last_internal_node != pattern_internal_start_id else pattern_internal_start_id, edge_label="Participant")
+                         mermaid_lines.append(f"        {p_node_id} --> {pattern_internal_end_id}") # All participant activities contribute to end
+                    if not participants_data and last_internal_node == pattern_internal_start_id : # if only moderator
+                        pass # moderator already connected via last_internal_node
+                    elif not participants_data and not element_data.get("moderator"): # empty discussion
+                        last_internal_node = pattern_internal_start_id
 
-                mermaid_lines.append("    end")  # End subgraph
-                # The "output" of a pattern subgraph for sequential linking is its internal end node
-                current_node_id = pattern_internal_end_id
-                # However, the connection from prev_node_id_in_sequence was already made to pattern_internal_start_id.
-                # The current_node_id to be returned should be the one that the *next* sequential step connects *from*.
-                # So, if this was a pattern, the next step connects from its internal_end_id.
-                # This is correct.
 
-            else:  # Should not happen if YAML structure is correct
-                mermaid_lines.append(
-                    f"    {current_node_id}[{escape_mermaid_label(f'Unknown: {element_name_for_id}')}]"
-                )
+                elif pattern_type == "DelegatePattern":
+                    delegator_data = element_data.get("delegator_agent", {})
+                    last_internal_node = add_mermaid_element(delegator_data, current_node_id, pattern_internal_start_id, edge_label="Delegator")
+                    
+                    delegatee_data = element_data.get("delegatee_agent", {})
+                    last_internal_node = add_mermaid_element(delegatee_data, current_node_id, last_internal_node, edge_label="Delegatee")
 
-            # Connect previous step to current step (if not a pattern, where connection is handled differently)
-            if element_data.get("type") != "pattern":
-                connection_str = (
-                    f" -->|{escape_mermaid_label(edge_label)}|"
-                    if edge_label
-                    else " -->"
-                )
-                mermaid_lines.append(
-                    f"    {prev_node_id_in_sequence}{connection_str} {current_node_id}"
-                )
+                    if element_data.get("chain_of_agents") and element_data.get("summary_agent"):
+                        summary_data = element_data.get("summary_agent", {})
+                        last_internal_node = add_mermaid_element(summary_data, current_node_id, last_internal_node, edge_label="Summary (CoA)")
+                
+                # Default connection for patterns that don't manage their own end connection (like Parallel, Router)
+                if pattern_type not in ["ParallelPattern", "RouterPattern", "DiscussionPattern", "DelegatePattern"]: # these handle their own end connections
+                     mermaid_lines.append(f"        {last_internal_node} --> {pattern_internal_end_id}")
+                elif pattern_type in ["DiscussionPattern", "DelegatePattern"] and last_internal_node != pattern_internal_end_id and not (pattern_type == "DiscussionPattern" and participants_data) : # Ensure final connection for Discussion if only moderator or simple delegate
+                    mermaid_lines.append(f"        {last_internal_node} --> {pattern_internal_end_id}")
 
-            return (
-                current_node_id  # Return the ID of the last main node of this element
-            )
 
-        # --- Start Mermaid generation ---
+                mermaid_lines.append("    end") # End subgraph
+                current_node_id = pattern_internal_end_id # Output of pattern is its end node
+            else: # Unknown type
+                mermaid_lines.append(f"    {current_node_id}[{escape_mermaid_label(f'Unknown: {element_name_for_id}')}]")
+
+            # Connect previous step to current step (if not a pattern, where connection is handled inside subgraph block)
+            if item_type != "pattern":
+                conn_str = f" -->|{escape_mermaid_label(edge_label)}|" if edge_label else " -->"
+                mermaid_lines.append(f"    {prev_node_id_in_sequence}{conn_str} {current_node_id}")
+            
+            return current_node_id
+
         flow_id_main = self.flow_name.replace(" ", "_")
-        mermaid_lines.append(
-            f"subgraph {flow_id_main}_overall [{escape_mermaid_label(f'Flow: {self.flow_name}')}]"
-        )
+        mermaid_lines.append(f"subgraph {flow_id_main}_overall [{escape_mermaid_label(f'Flow: {self.flow_name}')}]")
         mermaid_lines.append("    direction TD")
-
         flow_start_node = f"{flow_id_main}_FlowStart"
         flow_end_node = f"{flow_id_main}_FlowEnd"
         mermaid_lines.append(f'    {flow_start_node}(("Start"))')
@@ -550,11 +478,15 @@ class Flow:
         flow_steps_data = yaml_data_for_ids.get("flow", {}).get("steps", [])
 
         for step_data_item in flow_steps_data:
-            last_node_in_flow_sequence = add_mermaid_element(
-                step_data_item, flow_id_main, last_node_in_flow_sequence
-            )
+            # The top-level items in a flow are either agents or patterns.
+            # add_mermaid_element expects a dict, so if step_data_item is just an agent name (string),
+            # it was already converted to a dict by _generate_yaml_data_recursive.
+            if not isinstance(step_data_item, dict): # Should not happen if _generate_yaml_data is correct
+                 logger.error(f"Mermaid generation error: step_data_item is not a dict: {step_data_item}")
+                 continue
+            last_node_in_flow_sequence = add_mermaid_element(step_data_item, flow_id_main, last_node_in_flow_sequence)
 
         mermaid_lines.append(f"    {last_node_in_flow_sequence} --> {flow_end_node}")
-        mermaid_lines.append("end")  # End main flow subgraph
+        mermaid_lines.append("end") 
 
         return "\n".join(mermaid_lines)

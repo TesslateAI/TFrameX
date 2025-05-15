@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+      "ms-python.python",         // Core Python extension
+      "ms-python.black-formatter", // Black formatter support
+      "ms-python.isort",           // isort import sorter
+      "ms-toolsai.jupyter",        // Jupyter Notebook support (optional)
+      "ms-python.flake8"           // Flake8 linter support
+    ]
+  }

@@ -23,6 +23,9 @@ class FlowContext:
         self.current_message = message
         self.history.append(message)
 
+    def get_all_messages(self):
+        return self.history
+
     def __str__(self):
         return (
             f"FlowContext(current_message='{str(self.current_message.content)[:50]}...', "

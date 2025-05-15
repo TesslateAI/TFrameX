@@ -1,23 +1,11 @@
 import asyncio
 import logging
 import os
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
-from dotenv import find_dotenv, load_dotenv
+from dotenv import load_dotenv
 
-from tframex import (
-    DiscussionPattern,
-    Flow,
-    InMemoryMemoryStore,
-    Message,
-    OpenAIChatLLM,
-    ParallelPattern,
-    RouterPattern,
-    SequentialPattern,
-    TFrameXApp,
-    TFrameXRuntimeContext,
-)
+from tframex import Flow, OpenAIChatLLM, SequentialPattern, TFrameXApp
+from tframex.patterns.delegate_pattern import DelegatePattern, ProcessingMode
 
 # --- Environment and Logging Setup ---
 load_dotenv(override=True)
@@ -73,34 +61,26 @@ async def write_file(file_path: str, content: str):
 # --- Frontend Generation Agents ---
 @app.agent(
     name="frontend_analyzer",
-    description="Analyzes user requirements for a multipage web application and generates a detailed plan for HTML and Tailwind CSS implementation.",
+    description="Analyzes user requirements for a multipage web application and generates a detailed plan with shared context and individual page tasks.",
     system_prompt="""You are an expert Frontend Requirements Analyzer. Your primary role is to take a user's request for a web application and produce a detailed, structured plan for its creation using HTML and Tailwind CSS. You specialize in multipage applications.
 
 Your tasks are:
 1.  **Analyze User Request**: Carefully understand the user's description of the web application they want.
-2.  **Identify Pages**: Determine all the distinct HTML pages required for the application (e.g., Home, About, Services, Contact, Product Details).
-3.  **Define Page Structure**: For each identified page, list the key sections that should be present (e.g., Header, Navigation, Hero Section, Main Content, Sidebar, Footer).
-4.  **Specify Styling Approach**: Mandate the use of Tailwind CSS for all styling.
-5.  **Enforce Relative Paths**: State clearly that all internal navigation links between pages must use relative paths (e.g., `./about.html`, `../styles/main.css`).
-6.  **Output Format**: Respond ONLY with a single JSON object. Do not include any explanatory text before or after the JSON.
+2.  **Identify Pages**: Determine all the distinct HTML pages required for the application.
+3.  **Define Page Structure**: For each identified page, list the key sections.
+4.  **Specify Styling Approach**: Mandate Tailwind CSS.
+5.  **Enforce Relative Paths**: Stress the use of relative paths for internal links.
+6.  **Define Shared Elements**: Specify common elements like a consistent header (with navigation) and footer that should appear on multiple pages.
+7.  **Output Format**:
+    *   First, output a `<shared_context>` block containing a JSON object with `application_description`, `global_styling`, and `shared_elements`.
+    *   Then, for EACH page identified, output a separate `<task>` block containing a JSON object detailing that specific page (`file_path`, `title`, `description`, `sections`).
+    *   Do NOT include any other explanatory text outside these blocks.
 
-The JSON object must follow this structure:
+**Example Output Structure:**
+
+<shared_context>
 {
-  "application_description": "A brief summary of the web application to be built, based on the user's request.",
-  "pages": [
-    {
-      "file_path": "index.html", // e.g., "index.html", "about.html", "products/product1.html"
-      "title": "Homepage",       // Page title for the <title> tag
-      "description": "Brief description of this page's purpose and content.",
-      "sections": [              // List of main sections for this page
-        "Header (with navigation)",
-        "Hero Section",
-        "Key Features",
-        "Footer"
-      ]
-    }
-    // ... more page objects can be included here following the same structure
-  ],
+  "application_description": "A brief summary of the web application to be built, based on the user's request. Include key functionalities expected.",
   "global_styling": {
     "framework": "Tailwind CSS",
     "notes": [
@@ -108,16 +88,141 @@ The JSON object must follow this structure:
       "Ensure the design is responsive across common screen sizes (mobile, tablet, desktop) using Tailwind's responsive prefixes.",
       "All internal links between pages of this application MUST use relative paths.",
       "Each HTML page should include the Tailwind CSS CDN link in the <head>: <script src='https://cdn.tailwindcss.com'></script>.",
-      "Use semantic HTML5 elements where appropriate."
+      "Use semantic HTML5 elements where appropriate.",
+      "Define a specific color palette with hex codes. For example: Primary: #RRGGBB, Secondary: #RRGGBB, Accent: #RRGGBB, Text: #RRGGBB, Background: #RRGGBB.",
+      "Establish basic typography guidelines (e.g., font family for headings and body, base font size).",
+      "Promote consistent spacing and padding throughout the application.",
+      "Ensure good color contrast for accessibility."
     ]
+  },
+  "shared_elements": {
+    "header": "A consistent header should be present on all pages, typically containing the site logo/name and main navigation links.",
+    "footer": "A consistent footer should be present on all pages, typically containing copyright information and perhaps secondary links.",
+    "navigation_links": ["Example: Home", "Example: About", "Example: Services", "Example: Contact"]
   }
 }
+</shared_context>
+<task>
+{
+  "file_path": "index.html",
+  "title": "Homepage",
+  "description": "Brief description of this page's purpose and content.",
+  "sections": [
+    "Header (with navigation)",
+    "Hero Section",
+    "Key Features",
+    "Footer"
+  ]
+}
+</task>
+<task>
+{
+  "file_path": "about.html",
+  "title": "About Us",
+  "description": "Information about the company.",
+  "sections": [
+    "Header (with navigation)",
+    "Company History",
+    "Team Bios",
+    "Footer"
+  ]
+}
+</task>
+// ... more task blocks if more pages are identified.
 
-**Important**: Do NOT generate any HTML code yourself. Your sole output is the JSON plan.
+**Important**: Do NOT generate any HTML code yourself. Your sole output is the shared context and the series of task blocks.
 """,
 )
 async def frontend_analyzer():
     """Analyzes user requirements and creates a structured plan for frontend generation."""
+    pass
+
+
+@app.agent(
+    name="page_generator_delegatee",
+    description="Generates HTML code for a single web page using Tailwind CSS, based on a task JSON and shared context.",
+    system_prompt="""You are an expert HTML and Tailwind CSS Code Generator for single pages.
+You will receive input in two parts, often concatenated:
+1.  A 'Shared Context' JSON string, typically looking like:
+    ```json
+    // Shared Context (from frontend_analyzer)
+    {
+      "application_description": "A simple two-page website about a fictional company.",
+      "global_styling": {
+        "framework": "Tailwind CSS",
+        "notes": [
+          "Use Tailwind CSS classes for all styling aspects.",
+          "Ensure the design is responsive...",
+          "All internal links ... MUST use relative paths.",
+          "Each HTML page should include ... <script src='https://cdn.tailwindcss.com'></script>.",
+          "Use semantic HTML5 elements."
+        ]
+      }
+    }
+    ```
+2.  A 'Task' JSON string for a single page, typically looking like:
+    ```json
+    // Task (from frontend_analyzer)
+    {
+      "file_path": "index.html",
+      "title": "Welcome to MyApp",
+      "description": "The main landing page for MyApp.",
+      "sections": ["Header (with navigation: Home, About)", "Hero Section: Welcome to MyApp", "Main Content: Brief intro", "Footer"]
+    }
+    ```
+
+Your task is to generate the complete HTML code for the single page specified in the 'Task' JSON, adhering to the 'Shared Context'.
+
+**Your Responsibilities:**
+
+1.  **Parse Input**: Understand that the input might be a concatenation of shared context and the task. The task JSON is your primary focus for page details.
+2.  **Generate HTML**: Create a complete, standalone HTML document for the page.
+    *   Use the `file_path` from the task JSON for the `<file path="...">` wrapper.
+    *   Use the `title` from the task JSON for the HTML `<title>` tag.
+    *   Implement all `sections` listed for that page from the task JSON. Be creative and fill them with plausible placeholder content and structure.
+3.  **HTML Structure**: The HTML file must:
+    *   Start with `<!DOCTYPE html>`.
+    *   Include `<html lang="en">`, `<head>`, and `<body>` tags.
+    *   Inside `<head>`:
+        *   `<meta charset="UTF-8">`
+        *   `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+        *   The correct page `<title>`.
+        *   The Tailwind CSS CDN link (as specified in shared context, typically `<script src="https://cdn.tailwindcss.com"></script>`).
+4.  **Tailwind CSS**:
+    *   Style ALL elements using Tailwind CSS classes directly in the HTML, following guidelines in `global_styling.notes`.
+    *   Implement responsive design.
+    *   Create visually appealing layouts.
+5.  **Relative Paths**:
+    *   All links (`<a>` tags) navigating between pages of this application **MUST use relative paths** based on their `file_path` values (guided by `global_styling.notes` and the page's `file_path`).
+6.  **Content**:
+    *   Generate plausible placeholder content for each section.
+    *   Use semantic HTML5 elements.
+7.  **Output Format**:
+    *   Wrap the complete HTML code for the page within `<file path="THE_ACTUAL_FILE_PATH.html">` and `</file>` tags.
+    *   Replace `THE_ACTUAL_FILE_PATH.html` with the `file_path` from the input task JSON.
+    *   Your entire response MUST consist of this single `<file>...</file>` block.
+    *   **Do NOT include any other text, explanations, or markdown formatting (like ```html) outside of the `<file>...</file>` block.**
+
+**Example of output:**
+<file path="index.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Homepage</title>
+</head>
+<body>
+    <!-- ... HTML content based on task and shared context ... -->
+</body>
+</html>
+</file>
+Ensure your output strictly adheres to this format.
+""",
+)
+async def page_generator_delegatee():
+    """Generates HTML for a single page based on a task and shared context."""
     pass
 
 
@@ -253,22 +358,93 @@ async def file_writer():
     pass
 
 
+@app.agent(
+    name="task_summarizer",
+    description="Summarizes the result of a single page generation task, focusing on the file created and its main sections.",
+    system_prompt="""You are a Task Summarizer. Your input will be the output of a page generation process, which includes the full HTML content of a generated web page, wrapped in `<file path="...">...</file>` tags.
+
+Your task is to produce a concise summary of what was generated. The summary should include:
+1. The file path of the generated HTML page.
+2. A brief mention of the main sections or key features implemented in that page based on its content.
+
+Example Input:
+```
+<file path="about.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>About Us</title>
+</head>
+<body>
+    <header>...</header>
+    <main>
+        <section id="company-history">...</section>
+        <section id="team-bios">...</section>
+    </main>
+    <footer>...</footer>
+</body>
+</html>
+</file>
+```
+
+Example Summary Output:
+"Successfully generated page 'about.html'. It includes a header, sections for company history and team bios, and a footer."
+
+Keep the summary brief and to the point. Do not include the HTML content in your summary.
+""",
+)
+async def task_summarizer():
+    """Summarizes the output of a page generation task."""
+    pass
+
+
 # Create the frontend generation flow
 frontend_flow = Flow(
     flow_name="frontend_generation",
     description="Generates a complete frontend implementation based on user requirements.",
 )
 
-# Add the sequential pattern for the main flow
+frontend_flow2 = Flow(
+    flow_name="frontend_generation_CoA",
+    description="Generates a complete frontend implementation based on user requirements, using Chain of Agents",
+)
+
+sequential_pattern = SequentialPattern(
+    pattern_name="frontend_generation_sequence",
+    steps=["frontend_generator", "file_writer"],
+)
+
 frontend_flow.add_step(
-    SequentialPattern(
-        pattern_name="frontend_generation_sequence",
-        steps=["frontend_analyzer", "frontend_generator", "file_writer"],
+    DelegatePattern(
+        pattern_name="page_creation_delegation",
+        delegator_agent="frontend_analyzer",
+        delegatee_agent=sequential_pattern,
+        processing_mode=ProcessingMode.SEQUENTIAL,
+        task_extraction_regex=r"<task>(.*?)</task>",
+        shared_memory_extraction_regex=r"<shared_context>(.*?)</shared_context>",
     )
 )
 
+frontend_flow2.add_step(
+    DelegatePattern(
+        pattern_name="page_creation_delegation",
+        delegator_agent="frontend_analyzer",
+        delegatee_agent=sequential_pattern,
+        processing_mode=ProcessingMode.SEQUENTIAL,
+        task_extraction_regex=r"<task>(.*?)</task>",
+        shared_memory_extraction_regex=r"<shared_context>(.*?)</shared_context>",
+        chain_of_agents=True,
+        summary_agent="task_summarizer",
+    )
+)
+
+
 # Register the flow with the app
 app.register_flow(frontend_flow)
+app.register_flow(frontend_flow2)
 
 
 async def main():

@@ -10,7 +10,7 @@ from .agents.tool_agent import ToolAgent
 from .flows.flow_context import FlowContext
 from .flows.flows import Flow
 from .models.primitives import Message, MessageChunk  # MessageChunk already present
-from .patterns.patterns import BasePattern
+from .patterns import BasePattern
 from .util.engine import Engine
 from .util.llms import BaseLLMWrapper
 from .util.logging.logging_config import setup_logging

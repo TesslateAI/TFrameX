@@ -1,0 +1,44 @@
+{
+    // --- General Editor Settings ---
+    // Enable formatting on save (applies to the configured formatter)
+    "editor.formatOnSave": true,
+    // Enable code actions on save (like organizing imports with isort)
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    // Set the default editor formatter (optional, but good practice)
+    "editor.defaultFormatter": null, // Let language features decide
+
+    // --- Python Extension Settings ---
+    "python.defaultInterpreterPath": "python", // Or the path to your virtual env's python executable
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.autoImportCompletions": true,
+
+    // --- Pylance Settings ---
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportGeneralTypeIssues": "none",
+        "reportOptionalMemberAccess": "none",
+        "reportOptionalSubscript": "none",
+        "reportPrivateImportUsage": "none",
+        "reportUnboundVariable": "none",
+        "reportUndefinedVariable": "none"
+    },
+
+    "isort.args": [
+        "--profile",
+        "black",
+    ],
+    "flake8.args": [
+        "--ignore=E203,W503,F401,E501,E704"
+    ],
+    "liveServer.settings.port": 5501,
+}

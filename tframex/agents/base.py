@@ -125,6 +125,13 @@ class BaseAgent(ABC):
             message.content = processed_content
         return message
 
+    async def reset_memory(self) -> None:
+        """
+        Resets the agent's memory.
+        """
+        await self.memory.clear()
+        logger.info(f"Agent '{self.agent_id}': Memory reset.")
+
     @abstractmethod
     async def run(self, input_message: Union[str, Message], **kwargs: Any) -> Message:
         """
