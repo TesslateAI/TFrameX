@@ -2,18 +2,18 @@
   
 
 # TFrameX: The Extensible Task & Flow Orchestration Framework for LLMs
-
-  
-
-[![PyPI version](https://badge.fury.io/py/tframex.svg)](https://badge.fury.io/py/tframex)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
   
   
 
 ![image](https://github.com/user-attachments/assets/031f3b09-34da-4725-bb05-d064f55eec9e)
 
+Please join our discord for support: [Discord](https://discord.gg/DkzMzwBTaw)
+
+[TframeX Documentation Website](https://tframex.tesslate.com/)
+
+[![PyPI version](https://badge.fury.io/py/tframex.svg)](https://badge.fury.io/py/tframex)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   
   
 
@@ -56,10 +56,10 @@
 
 ---
 
-  
-
 ## 💡 Core Concepts
 
+
+[TframeX Documentation Website](https://tframex.tesslate.com/)
   
 
 **TFrameX** is designed to orchestrate complex agent interactions using its powerful `Flow` system, which controls the sequence and logic of operations.
@@ -963,7 +963,8 @@ Contributions are welcome! We're excited to see how the community extends and bu
 
 ---
 
-  
+
+[TframeX Documentation Website](https://tframex.tesslate.com/)
 
 ## 📜 License
 
