@@ -313,3 +313,10 @@ class Engine:
             logger.error(f"Error executing tool '{tool_name}': {e}", exc_info=True)
             # Propagate error in a structured way if possible
             return {"error": f"Error executing tool '{tool_name}': {str(e)}"}
+
+    async def reset_agent(self, agent_name: str) -> None:
+        """
+        Resets the agent's memory.
+        """
+        agent_instance = self._get_agent_instance(agent_name)
+        await agent_instance.reset_memory()

@@ -76,3 +76,10 @@ class SequentialPattern(BasePattern):
                 return flow_ctx
         logger.info(f"SequentialPattern '{self.pattern_name}' completed.")
         return flow_ctx
+
+    async def reset_agents(self, engine: Engine) -> None:
+        for step in self.steps:
+            if isinstance(step, BasePattern):
+                await step.reset_agents(engine)
+            elif isinstance(step, str):
+                await engine.reset_agent(step)

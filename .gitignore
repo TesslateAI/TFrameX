@@ -61,6 +61,7 @@ cython_debug/
 example_outputs/
 generated/
 logs/
+examples/**/*.html
 
 # System files
 .DS_Store

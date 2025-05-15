@@ -22,5 +22,9 @@ class BasePattern(ABC):
     ) -> FlowContext:
         pass
 
+    @abstractmethod
+    def reset_agents(self, engine: Engine) -> None:
+        pass
+
     def __str__(self):
         return f"{self.__class__.__name__}(name='{self.pattern_name}')"
