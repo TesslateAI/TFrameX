@@ -62,7 +62,7 @@ async def main():
     @app.agent(
         name="UniversalAssistant",
         system_prompt=(
-            "You are UniversalAssistant, a helpful AI. You have access to tools for time, MCP server introspection, and specific MCP server functionalities.\n"
+            "/no_think You are UniversalAssistant, a helpful AI. You have access to tools for time, MCP server introspection, and specific MCP server functionalities.\n"
             "MCP server tools are prefixed (e.g., 'math_http_service__add', 'echo_stdio_service__echo').\n"
             "Use 'tframex_read_mcp_resource' to read MCP resources if you know the server_alias and resource_uri.\n"
             "Carefully choose tools and provide arguments. Available tools: {available_tools_descriptions}"
