@@ -236,6 +236,11 @@ class TFrameXRuntimeContext:
             flow_template_vars=flow_template_vars,
         )
 
+    async def call_agent(
+        self, agent_name: str, input_message: Union[str, Message], **kwargs: Any
+    ) -> Message:
+        return await self.engine.call_agent(agent_name, input_message, **kwargs)
+
     async def interactive_chat(self, default_flow_name: Optional[str] = None) -> None:
         print("\n--- TFrameX Interactive Flow Chat ---")
 
