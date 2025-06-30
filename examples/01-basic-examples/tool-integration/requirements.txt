@@ -1,0 +1,26 @@
+# TFrameX Tool Integration Example Dependencies
+
+# Core TFrameX framework
+tframex>=0.1.3
+
+# Required for environment configuration
+python-dotenv>=1.0.0
+
+# HTTP client for API integrations
+aiohttp>=3.8.0
+
+# Database operations
+sqlite3  # Built into Python
+
+# Optional: Enhanced logging and utilities
+colorama>=0.4.6
+
+# For web scraping (in production)
+# beautifulsoup4>=4.12.0
+# lxml>=4.9.0
+
+# For email (in production)
+# aiosmtplib>=2.0.0
+
+# For CSV processing (built into Python)
+# pandas>=2.0.0  # For advanced CSV processing

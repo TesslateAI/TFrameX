@@ -12,6 +12,7 @@ venv/
 .env.bak/
 .venv/
 *.env
+.claude
 
 # Installer logs
 pip-log.txt
