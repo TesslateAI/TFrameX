@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Menu</title>
+</head>
+<body class="bg-[#F8F9FA] text-[#1A202C] font-sans">
+    <header class="bg-[#6B46C1] text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Brew Haven</h1>
+            <nav class="hidden md:flex space-x-6">
+                <a href="./index.html" class="hover:text-[#F97316]">Home</a>
+                <a href="./about.html" class="hover:text-[#F97316]">About</a>
+                <a href="./menu.html" class="hover:text-[#F97316]">Menu</a>
+                <a href="./contact.html" class="hover:text-[#F97316]">Contact</a>
+            </nav>
+            <button class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+    <main>
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12">Our Menu</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-[#F97316] text-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Espresso</h3>
+                        <p class="mb-4">A concentrated coffee made by forcing hot water through finely ground coffee beans.</p>
+                        <p class="font-bold">$2.50</p>
+                    </div>
+                    <div class="bg-[#319795] text-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Latte</h3>
+                        <p class="mb-4">A creamy coffee drink with steamed milk and a small layer of foam.</p>
+                        <p class="font-bold">$4.00</p>
+                    </div>
+                    <div class="bg-[#F97316] text-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Cappuccino</h3>
+                        <p class="mb-4">A coffee drink with equal parts espresso, steamed milk, and foam.</p>
+                        <p class="font-bold">$4.50</p>
+                    </div>
+                    <div class="bg-[#319795] text-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Cold Brew</h3>
+                        <p class="mb-4">A smooth, chilled coffee drink made by steeping coffee grounds in cold water.</p>
+                        <p class="font-bold">$3.50</p>
+                    </div>
+                    <div class="bg-[#F97316] text-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Mocha</h3>
+                        <p class="mb-4">A rich coffee drink with chocolate and steamed milk.</p>
+                        <p class="font-bold">$5.00</p>
+                    </div>
+                    <div class="bg-[#319795] text-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-2">Americano</h3>
+                        <p class="mb-4">A coffee drink made with espresso and hot water.</p>
+                        <p class="font-bold">$3.00</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="py-16 bg-[#F8F9FA]">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12">Pastries & Sweets</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <img src="https://picsum.photos/seed/130/300/300" alt="Croissant" class="w-full h-48 object-cover rounded-md mb-4">
+                        <h3 class="text-xl font-bold mb-2">Croissant</h3>
+                        <p class="text-gray-600 mb-2">Flaky and buttery, perfect with your morning coffee.</p>
+                        <p class="font-bold">$2.00</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <img src="https://picsum.photos/seed/131/300/300" alt="Brownie" class="w-full h-48 object-cover rounded-md mb-4">
+                        <h3 class="text-xl font-bold mb-2">Brownie</h3>
+                        <p class="text-gray-600 mb-2">Fudgy and rich, made with premium chocolate.</p>
+                        <p class="font-bold">$2.50</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <img src="https://picsum.photos/seed/132/300/300" alt="Muffin" class="w-full h-48 object-cover rounded-md mb-4">
+                        <h3 class="text-xl font-bold mb-2">Muffin</h3>
+                        <p class="text-gray-600 mb-2">Freshly baked with a variety of flavors.</p>
+                        <p class="font-bold">$1.50</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-[#1A202C] text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-2xl font-bold">Brew Haven</h3>
+                    <p class="text-sm mt-2">Where every cup tells a story</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="./index.html" class="hover:text-[#F97316]">Home</a>
+                    <a href="./about.html" class="hover:text-[#F97316]">About</a>
+                    <a href="./menu.html" class="hover:text-[#F97316]">Menu</a>
+                    <a href="./contact.html" class="hover:text-[#F97316]">Contact</a>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-sm">
+                <p>&copy; 2024 Brew Haven. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

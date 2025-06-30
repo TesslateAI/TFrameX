@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Contact Us</title>
+</head>
+<body class="bg-[#F8F9FA] text-[#1A202C] font-sans">
+    <header class="bg-[#6B46C1] text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Brew Haven</h1>
+            <nav class="hidden md:flex space-x-6">
+                <a href="./index.html" class="hover:text-[#F97316]">Home</a>
+                <a href="./about.html" class="hover:text-[#F97316]">About</a>
+                <a href="./menu.html" class="hover:text-[#F97316]">Menu</a>
+                <a href="./contact.html" class="hover:text-[#F97316]">Contact</a>
+            </nav>
+            <button class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+    <main>
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12">Contact Us</h2>
+                <div class="max-w-2xl mx-auto">
+                    <form class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium mb-2">Name</label>
+                            <input type="text" id="name" name="name" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F97316]">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-2">Email</label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F97316]">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                            <textarea id="message" name="message" rows="5" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F97316]"></textarea>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-[#F97316] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#FBBF24] transition">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <section class="py-16 bg-[#F8F9FA]">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12">Find Us</h2>
+                <div class="max-w-4xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold mb-4">Brew Haven - Main Location</h3>
+                            <p class="text-gray-600 mb-2">123 Coffee Street, Bean Town, BT 12345</p>
+                            <p class="text-gray-600 mb-2">Phone: (123) 456-7890</p>
+                            <p class="text-gray-600">Open: Mon-Fri 7am-7pm | Sat-Sun 8am-6pm</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold mb-4">Brew Haven - Downtown Branch</h3>
+                            <p class="text-gray-600 mb-2">456 Espresso Avenue, Cup City, CC 67890</p>
+                            <p class="text-gray-600 mb-2">Phone: (987) 654-3210</p>
+                            <p class="text-gray-600">Open: Mon-Fri 6am-8pm | Sat-Sun 9am-5pm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-[#1A202C] text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-2xl font-bold">Brew Haven</h3>
+                    <p class="text-sm mt-2">Where every cup tells a story</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="./index.html" class="hover:text-[#F97316]">Home</a>
+                    <a href="./about.html" class="hover:text-[#F97316]">About</a>
+                    <a href="./menu.html" class="hover:text-[#F97316]">Menu</a>
+                    <a href="./contact.html" class="hover:text-[#F97316]">Contact</a>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-sm">
+                <p>&copy; 2024 Brew Haven. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+        "blender_service": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "uvx", "blender-mcp"],
+      "env": {},
+      "init_step_timeout": 60.0,
+      "tool_call_timeout": 180.0,
+      "resource_read_timeout": 60.0
+    }
+  }
+}

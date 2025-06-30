@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Homepage</title>
+</head>
+<body class="bg-[#F8F9FA] text-[#1A202C] font-sans">
+    <header class="bg-[#6B46C1] text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Brew Haven</h1>
+            <nav class="hidden md:flex space-x-6">
+                <a href="./index.html" class="hover:text-[#F97316]">Home</a>
+                <a href="./about.html" class="hover:text-[#F97316]">About</a>
+                <a href="./menu.html" class="hover:text-[#F97316]">Menu</a>
+                <a href="./contact.html" class="hover:text-[#F97316]">Contact</a>
+            </nav>
+            <button class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+    <main>
+        <section class="relative h-96 md:h-[600px] bg-[url('https://picsum.photos/seed/123/1920/1080')] bg-cover bg-center">
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div class="text-center text-white px-4">
+                    <h2 class="text-4xl md:text-6xl font-bold mb-4">Welcome to Brew Haven</h2>
+                    <p class="text-lg md:text-xl mb-6">Sip, savor, and stay awhile</p>
+                    <a href="./menu.html" class="bg-[#F97316] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#FBBF24] transition">Explore Menu</a>
+                </div>
+            </div>
+        </section>
+        <section class="container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-center mb-12">Featured Coffee Items</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://picsum.photos/seed/124/400/300" alt="Espresso" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Espresso</h3>
+                        <p class="text-gray-600">A concentrated coffee made by forcing hot water through finely ground coffee beans.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://picsum.photos/seed/125/400/300" alt="Latte" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Latte</h3>
+                        <p class="text-gray-600">A creamy coffee drink with steamed milk and a small layer of foam.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="https://picsum.photos/seed/126/400/300" alt="Cappuccino" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Cappuccino</h3>
+                        <p class="text-gray-600">A coffee drink with equal parts espresso, steamed milk, and foam.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="bg-[#F8F9FA] py-12">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <p class="italic mb-4">"Brew Haven is my favorite spot to relax and enjoy a great cup of coffee. The atmosphere is warm and welcoming."</p>
+                        <p class="font-bold">- Sarah M.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <p class="italic mb-4">"The menu has something for everyone. I love their seasonal specials and the friendly staff."</p>
+                        <p class="font-bold">- James T.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <p class="italic mb-4">"From the moment you walk in, you feel at home. The coffee is always fresh and the service is top-notch."</p>
+                        <p class="font-bold">- Emily R.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-[#1A202C] text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-2xl font-bold">Brew Haven</h3>
+                    <p class="text-sm mt-2">Where every cup tells a story</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="./index.html" class="hover:text-[#F97316]">Home</a>
+                    <a href="./about.html" class="hover:text-[#F97316]">About</a>
+                    <a href="./menu.html" class="hover:text-[#F97316]">Menu</a>
+                    <a href="./contact.html" class="hover:text-[#F97316]">Contact</a>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-sm">
+                <p>&copy; 2024 Brew Haven. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
