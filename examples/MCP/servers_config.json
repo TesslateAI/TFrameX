@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "math_server": {
+      "type": "streamable-http",
+      "url": "http://localhost:8000/mcp/"
+    },
+    "sqlite_bi_tool": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-sqlite", "--db-path", "./business_data.db"],
+      "env": {}
+    },
+        "blender_service": {
+      "type": "stdio",
+      "command": "cmd", 
+      "args": [
+          "/c",         
+          "uvx",       
+          "blender-mcp" 
+      ],
+      "env": {},
+      "init_step_timeout": 60.0,
+      "tool_call_timeout": 120.0
+    }
+  }
+}

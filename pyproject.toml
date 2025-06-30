@@ -38,6 +38,7 @@ dependencies = [
     # If you want all examples to work out-of-the-box, include it here.
     # Otherwise, consider making it an optional dependency.
     "aiohttp>=3.0.0",
+    "mcp",
 ]
 
 [project.optional-dependencies]

@@ -1,305 +1,179 @@
-# tframex/engine.py
-
-"""
-Core execution engine for TFrameX agents and tools within a specific runtime context.
-
-This module defines the `Engine` class, responsible for managing the lifecycle
-and execution of agents registered within a TFrameXApp instance. It handles
-agent instantiation, configuration resolution (LLM, memory, tools), and
-delegates calls to the appropriate agent or tool methods.
-"""
-
+# tframex/util/engine.py
+import asyncio
 import inspect
+import json
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
-# Import primitives and utilities - generally safe from circular dependencies
-from ..models.primitives import Message
-from ..util.tools import Tool, ToolDefinition, ToolParameterProperty, ToolParameters
+from ..models.primitives import Message, ToolDefinition, ToolParameters, ToolParameterProperty
+from ..util.tools import Tool
+# MCP specific types for parsing results if needed, though results are simplified to string/error dict
+from mcp.types import TextContent, ImageContent, EmbeddedResource
 
-# Use TYPE_CHECKING block for imports needed only for static analysis
-# This avoids runtime circular imports.
+
 if TYPE_CHECKING:
     from ..agents.base import BaseAgent
-    from ..agents.llm_agent import LLMAgent
-    from ..app import TFrameXApp  # Assuming app type for better hinting
-    from ..runtime import RuntimeContext # Assuming context type for better hinting
-
+    from ..agents.llm_agent import LLMAgent # For issubclass check
+    from ..app import TFrameXApp, TFrameXRuntimeContext 
 
 logger = logging.getLogger("tframex.engine")
 
-
 class Engine:
-    """
-    Manages agent instantiation and execution within a TFrameX runtime context.
-
-    An Engine instance is typically created per request or session (via RuntimeContext)
-    and provides the necessary environment for agents to run, resolving dependencies
-    like LLMs, memory stores, and tools based on application defaults, context
-    overrides, and agent-specific configurations.
-    """
-
-    def __init__(self, app: 'TFrameXApp', runtime_context: 'RuntimeContext'):
-        """
-        Initializes the Engine.
-
-        Args:
-            app: The main TFrameXApp instance containing agent/tool registrations.
-            runtime_context: The specific runtime context for this engine instance,
-                             potentially holding session-specific state or overrides (e.g., LLM).
-        """
+    def __init__(self, app: 'TFrameXApp', runtime_context: 'TFrameXRuntimeContext'):
         self._app = app
-        self._runtime_context = runtime_context
-        # Use string literal for type hint to avoid import at class definition time
-        # Stores agent instances, keyed by agent name. Instantiated lazily.
+        self._runtime_context = runtime_context 
         self._agent_instances: Dict[str, 'BaseAgent'] = {}
 
     def _get_agent_instance(self, agent_name: str) -> 'BaseAgent':
-        """
-        Retrieves or lazily instantiates an agent based on its registered configuration.
-
-        This method handles the core logic of agent creation:
-        1. Checks if an instance for the given `agent_name` already exists for this engine.
-        2. If not, retrieves the agent's registration info from the `TFrameXApp`.
-        3. Resolves the LLM instance (Agent config > Context > App default).
-        4. Resolves the MemoryStore instance (Agent config > App default factory).
-        5. Resolves the Tools list based on registered `tool_names`.
-        6. Gathers other configuration: description, `strip_think_tags`, callable agents.
-        7. Creates ToolDefinitions for any specified `callable_agent_names`.
-        8. Determines the correct agent class to instantiate.
-        9. Filters registration config to pass only valid constructor arguments.
-        10. Validates required dependencies (e.g., LLM for LLMAgents).
-        11. Instantiates the agent class with the resolved configuration.
-        12. Stores and returns the new agent instance.
-
-        Args:
-            agent_name: The registered name of the agent to get or create.
-
-        Returns:
-            The agent instance corresponding to the `agent_name`.
-
-        Raises:
-            ValueError: If the `agent_name` is not registered in the app.
-            ValueError: If an LLMAgent is required but no LLM is available.
-        """
-        # Import agent classes here, INSIDE the method, only when needed for instantiation
-        # This prevents module-level circular dependencies.
-        from ..agents.base import BaseAgent
-        from ..agents.llm_agent import LLMAgent
+        from ..agents.base import BaseAgent 
+        from ..agents.llm_agent import LLMAgent # For issubclass check
 
         if agent_name not in self._agent_instances:
-            # --- Agent Registration Lookup ---
             if agent_name not in self._app._agents:
-                raise ValueError(
-                    f"Agent '{agent_name}' not registered with the TFrameXApp."
-                )
+                raise ValueError(f"Agent '{agent_name}' not registered.")
+            
             reg_info = self._app._agents[agent_name]
-            agent_config = reg_info["config"] # Use a shorter alias
+            agent_config_from_app = reg_info["config"] # This is the agent's specific config
 
-            # --- Dependency Resolution ---
-            # Resolve LLM: Agent-specific config > Context > App default
             agent_llm = (
-                agent_config.get("llm_instance_override")
-                or self._runtime_context.llm
+                agent_config_from_app.get("llm_instance_override")
+                or self._runtime_context.llm 
                 or self._app.default_llm
             )
-
-            # Resolve Memory: Agent-specific config > App default factory
             agent_memory = (
-                agent_config.get("memory_override")
-                or self._app.default_memory_store_factory() # Ensure factory provides a new instance
+                agent_config_from_app.get("memory_override")
+                or self._app.default_memory_store_factory()
             )
 
-            # Resolve Tools: Look up tools by name from app registry
-            agent_tools_resolved: List[Tool] = []
-            tool_names = agent_config.get("tool_names", [])
-            if tool_names:
-                for tool_name_ref in tool_names:
-                    tool_obj = self._app.get_tool(tool_name_ref)
-                    if tool_obj:
-                        agent_tools_resolved.append(tool_obj)
-                    else:
-                        logger.warning(
-                            f"Tool '{tool_name_ref}' specified for agent '{agent_name}' "
-                            f"not found in the app registry. Skipping."
-                        )
+            resolved_native_tools: List[Tool] = []
+            native_tool_names = agent_config_from_app.get("native_tool_names", [])
+            for tool_name_ref in native_tool_names:
+                tool_obj = self._app.get_tool(tool_name_ref)
+                if tool_obj:
+                    resolved_native_tools.append(tool_obj)
+                else:
+                    logger.warning(f"Native tool '{tool_name_ref}' for agent '{agent_name}' not found in app registry.")
+            
+            callable_agent_defs: List[ToolDefinition] = []
+            callable_agent_names_cfg = agent_config_from_app.get("callable_agent_names", [])
+            for sub_agent_name_cfg in callable_agent_names_cfg:
+                if sub_agent_name_cfg in self._app._agents:
+                    sub_agent_reg_info = self._app._agents[sub_agent_name_cfg]
+                    sub_agent_desc = sub_agent_reg_info["config"].get("description") or f"Invoke agent '{sub_agent_name_cfg}'."
+                    params = ToolParameters(properties={"input_message": ToolParameterProperty(type="string", description="Input for the agent.")}, required=["input_message"])
+                    callable_agent_defs.append(ToolDefinition(type="function", function={
+                        "name": sub_agent_name_cfg, "description": sub_agent_desc, "parameters": params.model_dump(exclude_none=True)
+                    }))
+                else:
+                    logger.warning(f"Callable agent '{sub_agent_name_cfg}' for agent '{agent_name}' not found.")
 
-            # --- Agent Configuration ---
-            agent_description = agent_config.get("description")
-            strip_think_tags_for_agent = agent_config.get(
-                "strip_think_tags", False # Default to False if not specified in config
-            )
 
-            # --- Callable Agent Definitions ---
-            # Define other agents this agent can call as tools
-            callable_agent_definitions: List[ToolDefinition] = []
-            callable_agent_names = agent_config.get("callable_agent_names", [])
-            for sub_agent_name in callable_agent_names:
-                if sub_agent_name not in self._app._agents:
-                    logger.warning(
-                        f"Agent '{agent_name}' configured to call non-existent agent "
-                        f"'{sub_agent_name}'. Skipping definition."
-                    )
-                    continue
-
-                # Fetch sub-agent info to create a tool-like definition
-                sub_agent_reg_info = self._app._agents[sub_agent_name]
-                sub_agent_description = (
-                    sub_agent_reg_info["config"].get("description")
-                    or f"Invoke the '{sub_agent_name}' agent. Provide the specific input message for it."
-                )
-
-                # Define standard parameters for calling another agent
-                agent_tool_params = ToolParameters(
-                    properties={
-                        "input_message": ToolParameterProperty(
-                            type="string",
-                            description=f"The specific query, task, or input content to pass to the '{sub_agent_name}' agent.",
-                        ),
-                    },
-                    required=["input_message"],
-                )
-
-                callable_agent_definitions.append(
-                    ToolDefinition(
-                        type="function",
-                        function={
-                            "name": sub_agent_name, # The name the primary agent uses to call
-                            "description": sub_agent_description,
-                            "parameters": agent_tool_params.model_dump(exclude_none=True),
-                        },
-                    )
-                )
-
-            # --- Agent Instantiation ---
             instance_id = f"{agent_name}_ctx{id(self._runtime_context)}"
-            AgentClassToInstantiate: Type[BaseAgent] = agent_config["agent_class_ref"]
-
-            # Identify keys used internally for setup vs. those passed to the constructor
-            internal_config_keys = {
-                "llm_instance_override", "memory_override", "tool_names",
-                "system_prompt_template", "agent_class_ref", "description",
-                "callable_agent_names", "strip_think_tags"
+            AgentClassToInstantiate: Type[BaseAgent] = agent_config_from_app["agent_class_ref"]
+            
+            # Prepare constructor arguments, excluding those managed internally by engine/app
+            constructor_args_from_config = {
+                k: v for k, v in agent_config_from_app.items() 
+                if k not in [
+                    "llm_instance_override", "memory_override", "native_tool_names", 
+                    "callable_agent_names", "agent_class_ref", 
+                    # "mcp_tools_from_servers_config" is handled by LLMAgent itself using the engine
+                ]
             }
-            additional_constructor_args = {
-                k: v
-                for k, v in agent_config.items()
-                if k not in internal_config_keys
-            }
-
-            # Runtime check: LLMAgent requires an LLM
+            
+            # Ensure LLMAgent gets an LLM
             if issubclass(AgentClassToInstantiate, LLMAgent) and not agent_llm:
-                raise ValueError(
-                    f"Agent '{agent_name}' (type: {AgentClassToInstantiate.__name__}) "
-                    f"requires an LLM, but none could be resolved (check agent config, "
-                    f"runtime context, and app defaults)."
-                )
+                raise ValueError(f"Agent '{agent_name}' (type: LLMAgent) requires an LLM, but none resolved.")
 
-            # Prepare arguments for the agent's constructor
             agent_init_kwargs = {
                 "agent_id": instance_id,
-                "description": agent_description,
                 "llm": agent_llm,
-                "tools": agent_tools_resolved,
+                "tools": resolved_native_tools, # Native TFrameX tools
                 "memory": agent_memory,
-                "system_prompt_template": agent_config.get("system_prompt_template"),
-                "callable_agent_definitions": callable_agent_definitions,
-                "strip_think_tags": strip_think_tags_for_agent,
-                **additional_constructor_args, # Include any other config values
+                "engine": self, # Pass the engine instance
+                "callable_agent_definitions": callable_agent_defs,
+                 # Pass the agent's specific desire for MCP tools to its constructor
+                "mcp_tools_from_servers_config": agent_config_from_app.get("mcp_tools_from_servers_config"),
+                **constructor_args_from_config, # Other configs like system_prompt_template, description, strip_think_tags
             }
-
-            # Inject engine dependency specifically for LLMAgents (if needed by their impl)
-            # Check inheritance dynamically using the imported LLMAgent class
-            if issubclass(AgentClassToInstantiate, LLMAgent):
-                agent_init_kwargs["engine"] = self # Pass self (the engine)
-
-            # Create the agent instance
+            
             self._agent_instances[agent_name] = AgentClassToInstantiate(**agent_init_kwargs)
-
-            logger.debug(
-                f"Instantiated agent '{instance_id}' "
-                f"(Name: '{agent_name}', Type: {AgentClassToInstantiate.__name__}, "
-                f"LLM: {agent_llm.model_id if agent_llm else 'None'}, "
-                f"Memory: {type(agent_memory).__name__}, "
-                f"Tools: {[t.name for t in agent_tools_resolved]}, "
-                f"Callable Agents: {callable_agent_names}, "
-                f"Strip Tags: {strip_think_tags_for_agent})"
-            )
-
-        # Return the existing or newly created instance
+            logger.debug(f"Instantiated agent '{instance_id}' (Type: {AgentClassToInstantiate.__name__}) for context {id(self._runtime_context)}.")
         return self._agent_instances[agent_name]
 
     async def call_agent(
         self, agent_name: str, input_message: Union[str, Message], **kwargs: Any
     ) -> Message:
-        """
-        Executes a registered agent with the given input.
-
-        This method retrieves (or instantiates) the specified agent and calls its
-        `run` method.
-
-        Args:
-            agent_name: The registered name of the agent to call.
-            input_message: The input message for the agent, either as a string
-                           (which will be wrapped in a 'user' Message) or a Message object.
-            **kwargs: Additional keyword arguments to be passed directly to the
-                      agent's `run` method.
-
-        Returns:
-            The response Message object from the agent's execution.
-
-        Raises:
-            ValueError: If the agent is not registered.
-            (Potentially others depending on the agent's `run` method)
-        """
-        # Ensure input is a Message object
-        if isinstance(input_message, str):
-            input_msg_obj = Message(role="user", content=input_message)
-        elif isinstance(input_message, Message):
-            input_msg_obj = input_message
-        else:
-            # Add type checking for clarity, though Union hint covers it
-             raise TypeError(f"input_message must be str or Message, not {type(input_message).__name__}")
-
-        # Get the agent instance (will create if first time for this engine)
+        if isinstance(input_message, str): input_msg_obj = Message(role="user", content=input_message)
+        elif isinstance(input_message, Message): input_msg_obj = input_message
+        else: raise TypeError(f"input_message must be str or Message, not {type(input_message)}")
         agent_instance = self._get_agent_instance(agent_name)
-
-        # Execute the agent's primary run logic
         return await agent_instance.run(input_msg_obj, **kwargs)
 
-    async def call_tool(self, tool_name: str, arguments_json_str: str) -> Any:
-        """
-        Executes a registered tool with the provided arguments.
+    async def execute_tool_by_llm_definition(
+        self,
+        tool_definition_name: str, 
+        arguments_json_str: str
+    ) -> Any: # Returns str for LLM or error dict
+        logger.info(f"Engine executing by LLM def name: '{tool_definition_name}' with args: {arguments_json_str[:100]}...")
+        
+        # 1. Handle TFrameX MCP Meta-tools (registered as native tools)
+        # These are tools like 'tframex_list_mcp_resources'
+        if tool_definition_name.startswith("tframex_"):
+            native_tool = self._app.get_tool(tool_definition_name)
+            if native_tool:
+                logger.debug(f"Executing TFrameX MCP meta-tool: {tool_definition_name}")
+                try:
+                    parsed_args = json.loads(arguments_json_str)
+                    # Meta tools are defined as async def func(rt_ctx: TFrameXRuntimeContext, ...other_args)
+                    # The Tool class doesn't auto-inject rt_ctx from engine.
+                    # We need to call the underlying function with rt_ctx.
+                    if asyncio.iscoroutinefunction(native_tool.func):
+                        # Check if 'rt_ctx' is an expected parameter
+                        sig = inspect.signature(native_tool.func)
+                        if 'rt_ctx' in sig.parameters:
+                            return await native_tool.func(rt_ctx=self._runtime_context, **parsed_args)
+                        else: # Should not happen for well-defined meta-tools
+                            return await native_tool.func(**parsed_args)
+                    else: # Should be async
+                        return await asyncio.to_thread(native_tool.func, rt_ctx=self._runtime_context, **parsed_args)
+                except Exception as e:
+                    logger.error(f"Error executing meta-tool '{tool_definition_name}': {e}", exc_info=True)
+                    return {"error": f"Error in meta-tool '{tool_definition_name}': {str(e)}"}
+            # If not found as native, it might be an error or fall through if a server is named 'tframex_'
 
-        This method looks up the tool in the application's registry and calls
-        its `execute` method. This is typically used internally by agents that
-        decide to use a tool.
+        # 2. Handle MCP tools (prefixed with server_alias__)
+        if "__" in tool_definition_name and self._runtime_context.mcp_manager:
+            mcp_manager = self._runtime_context.mcp_manager
+            logger.debug(f"Attempting to execute as MCP tool: {tool_definition_name}")
+            try:
+                mcp_call_tool_result = await mcp_manager.call_mcp_tool_by_prefixed_name(
+                    tool_definition_name, json.loads(arguments_json_str)
+                )
+                # Convert MCP CallToolResult to string or error dict for LLMAgent
+                if hasattr(mcp_call_tool_result, 'isError') and mcp_call_tool_result.isError:
+                    error_content = "Unknown MCP tool error"
+                    if mcp_call_tool_result.content and isinstance(mcp_call_tool_result.content[0], TextContent) and mcp_call_tool_result.content[0].text:
+                        error_content = mcp_call_tool_result.content[0].text
+                    return {"error": f"MCP Tool '{tool_definition_name}' error: {error_content}"}
+                elif mcp_call_tool_result.content and isinstance(mcp_call_tool_result.content[0], TextContent) and mcp_call_tool_result.content[0].text is not None:
+                    return mcp_call_tool_result.content[0].text
+                elif mcp_call_tool_result.content and isinstance(mcp_call_tool_result.content[0], ImageContent):
+                    return f"[Image from MCP tool '{tool_definition_name}', mime: {mcp_call_tool_result.content[0].mimeType}]" 
+                elif mcp_call_tool_result.content and isinstance(mcp_call_tool_result.content[0], EmbeddedResource):
+                    res = mcp_call_tool_result.content[0].resource
+                    return f"[Resource from MCP tool '{tool_definition_name}', uri: {res.uri}, mime: {res.mimeType}]"
+                else:
+                    return f"MCP Tool '{tool_definition_name}' executed, but result format not directly parsable to text for LLM."
+            except Exception as e:
+                logger.error(f"Error dispatching/executing MCP tool '{tool_definition_name}': {e}", exc_info=True)
+                return {"error": f"Client-side error executing MCP tool '{tool_definition_name}': {str(e)}"}
+        
+        # 3. Handle native TFrameX tools (not meta, not MCP prefixed)
+        native_tool = self._app.get_tool(tool_definition_name)
+        if native_tool: # Check if it's a non-MCP-meta native tool
+            logger.debug(f"Executing native TFrameX tool: {tool_definition_name}")
+            return await native_tool.execute(arguments_json_str) # Tool.execute expects JSON string
 
-        Args:
-            tool_name: The registered name of the tool to execute.
-            arguments_json_str: A JSON string containing the arguments for the tool,
-                                as expected by the tool's definition.
-
-        Returns:
-            The result returned by the tool's `execute` method. This can be of Any type.
-            Returns an error dictionary if the tool is not found.
-        """
-        tool = self._app.get_tool(tool_name)
-        if not tool:
-            logger.error(
-                f"Engine requested to call tool '{tool_name}', but it was not "
-                f"found in the app registry."
-            )
-            # Return a consistent error format that agents might handle
-            return {"error": f"Tool '{tool_name}' not found."}
-
-        logger.debug(f"Engine executing tool '{tool_name}' with args: {arguments_json_str}")
-        # Execute the tool
-        try:
-             result = await tool.execute(arguments_json_str)
-             logger.debug(f"Tool '{tool_name}' executed successfully.")
-             return result
-        except Exception as e:
-             logger.error(f"Error executing tool '{tool_name}': {e}", exc_info=True)
-             # Propagate error in a structured way if possible
-             return {"error": f"Error executing tool '{tool_name}': {str(e)}"}
+        logger.error(f"Engine: Tool/Function '{tool_definition_name}' not found or MCP manager unavailable for MCP tools.")
+        return {"error": f"Tool or function '{tool_definition_name}' could not be resolved or executed."}
