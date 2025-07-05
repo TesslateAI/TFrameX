@@ -5,6 +5,8 @@ repomix-output.xml
 __pycache__/
 *.py[cod]
 *$py.class
+node_modules/
+.db
 
 # Virtual environments
 venv/
@@ -13,7 +15,7 @@ venv/
 .venv/
 *.env
 .claude
-
+.env.test
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt

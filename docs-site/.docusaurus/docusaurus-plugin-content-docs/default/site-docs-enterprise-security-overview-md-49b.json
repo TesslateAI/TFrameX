@@ -1,0 +1,28 @@
+{
+  "id": "enterprise/security/overview",
+  "title": "Security Overview",
+  "description": "TFrameX Enterprise provides comprehensive security features to protect your AI agent deployments, ensure compliance, and maintain audit trails.",
+  "source": "@site/docs/enterprise/security/overview.md",
+  "sourceDirName": "enterprise/security",
+  "slug": "/enterprise/security/overview",
+  "permalink": "/docs/enterprise/security/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Security Overview"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Configuration",
+    "permalink": "/docs/enterprise/configuration"
+  },
+  "next": {
+    "title": "Authentication",
+    "permalink": "/docs/enterprise/security/authentication"
+  }
+}

@@ -1,0 +1,14 @@
+# Enterprise Human-in-the-Loop Workflow System Requirements
+
+# Core TFrameX framework
+tframex>=0.1.3
+
+# Environment and configuration
+python-dotenv>=1.0.0
+
+# Database and data handling
+sqlite3  # Built-in with Python
+dataclasses  # Built-in with Python 3.7+
+
+# Additional utilities
+typing-extensions>=4.0.0  # For enhanced type hints

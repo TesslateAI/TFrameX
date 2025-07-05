@@ -1,0 +1,58 @@
+flowchart LR
+    %% Input
+    A[Content Request] --> B[ContentStrategist]
+    
+    %% Strategy Phase
+    B --> C[ContentResearcher]
+    C --> D[ContentRouter]
+    
+    %% Routing Decision
+    D --> E{Content Type?}
+    E -->|Technical| F[TechnicalWriter]
+    E -->|Marketing| G[MarketingWriter]
+    E -->|Creative| H[CreativeWriter]
+    E -->|News| I[NewsWriter]
+    E -->|Business| J[BusinessWriter]
+    
+    %% Content Creation
+    F --> K[SEOOptimizer]
+    G --> K
+    H --> K
+    I --> K
+    J --> K
+    
+    %% Quality Assurance
+    K --> L[ContentEditor]
+    L --> M[QualityAssurance]
+    
+    %% Analysis
+    M --> N[ContentAnalyzer]
+    N --> O{Quality OK?}
+    O -->|No| P[RevisionAgent]
+    P --> L
+    O -->|Yes| Q[Final Content]
+    
+    %% Parallel Analysis
+    M --> R[ParallelAnalyzer]
+    R --> S[Technical Analysis]
+    R --> T[Marketing Analysis]
+    R --> U[Creative Analysis]
+    
+    S --> V[Analysis Report]
+    T --> V
+    U --> V
+    
+    %% Style
+    classDef input fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef strategy fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef writers fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef quality fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef analysis fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef output fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px
+    
+    class A input
+    class B,C,D strategy
+    class F,G,H,I,J writers
+    class K,L,M,P quality
+    class N,R,S,T,U,V analysis
+    class Q output

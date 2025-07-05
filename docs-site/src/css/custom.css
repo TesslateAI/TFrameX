@@ -1,0 +1,382 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #2563eb;
+  --ifm-color-primary-dark: #1d4ed8;
+  --ifm-color-primary-darker: #1e40af;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #3b82f6;
+  --ifm-color-primary-lighter: #60a5fa;
+  --ifm-color-primary-lightest: #93bbfc;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #60a5fa;
+  --ifm-color-primary-dark: #3b82f6;
+  --ifm-color-primary-darker: #2563eb;
+  --ifm-color-primary-darkest: #1d4ed8;
+  --ifm-color-primary-light: #93bbfc;
+  --ifm-color-primary-lighter: #a5c4fd;
+  --ifm-color-primary-lightest: #c3d9fe;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Custom styles for TFrameX */
+.hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.hero__title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.hero__subtitle {
+  font-size: 1.5rem;
+  font-weight: 300;
+  opacity: 0.9;
+}
+
+.button--primary {
+  background-color: var(--ifm-color-primary);
+  border-color: var(--ifm-color-primary);
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.button--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Feature cards */
+.feature {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--ifm-color-primary);
+}
+
+.feature p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Code blocks */
+pre code {
+  background-color: #f6f8fa !important;
+  color: #24292e !important;
+}
+
+[data-theme='dark'] pre code {
+  background-color: #282c34 !important;
+  color: #abb2bf !important;
+}
+
+/* Syntax highlighting improvements */
+.token.comment {
+  color: #6a737d !important;
+}
+
+[data-theme='dark'] .token.comment {
+  color: #5c6370 !important;
+}
+
+.token.string {
+  color: #032f62 !important;
+}
+
+[data-theme='dark'] .token.string {
+  color: #98c379 !important;
+}
+
+.token.keyword {
+  color: #d73a49 !important;
+}
+
+[data-theme='dark'] .token.keyword {
+  color: #c678dd !important;
+}
+
+.token.function {
+  color: #6f42c1 !important;
+}
+
+[data-theme='dark'] .token.function {
+  color: #61afef !important;
+}
+
+/* Inline code */
+code {
+  background-color: rgba(27, 31, 35, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 85%;
+}
+
+[data-theme='dark'] code {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Diagrams */
+img[src*="diagram"] {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  display: block;
+}
+
+/* Sidebar improvements */
+.menu__link {
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.menu__link:hover {
+  background-color: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary-darkest);
+}
+
+.menu__link--active {
+  background-color: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary-darkest) !important;
+  font-weight: 600;
+}
+
+[data-theme='dark'] .menu__link--active {
+  background-color: var(--ifm-color-primary-dark);
+  color: white !important;
+}
+
+/* Tables */
+table {
+  display: table;
+  width: 100%;
+  margin: 2rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+th {
+  background-color: var(--ifm-color-primary);
+  color: white;
+  font-weight: 600;
+  padding: 1rem;
+}
+
+td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+/* Alerts and admonitions */
+.admonition {
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.admonition-heading h5 {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Version badge */
+.version-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #10b981;
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+/* Landing page specific */
+.landing-section {
+  padding: 4rem 0;
+}
+
+.landing-section:nth-child(even) {
+  background-color: var(--ifm-color-emphasis-100);
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: var(--ifm-color-primary-darkest);
+}
+
+/* CLI command styling */
+.cli-command {
+  background-color: #1a1a1a;
+  color: #10b981;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  margin: 1rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.cli-command::before {
+  content: '$';
+  color: #60a5fa;
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hero__title {
+    font-size: 2.5rem;
+  }
+  
+  .hero__subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Navbar improvements */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar__title {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+/* Footer */
+.footer {
+  background-color: var(--ifm-color-emphasis-200);
+}
+
+.footer__title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Search box */
+.navbar__search-input {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Additional improvements for readability */
+.markdown {
+  line-height: 1.7;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* Better contrast for code blocks in tables */
+table code {
+  background-color: rgba(27, 31, 35, 0.03) !important;
+  padding: 0.1em 0.3em;
+}
+
+[data-theme='dark'] table code {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Improve readability of code block titles */
+.code-block-title {
+  background-color: #e1e4e8;
+  color: #24292e;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.25rem 0.25rem 0 0;
+  margin-bottom: -0.5rem;
+}
+
+[data-theme='dark'] .code-block-title {
+  background-color: #21252b;
+  color: #abb2bf;
+}
+
+/* Better visibility for links in documentation */
+.markdown a {
+  color: var(--ifm-color-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.markdown a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Improve contrast for blockquotes */
+blockquote {
+  border-left: 4px solid var(--ifm-color-primary);
+  background-color: var(--ifm-color-emphasis-100);
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+[data-theme='dark'] blockquote {
+  background-color: rgba(255, 255, 255, 0.05);
+}

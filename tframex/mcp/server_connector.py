@@ -9,6 +9,7 @@ from typing import List, Dict, Any, Optional
 from mcp import ClientSession, StdioServerParameters, InitializeResult
 from mcp.client.stdio import stdio_client
 from mcp.client.streamable_http import streamablehttp_client
+from .sse_transport import sse_client
 from mcp.types import (
     Tool as ActualMCPTool, Resource as ActualMCPResource, Prompt as ActualMCPPrompt,
     # TextContent, ImageContent, EmbeddedResource # Not directly used in this file, but good to know
@@ -48,11 +49,16 @@ class MCPConnectedServer:
         self.is_initialized = False # True if the server has successfully initialized and fetched primitives
         self._notification_listener_task: Optional[asyncio.Task] = None
         self._read_stream_for_listener: Optional[Any] = None
+        self._notification_callback: Optional[callable] = None
 
         # Timeout for individual critical steps during server initialization
         self.init_step_timeout: float = self.config.get(
             "init_step_timeout", DEFAULT_MCP_SERVER_INIT_STEP_TIMEOUT
         )
+    
+    def set_notification_callback(self, callback: callable) -> None:
+        """Set callback for handling server notifications."""
+        self._notification_callback = callback
 
     async def initialize(self) -> bool:
         """
@@ -125,8 +131,27 @@ class MCPConnectedServer:
                         )
                     status_code = getattr(http_response, 'status_code', None) or getattr(http_response, 'status', None)
                     logger.info(f"[{self.server_alias}] HTTP transport context entered. Initial HTTP status: {status_code}. Streams obtained.")
+                
+                elif server_type == "sse":
+                    # SSE (Server-Sent Events) transport
+                    base_url = self.config.get("url")
+                    if not base_url: raise ValueError(f"URL missing for SSE server '{self.server_alias}'.")
+                    
+                    headers = self.config.get("headers", {})
+                    logger.info(f"[{self.server_alias}] Attempting SSE connection to: {base_url}")
+                    
+                    transport_context = sse_client(base_url, headers)
+                    logger.debug(f"[{self.server_alias}] SSE client created for {base_url}.")
+                    
+                    self._read_stream_for_listener, write_stream_for_session = \
+                        await asyncio.wait_for(
+                            self._exit_stack.enter_async_context(transport_context),
+                            timeout=self.init_step_timeout
+                        )
+                    logger.info(f"[{self.server_alias}] SSE transport context entered. Streams obtained.")
+                
                 else:
-                    raise ValueError(f"Unsupported server type '{server_type}' for '{self.server_alias}'.")
+                    raise ValueError(f"Unsupported server type '{server_type}' for '{self.server_alias}'. Supported: stdio, streamable-http, sse")
 
                 if not self._read_stream_for_listener or not write_stream_for_session:
                     raise ConnectionError(f"Failed to establish read/write streams for '{self.server_alias}'. This should not happen if transport was successful.")
@@ -208,29 +233,53 @@ class MCPConnectedServer:
 
     async def _listen_for_notifications(self, stream_to_listen_on: Any):
         """
-        Placeholder for listening to server-pushed notifications.
-        This task operates on the raw stream passed to it.
-        In a production system, this would involve parsing MCP Notification messages.
+        Enhanced notification listener that parses and forwards MCP notifications.
         """
-        logger.debug(f"[{self.server_alias}] Placeholder notification listener active on stream: {type(stream_to_listen_on)}.")
+        logger.debug(f"[{self.server_alias}] Enhanced notification listener active on stream: {type(stream_to_listen_on)}.")
         try:
             while self.is_initialized and stream_to_listen_on:
-                # In a real implementation, you'd `await stream_to_listen_on.receive()` or similar
-                # and parse mcp.protocol.Envelope to check for Notification messages.
-                # This placeholder just sleeps to keep the task alive if is_initialized is true.
-                if getattr(stream_to_listen_on, 'at_eof', lambda: True)(): # Check if stream reports EOF
-                    logger.info(f"[{self.server_alias}] Notification listener: Stream at EOF. Exiting loop.")
-                    break
-                await asyncio.sleep(5) # Check periodically
+                # Try to receive a message from the stream
+                try:
+                    if hasattr(stream_to_listen_on, 'receive'):
+                        # Standard MCP stream with receive method
+                        message = await asyncio.wait_for(
+                            stream_to_listen_on.receive(),
+                            timeout=5.0  # 5 second timeout
+                        )
+                        
+                        # Parse and forward notification
+                        if message and self._notification_callback:
+                            try:
+                                # Check if it's a notification (no 'id' field)
+                                if isinstance(message, dict) and 'id' not in message:
+                                    await self._notification_callback(self.server_alias, message)
+                            except Exception as e:
+                                logger.error(f"Error forwarding notification from '{self.server_alias}': {e}")
+                    
+                    elif getattr(stream_to_listen_on, 'at_eof', lambda: True)():
+                        # Stream reports EOF
+                        logger.info(f"[{self.server_alias}] Notification listener: Stream at EOF. Exiting loop.")
+                        break
+                    else:
+                        # Fallback: sleep and check periodically
+                        await asyncio.sleep(1)
+                
+                except asyncio.TimeoutError:
+                    # Timeout is normal - just continue listening
+                    continue
+                except Exception as e:
+                    if self.is_initialized:
+                        logger.debug(f"Notification receive error for '{self.server_alias}': {e}")
+                    await asyncio.sleep(1)  # Brief pause before retry
+                    
         except asyncio.CancelledError:
             logger.info(f"Notification listener for '{self.server_alias}' was cancelled.")
         except Exception as e:
             # Only log errors if the server was meant to be initialized and running.
-            # If cleanup has already set is_initialized to False, this might be an expected closure.
             if self.is_initialized: 
-                logger.error(f"Error in placeholder notification listener for '{self.server_alias}': {e}", exc_info=True)
+                logger.error(f"Error in notification listener for '{self.server_alias}': {e}", exc_info=True)
         finally:
-            logger.info(f"Placeholder notification listener for '{self.server_alias}' stopped.")
+            logger.info(f"Enhanced notification listener for '{self.server_alias}' stopped.")
 
 
     async def _fetch_server_primitives(self):

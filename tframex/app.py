@@ -5,6 +5,11 @@ import logging
 import os
 from typing import Any, Callable, Coroutine, Dict, List, Optional, Type, Union
 
+try:
+    from typing import AsyncGenerator
+except ImportError:
+    from typing_extensions import AsyncGenerator
+
 from .agents.base import BaseAgent
 from .agents.llm_agent import LLMAgent
 from .flows.flow_context import FlowContext
@@ -36,6 +41,10 @@ class TFrameXApp:
         default_llm: Optional[BaseLLMWrapper] = None,
         default_memory_store_factory: Callable[[], BaseMemoryStore] = InMemoryMemoryStore,
         mcp_config_file: Optional[str] = "servers_config.json",
+        enable_mcp_roots: bool = True,
+        enable_mcp_sampling: bool = True,
+        enable_mcp_experimental: bool = False,
+        mcp_roots_allowed_paths: Optional[List[str]] = None,
     ):
         self._tools: Dict[str, Tool] = {}
         self._agents: Dict[str, Dict[str, Any]] = {}
@@ -47,8 +56,16 @@ class TFrameXApp:
         self._mcp_manager: Optional[MCPManager] = None
         if mcp_config_file:
             try:
-                self._mcp_manager = MCPManager(mcp_config_file_path=mcp_config_file)
-                logger.info(f"MCPManager initialized with config file: {mcp_config_file}")
+                self._mcp_manager = MCPManager(
+                    mcp_config_file_path=mcp_config_file,
+                    default_llm=default_llm,
+                    enable_roots=enable_mcp_roots,
+                    enable_sampling=enable_mcp_sampling,
+                    enable_experimental=enable_mcp_experimental,
+                    roots_allowed_paths=mcp_roots_allowed_paths
+                )
+                logger.info(f"Enhanced MCPManager initialized with config file: {mcp_config_file}")
+                logger.info(f"MCP capabilities: roots={enable_mcp_roots}, sampling={enable_mcp_sampling}, experimental={enable_mcp_experimental}")
             except Exception as e:
                 logger.error(f"Failed to initialize MCPManager with {mcp_config_file}: {e}", exc_info=True)
         else:
@@ -279,6 +296,23 @@ class TFrameXRuntimeContext:
         self, agent_name: str, input_message: Union[str, Message], **kwargs: Any
     ) -> Message:
         return await self.engine.call_agent(agent_name, input_message, **kwargs)
+    
+    async def call_agent_stream(
+        self, agent_name: str, input_message: Union[str, Message], **kwargs: Any
+    ) -> AsyncGenerator[MessageChunk, None]:
+        """
+        Stream response from an agent. Yields MessageChunk objects as they arrive.
+        
+        Args:
+            agent_name: Name of the agent to call
+            input_message: User input as string or Message object  
+            **kwargs: Additional parameters passed to agent
+            
+        Yields:
+            MessageChunk: Individual chunks of the streaming response
+        """
+        async for chunk in self.engine.call_agent_stream(agent_name, input_message, **kwargs):
+            yield chunk
 
     async def interactive_chat(self, default_agent_name: Optional[str] = None) -> None:
         print("\n--- TFrameX Interactive Agent Chat (with MCP) ---")

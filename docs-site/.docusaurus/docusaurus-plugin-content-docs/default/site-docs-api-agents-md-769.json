@@ -1,0 +1,28 @@
+{
+  "id": "api/agents",
+  "title": "Agents",
+  "description": "Agents are the core autonomous entities in TFrameX that can use tools, maintain conversations, and work together to solve complex tasks. This reference covers all agent types and their APIs.",
+  "source": "@site/docs/api/agents.md",
+  "sourceDirName": "api",
+  "slug": "/api/agents",
+  "permalink": "/docs/api/agents",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/agents.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "Agents"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "TFrameXApp",
+    "permalink": "/docs/api/tframexapp"
+  },
+  "next": {
+    "title": "Tools",
+    "permalink": "/docs/api/tools"
+  }
+}

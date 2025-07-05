@@ -1,0 +1,28 @@
+{
+  "id": "first-agent",
+  "title": "Your First Agent",
+  "description": "This tutorial will guide you through building a complete AI agent from scratch, teaching you the core concepts of TFrameX along the way.",
+  "source": "@site/docs/first-agent.md",
+  "sourceDirName": ".",
+  "slug": "/first-agent",
+  "permalink": "/docs/first-agent",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/first-agent.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "Your First Agent"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Quickstart",
+    "permalink": "/docs/quickstart"
+  },
+  "next": {
+    "title": "Overview",
+    "permalink": "/docs/concepts/overview"
+  }
+}

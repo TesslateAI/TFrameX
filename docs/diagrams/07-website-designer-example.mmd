@@ -1,0 +1,56 @@
+graph TB
+    %% User Interface
+    U[User Request] --> WC[WebsiteCoordinator]
+    
+    %% Coordinator Agent
+    WC --> CS[ContentStrategist]
+    WC --> HD[HTMLDeveloper]
+    WC --> CD[CSSDesigner]
+    WC --> UD[UIUXDesigner]
+    
+    %% Tools
+    subgraph "File System Tools"
+        FT[create_file]
+        RT[read_file]
+        LT[list_files]
+        DT[delete_file]
+    end
+    
+    %% Agent Tool Usage
+    CS --> FT
+    HD --> FT
+    HD --> RT
+    CD --> FT
+    CD --> RT
+    UD --> FT
+    UD --> RT
+    
+    %% Parallel Execution
+    subgraph "Parallel Development"
+        HD --> HTML[HTML Files]
+        CD --> CSS[CSS Files]
+        UD --> UX[UX Assets]
+    end
+    
+    %% File Outputs
+    HTML --> WS[Website Files]
+    CSS --> WS
+    UX --> WS
+    
+    %% Review Process
+    WS --> WC
+    WC --> QA[Quality Assurance]
+    QA --> WS
+    
+    %% Style
+    classDef coordinator fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef agents fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef tools fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef files fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef output fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class WC,QA coordinator
+    class CS,HD,CD,UD agents
+    class FT,RT,LT,DT tools
+    class HTML,CSS,UX files
+    class WS output

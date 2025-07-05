@@ -1,0 +1,203 @@
+{
+  "/__docusaurus/debug-9a5": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---docusaurus-debug-24-a-71d"
+    }
+  },
+  "/__docusaurus/debug/config-57b": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---docusaurus-debug-24-a-71d"
+    }
+  },
+  "/__docusaurus/debug/content-4c6": {
+    "__comp": "__comp---theme-debug-contentba-8-ce7",
+    "__context": {
+      "plugin": "plugin---docusaurus-debug-24-a-71d"
+    },
+    "allContent": "allContent---docusaurus-debug-content-246-9aa"
+  },
+  "/__docusaurus/debug/globalData-984": {
+    "__comp": "__comp---theme-debug-global-dataede-0fa",
+    "__context": {
+      "plugin": "plugin---docusaurus-debug-24-a-71d"
+    }
+  },
+  "/__docusaurus/debug/metadata-275": {
+    "__comp": "__comp---theme-debug-site-metadata-68-e-3d4",
+    "__context": {
+      "plugin": "plugin---docusaurus-debug-24-a-71d"
+    }
+  },
+  "/__docusaurus/debug/registry-d00": {
+    "__comp": "__comp---theme-debug-registry-679-501",
+    "__context": {
+      "plugin": "plugin---docusaurus-debug-24-a-71d"
+    }
+  },
+  "/__docusaurus/debug/routes-0ed": {
+    "__comp": "__comp---theme-debug-routes-946-699",
+    "__context": {
+      "plugin": "plugin---docusaurus-debug-24-a-71d"
+    }
+  },
+  "/search-a09": {
+    "__comp": "__comp---theme-search-page-1-a-4-d6f",
+    "__context": {
+      "plugin": "plugin---search-7-c-1-952"
+    }
+  },
+  "/docs-262": {
+    "__comp": "__comp---theme-docs-root-5-e-9-0b6",
+    "__context": {
+      "plugin": "plugin---docs-198-c59"
+    }
+  },
+  "/docs-730": {
+    "__comp": "__comp---theme-doc-version-roota-7-b-5de",
+    "version": "version---docs-935-398"
+  },
+  "/docs-486": {
+    "__comp": "__comp---theme-doc-roota-94-67a"
+  },
+  "/docs/api/agents-2ab": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-agents-769-3ae"
+  },
+  "/docs/api/flows-e40": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-flows-813-6d3"
+  },
+  "/docs/api/mcp-ad2": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-mcpe-8-d-e8c"
+  },
+  "/docs/api/memory-806": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-memory-405-394"
+  },
+  "/docs/api/overview-79e": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-overview-65-d-0e3"
+  },
+  "/docs/api/patterns-763": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-patternsea-1-859"
+  },
+  "/docs/api/patterns_old-dac": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-patterns-old-436-087"
+  },
+  "/docs/api/tframexapp-221": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-tframexapp-1-bd-fd6"
+  },
+  "/docs/api/tools-d23": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-api-tools-8-a-2-0bd"
+  },
+  "/docs/cli/basic-956": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-cli-basic-96-c-1bd"
+  },
+  "/docs/cli/commands-d7f": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-cli-commandsaef-c82"
+  },
+  "/docs/cli/overview-128": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-cli-overview-2-c-1-5cd"
+  },
+  "/docs/cli/serve-e8a": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-cli-serveea-8-85c"
+  },
+  "/docs/cli/setup-cd0": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-cli-setupbc-1-967"
+  },
+  "/docs/concepts/agents-518": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-agents-20-c-88e"
+  },
+  "/docs/concepts/flows-199": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-flows-4-f-0-0aa"
+  },
+  "/docs/concepts/mcp-integration-f44": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-mcp-integration-603-6f7"
+  },
+  "/docs/concepts/memory-b59": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-memorycf-8-2c5"
+  },
+  "/docs/concepts/overview-fee": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-overview-85-b-024"
+  },
+  "/docs/concepts/patterns-22c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-patternsa-37-675"
+  },
+  "/docs/concepts/tools-d88": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-concepts-toolscb-3-108"
+  },
+  "/docs/enterprise/configuration-b0d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-enterprise-configuration-103-8b5"
+  },
+  "/docs/enterprise/metrics-bfd": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-enterprise-metrics-50-a-e2b"
+  },
+  "/docs/enterprise/overview-7c3": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-enterprise-overviewc-95-962"
+  },
+  "/docs/enterprise/security/audit-0f3": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-enterprise-security-auditc-4-f-390"
+  },
+  "/docs/enterprise/security/authentication-92b": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-enterprise-security-authenticationc-46-ade"
+  },
+  "/docs/enterprise/security/authorization-922": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-enterprise-security-authorizationf-0-b-b95"
+  },
+  "/docs/enterprise/security/overview-8f0": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-enterprise-security-overview-49-b-b14"
+  },
+  "/docs/enterprise/security/sessions-a35": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-enterprise-security-sessions-6-c-2-df9"
+  },
+  "/docs/first-agent-8bc": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-first-agent-175-bba"
+  },
+  "/docs/installation-001": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-installation-3-b-8-7c6"
+  },
+  "/docs/intro-aed": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-intro-0-e-3-be1"
+  },
+  "/docs/quickstart-e30": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-quickstart-807-6cd"
+  },
+  "/-5c3": {
+    "__comp": "__comp---site-src-pages-index-jsc-4-f-f99",
+    "__context": {
+      "plugin": "plugin---ce-2-0bf"
+    },
+    "config": "config---5-e-9-4f3"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "enterprise/security/authorization",
+  "title": "Authorization (RBAC)",
+  "description": "TFrameX Enterprise implements a comprehensive Role-Based Access Control (RBAC) system with hierarchical roles, fine-grained permissions, and dynamic policies.",
+  "source": "@site/docs/enterprise/security/authorization.md",
+  "sourceDirName": "enterprise/security",
+  "slug": "/enterprise/security/authorization",
+  "permalink": "/docs/enterprise/security/authorization",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/authorization.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "Authorization (RBAC)"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Authentication",
+    "permalink": "/docs/enterprise/security/authentication"
+  },
+  "next": {
+    "title": "Audit Logging",
+    "permalink": "/docs/enterprise/security/audit"
+  }
+}

@@ -1,9 +1,9 @@
 # tframex/agents/llm_agent.py
 import json
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, List, Optional, Union
 
-from tframex.models.primitives import Message, ToolCall, ToolDefinition
+from tframex.models.primitives import Message, MessageChunk, ToolCall, ToolDefinition
 from tframex.util.llms import BaseLLMWrapper
 from tframex.util.memory import BaseMemoryStore
 from tframex.util.tools import Tool # Assuming ToolDefinition doesn't need FunctionCall directly here
@@ -147,10 +147,18 @@ class LLMAgent(BaseAgent):
         return unique_defs
 
 
-    async def run(self, input_message: Union[str, Message], **kwargs: Any) -> Message:
+    async def run(self, input_message: Union[str, Message], stream: bool = False, **kwargs: Any) -> Union[Message, AsyncGenerator[MessageChunk, None]]:
         """
         Main execution logic for the LLMAgent.
         Handles interaction with the LLM, tool execution, and memory management.
+        
+        Args:
+            input_message: User input as string or Message object
+            stream: If True, returns AsyncGenerator[MessageChunk, None] for streaming responses
+            **kwargs: Additional parameters passed to LLM
+            
+        Returns:
+            Message for non-streaming, AsyncGenerator[MessageChunk, None] for streaming
         """
         if isinstance(input_message, str):
             current_user_message = Message(role="user", content=input_message)
@@ -164,6 +172,9 @@ class LLMAgent(BaseAgent):
         await self.memory.add_message(current_user_message)
         template_vars_for_prompt = kwargs.get("template_vars", {})
 
+        if stream:
+            return self._run_streaming(current_user_message, template_vars_for_prompt, **kwargs)
+        
         for iteration_count in range(self.max_tool_iterations + 1):
             history = await self.memory.get_history(limit=self.config.get("history_limit", 10))
             messages_for_llm: List[Message] = []
@@ -173,10 +184,10 @@ class LLMAgent(BaseAgent):
                 messages_for_llm.append(system_message_rendered)
             messages_for_llm.extend(history)
 
-            llm_call_kwargs_from_run = {k: v for k, v in kwargs.items() if k != "template_vars"}
+            llm_call_kwargs_from_run = {k: v for k, v in kwargs.items() if k not in ["template_vars", "stream"]}
             all_tool_definitions_for_llm = self._get_all_available_tool_definitions_for_llm()
 
-            llm_api_params: Dict[str, Any] = {"stream": False, **llm_call_kwargs_from_run}
+            llm_api_params: Dict[str, Any] = {"stream": stream, **llm_call_kwargs_from_run}
             if all_tool_definitions_for_llm:
                 llm_api_params["tools"] = [td.model_dump(exclude_none=True) for td in all_tool_definitions_for_llm]
                 llm_api_params["tool_choice"] = self.config.get("tool_choice", "auto")
@@ -261,3 +272,119 @@ class LLMAgent(BaseAgent):
 
         final_error_message = Message(role="assistant", content=error_msg_content)
         return self._post_process_llm_response(final_error_message)
+    
+    async def _run_streaming(self, current_user_message: Message, template_vars_for_prompt: Dict[str, Any], **kwargs: Any) -> AsyncGenerator[MessageChunk, None]:
+        """
+        Streaming version of the main execution logic.
+        Yields MessageChunk objects as they arrive while handling tool calls.
+        """
+        # Main streaming execution loop
+        for iteration_count in range(self.max_tool_iterations + 1):
+            history = await self.memory.get_history(limit=self.config.get("history_limit", 10))
+            messages_for_llm: List[Message] = []
+
+            system_message_rendered = self._render_system_prompt(**template_vars_for_prompt)
+            if system_message_rendered:
+                messages_for_llm.append(system_message_rendered)
+            messages_for_llm.extend(history)
+
+            llm_call_kwargs_from_run = {k: v for k, v in kwargs.items() if k not in ["template_vars", "stream"]}
+            all_tool_definitions_for_llm = self._get_all_available_tool_definitions_for_llm()
+            
+            llm_api_params: Dict[str, Any] = {"stream": True, **llm_call_kwargs_from_run}
+            if all_tool_definitions_for_llm:
+                llm_api_params["tools"] = [td.model_dump(exclude_none=True) for td in all_tool_definitions_for_llm]
+                llm_api_params["tool_choice"] = self.config.get("tool_choice", "auto")
+
+            logger.info(
+                f"Agent '{self.agent_id}' (LLM: {self.llm.model_id}) calling LLM [STREAMING]. "
+                f"Iteration: {iteration_count+1}/{self.max_tool_iterations + 1}. "
+                f"Tool definitions for LLM: {len(all_tool_definitions_for_llm)}."
+            )
+
+            # Get streaming response from LLM
+            stream_generator = await self.llm.chat_completion(messages_for_llm, **llm_api_params)
+            
+            # Accumulate streaming chunks into complete message for tool processing
+            accumulated_content = ""
+            accumulated_tool_calls = []
+            current_role = "assistant"
+            
+            async for chunk in stream_generator:
+                # Yield chunk to caller immediately for real-time streaming
+                yield chunk
+                
+                # Accumulate for internal processing and memory
+                if chunk.content:
+                    accumulated_content += chunk.content
+                if chunk.role:
+                    current_role = chunk.role
+                if chunk.tool_calls:
+                    accumulated_tool_calls.extend(chunk.tool_calls)
+            
+            # Create complete message from accumulated chunks
+            complete_assistant_message = Message(
+                role=current_role,
+                content=accumulated_content if accumulated_content else None,
+                tool_calls=accumulated_tool_calls if accumulated_tool_calls else None
+            )
+                
+            # Add complete message to memory
+            await self.memory.add_message(complete_assistant_message)
+
+            # Check if we're done (no tool calls or max iterations reached)
+            if not complete_assistant_message.tool_calls or iteration_count >= self.max_tool_iterations:
+                if iteration_count >= self.max_tool_iterations and complete_assistant_message.tool_calls:
+                    logger.warning(f"Agent '{self.agent_id}' reached max_tool_iterations ({self.max_tool_iterations}) "
+                                   "but LLM still requested tool calls. Ignoring further tool calls.")
+                logger.info(f"Agent '{self.agent_id}' concluding streaming processing. Iteration: {iteration_count+1}.")
+                return
+
+            # Execute tool calls
+            logger.info(f"Agent '{self.agent_id}': LLM requested {len(complete_assistant_message.tool_calls)} tool_calls in streaming mode.")
+            
+            tool_response_messages: List[Message] = []
+            for tool_call_obj in complete_assistant_message.tool_calls:
+                tool_name_for_llm = tool_call_obj.function.name
+                tool_call_id = tool_call_obj.id
+                tool_args_json_str = tool_call_obj.function.arguments
+
+                logger.info(f"Agent '{self.agent_id}': Dispatching tool call for '{tool_name_for_llm}' (ID: {tool_call_id}) via Engine.")
+                
+                tool_result_content_or_error_dict = await self.engine.execute_tool_by_llm_definition(
+                    tool_name_for_llm, tool_args_json_str
+                )
+
+                tool_result_content_str = ""
+                if isinstance(tool_result_content_or_error_dict, dict) and "error" in tool_result_content_or_error_dict:
+                    tool_result_content_str = str(tool_result_content_or_error_dict["error"])
+                    logger.warning(f"Agent '{self.agent_id}': Tool '{tool_name_for_llm}' execution resulted in error: {tool_result_content_str}")
+                elif isinstance(tool_result_content_or_error_dict, (str, int, float, bool)):
+                    tool_result_content_str = str(tool_result_content_or_error_dict)
+                elif tool_result_content_or_error_dict is None:
+                    tool_result_content_str = "[Tool executed successfully but returned no specific content]"
+                else:
+                    try:
+                        tool_result_content_str = json.dumps(tool_result_content_or_error_dict)
+                    except TypeError:
+                        tool_result_content_str = (f"[Tool '{tool_name_for_llm}' returned complex non-JSON-serializable data "
+                                                   f"of type: {type(tool_result_content_or_error_dict)}]")
+                        logger.warning(f"Agent '{self.agent_id}': {tool_result_content_str}")
+
+                tool_response_messages.append(
+                    Message(
+                        role="tool",
+                        tool_call_id=tool_call_id,
+                        name=tool_name_for_llm,
+                        content=tool_result_content_str,
+                    )
+                )
+
+            # Add tool responses to memory
+            for tr_msg in tool_response_messages:
+                await self.memory.add_message(tr_msg)
+        
+        # If we reach here, we've exceeded max iterations
+        error_content = f"Error: Agent '{self.agent_id}' exceeded maximum tool processing iterations ({self.max_tool_iterations}) in streaming mode."
+        error_chunk = MessageChunk(role="assistant", content=error_content)
+        yield error_chunk

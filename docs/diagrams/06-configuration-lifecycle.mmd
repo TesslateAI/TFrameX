@@ -1,0 +1,48 @@
+sequenceDiagram
+    participant U as User
+    participant A as TFrameXApp
+    participant RC as RuntimeContext
+    participant E as Engine
+    participant MCP as MCPManager
+    participant AG as Agent
+    participant LLM as LLMWrapper
+    participant MS as MemoryStore
+    
+    %% Initialization
+    U->>A: Create App
+    A->>A: Load Configuration
+    A->>A: Register Agents/Tools
+    A->>MCP: Initialize MCP Servers
+    MCP-->>A: Servers Ready
+    
+    %% Runtime Context
+    U->>A: run_context()
+    A->>RC: Create Context
+    RC->>E: Initialize Engine
+    RC->>LLM: Initialize LLM
+    RC->>MS: Initialize Memory
+    
+    %% Agent Execution
+    U->>RC: Execute Agent
+    RC->>E: execute_agent()
+    E->>AG: Create/Get Agent
+    AG->>MS: Load Memory
+    AG->>LLM: Call LLM
+    LLM-->>AG: Response
+    AG->>MS: Save Memory
+    AG-->>E: Result
+    E-->>RC: Result
+    RC-->>U: Response
+    
+    %% Tool Execution
+    AG->>E: Execute Tool
+    E->>MCP: Call MCP Tool
+    MCP-->>E: Tool Result
+    E-->>AG: Result
+    
+    %% Cleanup
+    U->>RC: Exit Context
+    RC->>MCP: Cleanup Servers
+    RC->>MS: Cleanup Memory
+    RC->>LLM: Cleanup LLM
+    RC-->>A: Context Closed

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "aws_docs": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "AWS_DOCUMENTATION_PARTITION": "aws"
+      },
+      "init_step_timeout": 45.0,
+      "tool_call_timeout": 120.0
+    }
+  }
+}

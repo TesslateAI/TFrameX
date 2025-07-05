@@ -1,0 +1,28 @@
+{
+  "id": "concepts/flows",
+  "title": "Flows",
+  "description": "Flows are TFrameX's way of orchestrating complex, multi-step workflows. They enable you to chain agents, tools, and patterns together to solve sophisticated problems.",
+  "source": "@site/docs/concepts/flows.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/flows",
+  "permalink": "/docs/concepts/flows",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/flows.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "Flows"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Tools",
+    "permalink": "/docs/concepts/tools"
+  },
+  "next": {
+    "title": "Patterns",
+    "permalink": "/docs/concepts/patterns"
+  }
+}

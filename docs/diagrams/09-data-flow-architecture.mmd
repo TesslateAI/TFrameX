@@ -1,0 +1,67 @@
+graph LR
+    %% Data Sources
+    subgraph "Data Sources"
+        A[User Input]
+        B[Environment Variables]
+        C[Configuration Files]
+        D[MCP Servers]
+        E[External APIs]
+    end
+    
+    %% Processing Layer
+    subgraph "Processing Layer"
+        F[Input Validation]
+        G[Context Assembly]
+        H[Agent Execution]
+        I[Tool Execution]
+        J[Result Aggregation]
+    end
+    
+    %% Storage Layer
+    subgraph "Storage Layer"
+        K[Memory Stores]
+        L[Session Data]
+        M[Configuration Cache]
+        N[Tool Results]
+    end
+    
+    %% Output Layer
+    subgraph "Output Layer"
+        O[Response Formatting]
+        P[Logging]
+        Q[Metrics]
+        R[User Response]
+    end
+    
+    %% Flow
+    A --> F
+    B --> G
+    C --> G
+    D --> I
+    E --> I
+    
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    
+    H --> K
+    I --> N
+    G --> M
+    H --> L
+    
+    J --> O
+    J --> P
+    J --> Q
+    O --> R
+    
+    %% Style
+    classDef sources fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef processing fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef storage fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef output fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    
+    class A,B,C,D,E sources
+    class F,G,H,I,J processing
+    class K,L,M,N storage
+    class O,P,Q,R output

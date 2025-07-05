@@ -1,0 +1,24 @@
+{
+  "id": "enterprise/metrics",
+  "title": "Metrics & Monitoring",
+  "description": "TFrameX Enterprise provides basic metrics collection for monitoring application performance and usage through Prometheus integration.",
+  "source": "@site/docs/enterprise/metrics.md",
+  "sourceDirName": "enterprise",
+  "slug": "/enterprise/metrics",
+  "permalink": "/docs/enterprise/metrics",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/metrics.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "Metrics & Monitoring"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Session Management",
+    "permalink": "/docs/enterprise/security/sessions"
+  }
+}

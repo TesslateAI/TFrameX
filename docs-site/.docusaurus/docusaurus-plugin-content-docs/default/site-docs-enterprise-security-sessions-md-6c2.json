@@ -1,0 +1,28 @@
+{
+  "id": "enterprise/security/sessions",
+  "title": "Session Management",
+  "description": "TFrameX Enterprise provides secure session management with support for multiple backends, concurrent session control, and advanced security features.",
+  "source": "@site/docs/enterprise/security/sessions.md",
+  "sourceDirName": "enterprise/security",
+  "slug": "/enterprise/security/sessions",
+  "permalink": "/docs/enterprise/security/sessions",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/sessions.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5,
+    "title": "Session Management"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Audit Logging",
+    "permalink": "/docs/enterprise/security/audit"
+  },
+  "next": {
+    "title": "Metrics & Monitoring",
+    "permalink": "/docs/enterprise/metrics"
+  }
+}

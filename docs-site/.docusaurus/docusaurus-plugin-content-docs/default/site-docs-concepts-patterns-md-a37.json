@@ -1,0 +1,28 @@
+{
+  "id": "concepts/patterns",
+  "title": "Patterns",
+  "description": "Patterns are reusable workflow templates in TFrameX that solve common multi-agent coordination problems. They provide structured ways for agents to work together effectively.",
+  "source": "@site/docs/concepts/patterns.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/patterns",
+  "permalink": "/docs/concepts/patterns",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/patterns.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5,
+    "title": "Patterns"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Flows",
+    "permalink": "/docs/concepts/flows"
+  },
+  "next": {
+    "title": "Memory",
+    "permalink": "/docs/concepts/memory"
+  }
+}

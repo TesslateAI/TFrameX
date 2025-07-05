@@ -1,0 +1,71 @@
+flowchart TD
+    %% Pattern Entry
+    A[Pattern.execute] --> B[FlowContext]
+    B --> C{Pattern Type?}
+    
+    %% Sequential Pattern
+    C -->|Sequential| D[SequentialPattern]
+    D --> E[For Each Step]
+    E --> F[Execute Agent]
+    F --> G[Update Context]
+    G --> H{More Steps?}
+    H -->|Yes| E
+    H -->|No| I[Return Context]
+    
+    %% Parallel Pattern
+    C -->|Parallel| J[ParallelPattern]
+    J --> K[Create Tasks]
+    K --> L[Execute Concurrently]
+    L --> M[Await All Results]
+    M --> N[Aggregate Results]
+    N --> O[Update Context]
+    O --> I
+    
+    %% Router Pattern
+    C -->|Router| P[RouterPattern]
+    P --> Q[Execute Router Agent]
+    Q --> R[Parse Route Decision]
+    R --> S[Execute Selected Agent]
+    S --> T[Update Context]
+    T --> I
+    
+    %% Discussion Pattern
+    C -->|Discussion| U[DiscussionPattern]
+    U --> V[Initialize Round]
+    V --> W[For Each Agent]
+    W --> X[Execute Agent]
+    X --> Y[Update Shared Context]
+    Y --> Z{More Agents?}
+    Z -->|Yes| W
+    Z -->|No| AA{More Rounds?}
+    AA -->|Yes| V
+    AA -->|No| BB[Moderator Summary]
+    BB --> I
+    
+    %% Nested Patterns
+    F --> CC{Nested Pattern?}
+    CC -->|Yes| C
+    CC -->|No| G
+    
+    S --> DD{Nested Pattern?}
+    DD -->|Yes| C
+    DD -->|No| T
+    
+    X --> EE{Nested Pattern?}
+    EE -->|Yes| C
+    EE -->|No| Y
+    
+    %% Style
+    classDef pattern fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef sequential fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef parallel fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef router fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef discussion fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef context fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px
+    
+    class A,B,C pattern
+    class D,E,F,G,H sequential
+    class J,K,L,M,N,O parallel
+    class P,Q,R,S,T router
+    class U,V,W,X,Y,Z,AA,BB discussion
+    class I,CC,DD,EE context

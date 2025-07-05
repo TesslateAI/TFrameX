@@ -1,0 +1,28 @@
+{
+  "id": "api/tframexapp",
+  "title": "TFrameXApp",
+  "description": "The TFrameXApp class is the central orchestrator of the TFrameX framework. It manages agents, tools, runtime contexts, and provides the main interface for building AI applications.",
+  "source": "@site/docs/api/tframexapp.md",
+  "sourceDirName": "api",
+  "slug": "/api/tframexapp",
+  "permalink": "/docs/api/tframexapp",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/tframexapp.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "title": "TFrameXApp"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "API Overview",
+    "permalink": "/docs/api/overview"
+  },
+  "next": {
+    "title": "Agents",
+    "permalink": "/docs/api/agents"
+  }
+}

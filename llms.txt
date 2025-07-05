@@ -1,0 +1,937 @@
+# TFrameX Framework Complete Reference (LLMs.txt)
+
+## FRAMEWORK OVERVIEW
+TFrameX v1.1.0 - Task & Flow Orchestration Framework for eXtensible LLM Systems. Production-ready Python framework for sophisticated multi-agent LLM applications with enhanced MCP integration, comprehensive enterprise features, and powerful CLI tooling.
+
+## CORE ARCHITECTURE
+```
+TFrameXApp -> TFrameXRuntimeContext -> Engine -> {Agents, Tools, Flows, MCP}
+```
+
+### Key Components:
+- **TFrameXApp**: Central registry, configuration, lifecycle management
+- **TFrameXRuntimeContext**: Execution environment, resource management, async context manager
+- **Engine**: Core orchestrator, dependency injection, tool routing, agent instantiation
+- **Agents**: LLMAgent (reasoning), ToolAgent (direct execution), BaseAgent (abstract)
+- **Tools**: Native Python functions, MCP external tools, Agent-as-Tool delegation
+- **Flows**: Sequential workflows with nested patterns (Sequential, Parallel, Router, Discussion)
+- **Memory**: Pluggable conversation storage (InMemory default, custom implementations)
+- **MCP**: Model Context Protocol integration for external services
+
+## QUICK START PATTERN
+```python
+from tframex import TFrameXApp
+from tframex.util.llms import OpenAIChatLLM
+import asyncio
+
+app = TFrameXApp(default_llm=OpenAIChatLLM())
+
+@app.tool(description="Add two numbers")
+async def add(a: int, b: int) -> int:
+    return a + b
+
+@app.agent(name="MathAgent", tools=["add"], system_prompt="Use tools for math")
+async def math_agent():
+    pass
+
+async def main():
+    async with app.run_context() as rt:
+        result = await rt.execute_agent("MathAgent", "What is 5 + 3?")
+        print(result)
+
+asyncio.run(main())
+```
+
+## API REFERENCE COMPLETE
+
+### TFrameXApp Constructor
+```python
+TFrameXApp(
+    default_llm=None,                              # BaseLLMWrapper
+    default_memory_store_factory=InMemoryMemoryStore,  # Callable
+    mcp_config_file="servers_config.json",        # str
+    enable_mcp_roots=True,                         # bool
+    enable_mcp_sampling=True,                      # bool
+    enable_mcp_experimental=False,                 # bool
+    mcp_roots_allowed_paths=None                   # List[str]
+)
+```
+
+### Agent Decorator (Complete Options)
+```python
+@app.agent(
+    name: str,                                     # Required: unique identifier
+    description: str = "",                         # Agent description
+    callable_agents: Optional[List[str]] = None,   # Agents this agent can call
+    system_prompt: Optional[str] = None,           # System prompt template
+    tools: Optional[List[str]] = None,             # Native tool names
+    mcp_tools_from_servers: Union[str, List[str]] = None,  # "ALL" or server list
+    llm: Optional[BaseLLMWrapper] = None,          # Custom LLM override
+    memory_store: Optional[BaseMemoryStore] = None, # Custom memory override
+    agent_class: Type[BaseAgent] = LLMAgent,       # Agent implementation class
+    strip_think_tags: bool = True,                 # Remove <think></think> tags
+    max_tool_iterations: int = 10,                 # Max tool call iterations
+    additional_prompt_variables: Dict[str, Any] = None  # Template variables
+)
+```
+
+### Tool Decorator
+```python
+@app.tool(
+    name: Optional[str] = None,                    # Defaults to function name
+    description: Optional[str] = None,             # Defaults to docstring
+    enabled: bool = True                           # Tool availability
+)
+```
+
+### Runtime Context Usage
+```python
+async with app.run_context(**template_variables) as rt:
+    # Agent execution
+    response = await rt.execute_agent(agent_name, input_message, **kwargs)
+    
+    # Flow execution
+    flow_result = await rt.execute_flow(flow_name, initial_input, **kwargs)
+    
+    # Interactive chat
+    await rt.chat_with_agent(agent_name, max_iterations=100)
+```
+
+## AGENT PATTERNS
+
+### Specialist Agent Pattern
+```python
+@app.agent(
+    name="DataAnalyst",
+    description="Analyzes data and provides insights",
+    tools=["load_data", "analyze_data", "visualize_data"],
+    system_prompt="You are a data analyst. Focus on data analysis tasks only."
+)
+```
+
+### Coordinator/Supervisor Pattern
+```python
+@app.agent(
+    name="ProjectManager",
+    description="Coordinates multiple specialist agents",
+    callable_agents=["DataAnalyst", "Designer", "Developer"],
+    system_prompt="You coordinate project activities. Delegate to specialists: {available_agents_descriptions}"
+)
+```
+
+### MCP Integration Pattern
+```python
+@app.agent(
+    name="UniversalAssistant",
+    mcp_tools_from_servers="ALL",
+    system_prompt="You have access to all external tools via MCP servers."
+)
+```
+
+### Multi-Modal Agent Pattern
+```python
+@app.agent(
+    name="MultiModalAgent",
+    tools=["native_tool"],
+    callable_agents=["SpecialistAgent"],
+    mcp_tools_from_servers=["external_server"],
+    system_prompt="You coordinate native tools, agents, and external services."
+)
+```
+
+## TOOL PATTERNS
+
+### Basic Tool Pattern
+```python
+@app.tool(description="Get current timestamp")
+async def get_timestamp() -> str:
+    return datetime.now().isoformat()
+```
+
+### Complex Tool Pattern
+```python
+@app.tool(description="Comprehensive data analysis")
+async def analyze_dataset(data_path: str, analysis_type: str = "descriptive") -> dict:
+    try:
+        data = load_data(data_path)
+        if analysis_type == "descriptive":
+            return descriptive_analysis(data)
+        elif analysis_type == "predictive":
+            return predictive_analysis(data)
+        else:
+            return {"error": f"Unknown analysis type: {analysis_type}"}
+    except Exception as e:
+        return {"error": str(e)}
+```
+
+### Error-Safe Tool Pattern
+```python
+@app.tool(description="Safe file operations")
+async def safe_file_read(file_path: str) -> str:
+    try:
+        with open(file_path, 'r') as f:
+            return f.read()
+    except FileNotFoundError:
+        return f"Error: File {file_path} not found"
+    except PermissionError:
+        return f"Error: Permission denied for {file_path}"
+    except Exception as e:
+        return f"Error: {str(e)}"
+```
+
+## FLOW ORCHESTRATION PATTERNS
+
+### Sequential Flow
+```python
+flow = Flow("DataPipeline", "Sequential data processing")
+flow.add_step("data_collector")
+flow.add_step("data_processor")
+flow.add_step("data_analyzer")
+flow.add_step("report_generator")
+app.register_flow(flow)
+```
+
+### Parallel Execution Pattern
+```python
+flow = Flow("ParallelAnalysis", "Concurrent analysis")
+flow.add_pattern_step(
+    ParallelPattern("analysts", ["technical_analyst", "business_analyst", "risk_analyst"])
+)
+flow.add_step("synthesis_agent")
+```
+
+### Router Pattern
+```python
+flow = Flow("ConditionalFlow", "Route based on content type")
+flow.add_step("content_classifier")
+flow.add_pattern_step(
+    RouterPattern("content_router", {
+        "technical": "technical_writer",
+        "marketing": "marketing_writer",
+        "creative": "creative_writer"
+    })
+)
+```
+
+### Discussion Pattern
+```python
+flow = Flow("TeamDiscussion", "Multi-agent collaboration")
+flow.add_pattern_step(
+    DiscussionPattern(
+        "team_discussion",
+        agents=["architect", "developer", "designer"],
+        num_rounds=3,
+        moderator_agent="project_manager"
+    )
+)
+```
+
+## MCP INTEGRATION COMPLETE
+
+### Server Configuration (servers_config.json)
+```json
+{
+  "mcpServers": {
+    "stdio_server": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["server.py"],
+      "env": {"KEY": "value"},
+      "init_step_timeout": 30.0,
+      "tool_call_timeout": 60.0
+    },
+    "http_server": {
+      "type": "streamable-http",
+      "url": "https://api.example.com/mcp",
+      "headers": {"Authorization": "Bearer token"}
+    }
+  }
+}
+```
+
+### MCP Meta-Tools
+- `tframex_list_mcp_servers()`: List all configured servers
+- `tframex_list_mcp_resources(server_alias?)`: List available resources
+- `tframex_read_mcp_resource(server_alias, resource_uri)`: Read resource content
+- `tframex_list_mcp_prompts(server_alias?)`: List available prompts
+- `tframex_use_mcp_prompt(server_alias, prompt_name, arguments)`: Use server prompt
+
+### MCP Agent Configuration
+```python
+# All servers
+@app.agent(mcp_tools_from_servers="ALL")
+
+# Specific servers
+@app.agent(mcp_tools_from_servers=["server1", "server2"])
+
+# Tool naming: "server_alias__tool_name"
+```
+
+## CONFIGURATION MANAGEMENT
+
+### Environment Variables
+```bash
+# Core LLM
+OPENAI_API_KEY=sk-...
+OPENAI_API_BASE=https://api.openai.com/v1
+OPENAI_MODEL_NAME=gpt-3.5-turbo
+
+# Framework
+TFRAMEX_ALLOW_NO_DEFAULT_LLM=false
+TFRAMEX_LOG_LEVEL=INFO
+MCP_LOG_LEVEL=INFO
+
+# Local development (Ollama)
+OPENAI_API_BASE=http://localhost:11434/v1
+OPENAI_API_KEY=ollama
+OPENAI_MODEL_NAME=llama3
+```
+
+### Application Configuration Pattern
+```python
+app = TFrameXApp(
+    default_llm=OpenAIChatLLM(
+        model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-3.5-turbo"),
+        api_key=os.getenv("OPENAI_API_KEY"),
+        api_base_url=os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
+    ),
+    default_memory_store_factory=lambda: InMemoryMemoryStore(max_messages=100),
+    mcp_config_file="servers_config.json"
+)
+```
+
+## DATA MODELS (COMPLETE)
+
+### Message
+```python
+@dataclass
+class Message:
+    role: Literal["system", "user", "assistant", "tool"]
+    content: Optional[str] = None
+    tool_calls: Optional[List[ToolCall]] = None
+    tool_call_id: Optional[str] = None
+    name: Optional[str] = None
+```
+
+### ToolCall & FunctionCall
+```python
+@dataclass
+class ToolCall:
+    id: str
+    type: Literal["function"] = "function"
+    function: FunctionCall
+
+@dataclass
+class FunctionCall:
+    name: str
+    arguments: str  # JSON string
+```
+
+### Tool Schema
+```python
+{
+    "type": "function",
+    "function": {
+        "name": "tool_name",
+        "description": "Tool description",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "param": {"type": "string", "description": "Parameter description"}
+            },
+            "required": ["param"]
+        }
+    }
+}
+```
+
+## BEST PRACTICES & IDIOMS
+
+### Error Handling Pattern
+```python
+@app.tool(description="Robust operation")
+async def robust_tool(param: str) -> Union[str, dict]:
+    try:
+        result = risky_operation(param)
+        logger.info(f"Operation successful: {result}")
+        return result
+    except ValidationError as e:
+        logger.error(f"Validation failed: {e}")
+        return {"error": f"Invalid input: {str(e)}"}
+    except TimeoutError as e:
+        logger.error(f"Operation timeout: {e}")
+        return {"error": "Operation timed out"}
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}", exc_info=True)
+        return {"error": "Internal error"}
+```
+
+### Logging Setup
+```python
+from tframex.util.logging import setup_logging
+import logging
+
+setup_logging(level=logging.INFO, use_colors=True)
+logging.getLogger("tframex.mcp").setLevel(logging.DEBUG)
+```
+
+### Memory Management
+```python
+# Bounded memory
+app = TFrameXApp(
+    default_memory_store_factory=lambda: InMemoryMemoryStore(max_messages=50)
+)
+
+# Custom memory store
+class DatabaseMemoryStore(BaseMemoryStore):
+    async def add_message(self, message: Message) -> None:
+        # Database implementation
+    
+    async def get_history(self, limit=None, offset=0, roles=None) -> List[Message]:
+        # Database query
+```
+
+### Performance Patterns
+```python
+# Connection pooling
+client = httpx.AsyncClient(limits=httpx.Limits(max_connections=100))
+
+# Batch operations
+async def process_batch(items: list):
+    tasks = [process_item(item) for item in items]
+    return await asyncio.gather(*tasks)
+
+# Caching
+from functools import lru_cache
+
+@lru_cache(maxsize=128)
+def get_expensive_result(key: str):
+    return expensive_computation(key)
+```
+
+### Security Patterns
+```python
+# Input validation
+def sanitize_input(user_input: str) -> str:
+    return re.sub(r'[<>"`{}|\\]', '', user_input).strip()
+
+# Path validation
+def safe_path_access(file_path: str, allowed_base: str) -> bool:
+    safe_path = Path(file_path).resolve()
+    allowed_base_path = Path(allowed_base).resolve()
+    return str(safe_path).startswith(str(allowed_base_path))
+```
+
+## ADVANCED PATTERNS
+
+### Custom Agent Class
+```python
+class DomainSpecificAgent(BaseAgent):
+    def __init__(self, *args, domain_config: dict = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.domain_config = domain_config or {}
+    
+    async def run(self, input_message: Union[str, Message], **kwargs) -> Message:
+        enhanced_context = self.add_domain_context(input_message)
+        return await super().run(enhanced_context, **kwargs)
+    
+    def add_domain_context(self, message):
+        return f"Domain: {self.domain_config}\n\n{message}"
+```
+
+### Custom LLM Provider
+```python
+class CustomLLMProvider(BaseLLMWrapper):
+    async def generate_response(
+        self,
+        messages: List[Message],
+        tools: Optional[List[Dict[str, Any]]] = None,
+        **kwargs
+    ) -> AsyncGenerator[Message, None]:
+        response = await self.call_custom_api(messages, tools, **kwargs)
+        yield Message(role="assistant", content=response)
+```
+
+### Plugin Architecture
+```python
+class TFrameXPlugin(ABC):
+    @abstractmethod
+    async def initialize(self, app: TFrameXApp): pass
+    
+    @abstractmethod
+    async def cleanup(self): pass
+
+class MetricsPlugin(TFrameXPlugin):
+    async def initialize(self, app: TFrameXApp):
+        self.collector = MetricsCollector()
+        app.add_middleware(self.collector)
+```
+
+## PRODUCTION DEPLOYMENT
+
+### Docker Pattern
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+ENV OPENAI_API_KEY=""
+CMD ["python", "main.py"]
+```
+
+### Health Checks
+```python
+@app.get("/health")
+async def health_check():
+    try:
+        async with tframex_app.run_context() as rt:
+            return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e)}
+```
+
+### Monitoring
+```python
+from prometheus_client import Counter, Histogram
+agent_executions = Counter('tframex_agent_executions_total')
+execution_time = Histogram('tframex_execution_seconds')
+```
+
+## TROUBLESHOOTING GUIDE
+
+### Common Issues & Solutions
+1. **Agent Not Found**: Check agent registration and name matching
+2. **Tool Execution Failures**: Add proper error handling, check tool signatures
+3. **Memory Issues**: Configure bounded memory stores
+4. **MCP Connection Problems**: Check server config, increase timeouts
+5. **LLM API Errors**: Verify API keys, check rate limits
+6. **Performance Issues**: Use connection pooling, implement caching
+
+### Debug Patterns
+```python
+# Enable debug logging
+logging.getLogger("tframex").setLevel(logging.DEBUG)
+
+# Debug agent execution
+@app.agent(name="DebugAgent", tools=["tframex_list_mcp_servers"])
+async def debug_agent():
+    pass
+
+# Interactive debugging
+import pdb; pdb.set_trace()
+```
+
+## EXAMPLE ARCHITECTURES
+
+### Content Creation Pipeline
+```
+Strategy -> Research -> Router -> [Technical|Marketing|Creative] -> SEO -> Editor -> QA
+```
+
+### Website Designer System
+```
+Coordinator -> [ContentStrategist, HTMLDeveloper, CSSDesigner, UIUXDesigner] -> FileSystem -> QA
+```
+
+### Multi-Agent Discussion
+```
+Moderator -> Round1[Agent1, Agent2, Agent3] -> Round2[...] -> Synthesis
+```
+
+## FRAMEWORK EXTENSIBILITY
+
+### Extension Points
+- Custom Agent Classes: Extend BaseAgent/LLMAgent
+- Custom Tools: @app.tool decorator or manual registration
+- Custom Memory Stores: Implement BaseMemoryStore
+- Custom LLM Providers: Implement BaseLLMWrapper
+- Custom Patterns: Extend BasePattern
+- MCP Servers: External service integration
+- Plugin System: Custom middleware and extensions
+
+### Integration Capabilities
+- OpenAI/Anthropic/Local LLMs (via OpenAI-compatible APIs)
+- External services via MCP protocol
+- Databases (via tools or MCP)
+- File systems (secure access patterns)
+- Web APIs (HTTP tools)
+- Real-time systems (WebSocket, SSE)
+
+## VERSION INFO
+- Version: 1.1.0
+- Python: >=3.8
+- Dependencies: httpx, pydantic, PyYAML, openai, aiohttp, mcp
+- License: MIT
+- Repository: https://github.com/TesslateAI/TFrameX
+
+## CLI TOOLING (COMPLETE)
+
+### Installation & Setup
+```bash
+# Install TFrameX
+pip install tframex
+
+# Verify CLI installation
+tframex --help
+```
+
+### CLI Commands Overview
+- **`tframex basic`** - Interactive AI session with built-in chat system
+- **`tframex setup <project>`** - Complete project scaffolding with templates
+- **`tframex serve`** - Web interface for agent interaction
+
+### CLI Command Reference
+
+#### tframex basic
+```bash
+tframex basic
+```
+**Features:**
+- Interactive chat with agent switching ('switch', 'exit', 'quit')
+- Built-in time tool included
+- Environment variable auto-detection
+- Demo mode if no API keys configured
+- Uses TFrameX native interactive_chat() system
+
+**Environment Detection (in priority order):**
+```bash
+# OpenAI
+OPENAI_API_KEY=sk-...
+OPENAI_API_BASE=https://api.openai.com/v1      # Optional
+OPENAI_MODEL_NAME=gpt-3.5-turbo               # Optional
+
+# Llama/Compatible APIs
+LLAMA_API_KEY=LLM|...
+LLAMA_BASE_URL=https://api.llama.com/compat/v1/
+LLAMA_MODEL=Llama-4-Maverick-17B-128E-Instruct-FP8
+```
+
+#### tframex setup <project-name>
+```bash
+tframex setup myproject [--template basic]
+```
+**Generated Structure:**
+```
+myproject/
+├── main.py              # Complete async application entry point
+├── config/
+│   ├── __init__.py      # Package initialization
+│   ├── agents.py        # Agent configurations with LLM setup
+│   └── tools.py         # Tool configurations with examples
+├── data/                # Data files and storage
+├── docs/                # Documentation
+├── requirements.txt     # TFrameX + dependencies
+├── .env.example        # Complete environment template
+├── .gitignore          # Security and Python ignores
+└── README.md           # Comprehensive project docs
+```
+
+**Key Generated Files:**
+
+**main.py Pattern:**
+```python
+#!/usr/bin/env python3
+import asyncio
+from tframex import TFrameXApp
+from config.agents import setup_agents
+from config.tools import setup_tools
+
+def create_app() -> TFrameXApp:
+    app = TFrameXApp()
+    setup_tools(app)
+    setup_agents(app)
+    return app
+
+async def main():
+    print(f"🚀 Starting {project_name}")
+    app = create_app()
+    async with app.run_context() as rt:
+        await rt.interactive_chat()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+**config/tools.py Pattern:**
+```python
+from tframex.util.tools import Tool, ToolParameters
+
+def setup_tools(app):
+    def get_current_time() -> str:
+        from datetime import datetime
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    time_tool = Tool(
+        name="get_current_time",
+        func=get_current_time,
+        description="Get the current date and time",
+        parameters_schema=ToolParameters(properties={}, required=None)
+    )
+    app.register_tool(time_tool)
+    
+    # Extensive comments showing custom tool patterns
+```
+
+**config/agents.py Pattern:**
+```python
+from tframex.agents.llm_agent import LLMAgent
+from tframex.util.llms import OpenAIChatLLM
+
+def setup_agents(app):
+    # Environment-based LLM configuration
+    api_key = os.getenv("OPENAI_API_KEY") or os.getenv("LLAMA_API_KEY")
+    base_url = os.getenv("OPENAI_API_BASE") or os.getenv("LLAMA_BASE_URL")
+    model_name = os.getenv("OPENAI_MODEL_NAME") or os.getenv("LLAMA_MODEL") or "gpt-3.5-turbo"
+    
+    llm = OpenAIChatLLM(
+        model_name=model_name,
+        api_key=api_key,
+        api_base_url=base_url,
+        parse_text_tool_calls=True
+    )
+    
+    assistant = LLMAgent(
+        name="Assistant",
+        description="A helpful AI assistant",
+        llm=llm,
+        system_prompt="Production-ready system prompt template"
+    )
+    
+    app.register_agent(assistant)
+```
+
+**.env.example Template:**
+```bash
+# LLM Configuration (choose one)
+# OpenAI:
+OPENAI_API_KEY=your_openai_api_key_here
+# OPENAI_API_BASE=https://api.openai.com/v1
+# OPENAI_MODEL_NAME=gpt-3.5-turbo
+
+# Llama/Compatible:
+# LLAMA_API_KEY=your_llama_api_key_here
+# LLAMA_BASE_URL=https://api.llama.com/compat/v1/
+# LLAMA_MODEL=Llama-4-Maverick-17B-128E-Instruct-FP8
+
+# Project Configuration
+PROJECT_NAME="project_name"
+ENVIRONMENT=development
+```
+
+#### tframex serve
+```bash
+tframex serve [--host HOST] [--port PORT]
+```
+**Options:**
+- `--host localhost` (default) - Bind host
+- `--port 8000` (default) - Bind port
+
+**Examples:**
+```bash
+tframex serve                           # localhost:8000
+tframex serve --port 3000              # localhost:3000
+tframex serve --host 0.0.0.0 --port 80 # production
+```
+
+**Requirements:**
+```bash
+pip install tframex[web]  # Includes Flask
+```
+
+**Web Interface Features:**
+- Real-time chat interface with HTML/CSS/JavaScript
+- TFrameX agent backend integration
+- Session management and error handling
+- Responsive design for desktop/mobile
+- HTTP endpoints: GET / (chat UI), POST /chat (API)
+
+### CLI Development Workflow
+
+#### Quick Prototyping
+```bash
+# 1. Instant interactive session
+tframex basic
+
+# 2. Test ideas with built-in tools
+# 3. Set environment variables for your LLM
+export OPENAI_API_KEY="sk-..."
+```
+
+#### Project Development
+```bash
+# 1. Create structured project
+tframex setup my-ai-app
+cd my-ai-app
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env with API keys
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Develop agents/tools in config/
+# 5. Test interactively
+python main.py
+
+# 6. Test web interface
+tframex serve --port 3000
+```
+
+#### Production Deployment
+```bash
+# 1. Production project setup
+tframex setup production-app
+
+# 2. Production environment
+cp .env.example .env.production
+# Configure production settings
+
+# 3. Install with web support
+pip install -r requirements.txt
+pip install tframex[web]
+
+# 4. Deploy web server
+tframex serve --host 0.0.0.0 --port 8080
+```
+
+### CLI Advanced Patterns
+
+#### Custom Tool Development
+```python
+# In config/tools.py
+def create_custom_tool():
+    def custom_function(param1: str, param2: int = 10) -> str:
+        return f"Custom result: {param1} with {param2}"
+    
+    return Tool(
+        name="custom_tool",
+        func=custom_function,
+        description="A custom tool example",
+        parameters_schema=ToolParameters(
+            properties={
+                "param1": ToolParameterProperty(type="string", description="First parameter"),
+                "param2": ToolParameterProperty(type="integer", description="Second parameter")
+            },
+            required=["param1"]
+        )
+    )
+
+def setup_tools(app):
+    app.register_tool(create_custom_tool())
+```
+
+#### Multi-Agent Configuration
+```python
+# In config/agents.py
+def setup_agents(app):
+    llm = create_llm()  # Environment-based setup
+    
+    # Specialist agents
+    research_agent = LLMAgent(
+        name="Researcher",
+        description="Research specialist",
+        llm=llm,
+        system_prompt="You are a research specialist..."
+    )
+    
+    writer_agent = LLMAgent(
+        name="Writer", 
+        description="Content writer",
+        llm=llm,
+        system_prompt="You are a professional writer..."
+    )
+    
+    # Coordinator agent
+    coordinator = LLMAgent(
+        name="Coordinator",
+        description="Project coordinator",
+        llm=llm,
+        callable_agents=["Researcher", "Writer"],
+        system_prompt="You coordinate specialists: {available_agents_descriptions}"
+    )
+    
+    app.register_agent(research_agent)
+    app.register_agent(writer_agent)
+    app.register_agent(coordinator)
+```
+
+#### MCP Integration in Projects
+```python
+# In main.py
+from tframex.mcp import MCPManager
+
+def create_app() -> TFrameXApp:
+    app = TFrameXApp()
+    
+    # MCP configuration
+    mcp_config = {
+        "aws_docs": {
+            "command": "uvx",
+            "args": ["awslabs.aws-documentation-mcp-server@latest"]
+        }
+    }
+    
+    mcp_manager = MCPManager(mcp_config)
+    app.set_mcp_manager(mcp_manager)
+    
+    setup_tools(app)
+    setup_agents(app)
+    return app
+```
+
+### CLI Troubleshooting
+
+#### Common Issues
+```bash
+# Command not found
+pip uninstall tframex && pip install tframex
+which tframex
+
+# Import errors
+python -c "import tframex; print(tframex.__version__)"
+
+# API key issues
+echo $OPENAI_API_KEY
+export OPENAI_API_KEY="your_key"
+
+# Web server issues
+pip install tframex[web]
+netstat -an | grep :8000
+```
+
+#### Debug Mode
+```bash
+export TFRAMEX_LOG_LEVEL=DEBUG
+tframex basic
+```
+
+### CLI Architecture
+
+#### Design Principles
+- **Native Integration**: Uses TFrameX's built-in interactive_chat() system
+- **Environment-driven**: Standard environment variable patterns
+- **Template-based**: Scaffolding creates working examples
+- **Modular**: Separate files for agents, tools, configuration
+- **Production-ready**: Includes security, documentation, best practices
+
+#### CLI Tool Structure
+```
+tframex/cli.py:
+├── create_basic_app()          # Basic app with time tool
+├── run_basic_session()         # Interactive session runner
+├── create_project_structure()   # Project scaffolding
+├── setup_project()             # Project creation logic
+├── serve_webapp()              # Flask web server
+└── main()                      # Argument parsing and routing
+```
+
+#### Integration Points
+- **TFrameXApp**: Direct integration with core framework
+- **Interactive Chat**: Native `rt.interactive_chat()` usage
+- **Tool System**: Dynamic tool creation with `Tool` class
+- **Environment**: Standard LLM configuration patterns
+- **Templates**: Consistent project structure generation
+
+This comprehensive reference covers the complete TFrameX framework including all APIs, patterns, best practices, CLI tooling, and production deployment considerations. Use this as the definitive guide for building sophisticated multi-agent LLM applications.

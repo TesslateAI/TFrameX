@@ -1,7 +1,7 @@
 
   
 
-# TFrameX: The Extensible Task & Flow Orchestration Framework for LLMs
+# TFrameX v1.1.0: The Enterprise-Ready Multi-Agent LLM Orchestration Framework 🚀
   
   
 
@@ -19,10 +19,32 @@ Please join our discord for support: [Discord](https://discord.gg/DkzMzwBTaw)
 
 **TFrameX** empowers you to build sophisticated, multi-agent LLM applications with unparalleled ease and flexibility. Move beyond simple prompt-response interactions and construct complex, dynamic workflows where intelligent agents collaborate, use tools, and adapt to intricate tasks.
 
+## 🔥 **What's NEW in v1.1.0: Enterprise-Grade Power!**
+
+### 🌊 **Revolutionary Streaming Support**
+- **Real-Time Agent Responses**: Experience blazing-fast streaming responses from all agents
+- **Live Flow Execution**: Watch your multi-agent workflows execute in real-time
+- **Seamless Integration**: Zero configuration change needed - just add `streaming=True`
+
+### 🔌 **Next-Level MCP Integration** 
+- **Universal Tool Connectivity**: Connect to any MCP-compatible service with zero friction
+- **Enhanced Stability**: Rock-solid MCP server management with auto-reconnection
+- **Rich Meta-Tools**: Built-in tools for server discovery, resource exploration, and dynamic prompt usage
+- **Production Ready**: Battle-tested MCP integration for enterprise deployments
+
+### 🏢 **Enterprise-Grade Features**
+- **🔒 Enterprise Security**: Full RBAC, multi-auth (JWT, OAuth2, API keys), audit logging, and session management
+- **📊 Advanced Monitoring**: Prometheus, OpenTelemetry, and custom metrics with real-time dashboards  
+- **🗄️ Multi-Backend Storage**: SQLite → PostgreSQL → S3 with seamless auto-migration
+- **⚡ Production Performance**: Optimized for high-throughput, multi-tenant deployments
+- **🛡️ Compliance Ready**: Complete audit trails, data governance, and regulatory compliance features
+
+Perfect for production deployments, enterprise applications, and mission-critical AI systems!
+
   
   
 
-**Find our Agent Builder Framework Here**: [Tesslate Studio Agent Builder](https://github.com/TesslateAI/Studio)
+**Find our Agent Builder Framework Here**: [Tesslate Studio Agent Builder](https://github.com/TesslateAI/Agent-Builder)
 
 ![image](https://github.com/user-attachments/assets/8e5b0689-38e6-4832-8de5-07ea03ed1c25)
 
@@ -42,15 +64,23 @@ Please join our discord for support: [Discord](https://discord.gg/DkzMzwBTaw)
 
 * 🌊 **Powerful Flow Orchestration:** Design complex workflows by chaining agents and predefined patterns (Sequential, Parallel, Router, Discussion) using an intuitive `Flow` API.
 
+* ⚡ **Lightning-Fast Streaming:** Experience real-time agent responses with our revolutionary streaming support - just add `streaming=True` for instant responsiveness.
+
+* 🔌 **Universal MCP Connectivity:** Connect to any MCP-compatible service with zero friction - from file systems to databases to external APIs.
+
 * 🧩 **Composable & Modular:** Build reusable components (agents, tools, flows) that can be combined to create increasingly complex applications.
 
 * 🚀 **Agent-as-Tool Paradigm:** Elevate your architecture by enabling agents to call other agents as tools, creating hierarchical and supervised agent structures.
+
+* 🏢 **Enterprise-Ready:** Full RBAC, authentication, audit logging, metrics collection, and multi-backend storage for production deployments.
 
 * 🎨 **Fine-Grained Control:** Customize agent behavior with features like per-agent LLMs and `<think>` tag stripping for cleaner outputs.
 
 * 💬 **Interactive Debugging:** Quickly test your flows and agents with the built-in interactive chat.
 
 * 🔌 **Pluggable LLMs:** Start with `OpenAIChatLLM` (compatible with OpenAI API and many local server UIs like Ollama) and extend to other models easily.
+
+* ⚡ **CLI Tooling:** Complete command-line interface with `tframex basic` for instant interaction, `tframex setup` for project scaffolding, and `tframex serve` for web interfaces.
 
   
 
@@ -156,13 +186,64 @@ TFrameX revolves around a few key concepts:
 
 ## Getting Started
 
-1.  **Installation:**
+### 🚀 Quick Start with CLI
 
-    To use TFrameX in your project, install it via pip:
-    ```bash
-    pip install tframex
-    ```
-    Core dependencies (like `httpx`, `pydantic`, `PyYAML`, `python-dotenv`, `openai`) are listed in `pyproject.toml` and should be installed automatically. If you plan to run specific examples from the TFrameX repository, you might need additional packages like `aiohttp` (for the Reddit tool example) or `Flask` (for the web app example). You can install these separately: `pip install aiohttp Flask`.
+The fastest way to get started with TFrameX is using the built-in CLI:
+
+1. **Install TFrameX:**
+   ```bash
+   pip install tframex
+   ```
+
+2. **Start an interactive session:**
+   ```bash
+   # Set your API key
+   export OPENAI_API_KEY="sk-..."
+   
+   # Launch interactive chat
+   tframex basic
+   ```
+
+3. **Create your first project:**
+   ```bash
+   # Generate a complete project structure
+   tframex setup my-ai-app
+   cd my-ai-app
+   
+   # Configure environment
+   cp .env.example .env
+   # Edit .env with your API keys
+   
+   # Install dependencies and run
+   pip install -r requirements.txt
+   python main.py
+   ```
+
+4. **Try the web interface:**
+   ```bash
+   # Install web dependencies
+   pip install tframex[web]
+   
+   # Launch web server
+   tframex serve
+   # Open http://localhost:8000 in your browser
+   ```
+
+### 📚 CLI Commands
+
+- **`tframex basic`** - Interactive AI session with built-in tools
+- **`tframex setup <project>`** - Complete project scaffolding 
+- **`tframex serve`** - Web interface for agent interaction
+
+For complete CLI documentation, see [CLI Guide](docs/CLI_GUIDE.md) and [CLI Reference](docs/CLI_REFERENCE.md).
+
+### 📦 Manual Installation
+
+To use TFrameX in your project manually, install it via pip:
+```bash
+pip install tframex
+```
+Core dependencies (like `httpx`, `pydantic`, `PyYAML`, `python-dotenv`, `openai`) are listed in `pyproject.toml` and should be installed automatically. If you plan to run specific examples from the TFrameX repository, you might need additional packages like `aiohttp` (for the Reddit tool example) or `Flask` (for the web app example). You can install these separately: `pip install aiohttp Flask`.
 
     **For Developers (Contributing to TFrameX or running all examples from source):**
 
@@ -279,6 +360,50 @@ if  __name__ == "__main__":
         asyncio.run(main())
 ```
 
+### 🌊 **Streaming Agents Example:**
+
+Experience real-time responses with TFrameX's streaming capabilities:
+
+```python
+# Enable streaming for lightning-fast responses
+@app.agent(
+    name="StreamingAssistant",
+    system_prompt="You are a helpful assistant. Provide detailed, thoughtful responses.",
+    streaming=True  # ✨ Just add this for real-time streaming!
+)
+async def streaming_assistant():
+    pass
+
+async def streaming_demo():
+    async with app.run_context() as rt:
+        message = Message(role="user", content="Tell me about the future of AI")
+        
+        # Get streaming response - watch it appear in real-time!
+        response = await rt.call_agent("StreamingAssistant", message)
+        print(f"Streamed response: {response.content}")
+```
+
+### 🔌 **MCP Integration Example:**
+
+Connect to external services with MCP:
+
+```python
+# MCP servers auto-discovered and integrated
+@app.agent(
+    name="MCPAgent",
+    system_prompt="You have access to external tools via MCP. Use them to help users.",
+    # MCP tools automatically available!
+)
+async def mcp_agent():
+    pass
+
+# Available MCP meta-tools:
+# - tframex_list_mcp_servers: Discover available MCP servers
+# - tframex_list_mcp_resources: Browse MCP resources
+# - tframex_read_mcp_resource: Access MCP resource content
+# - tframex_list_mcp_prompts: List available MCP prompts
+# - tframex_use_mcp_prompt: Execute MCP prompts
+```
 
 ---
 
@@ -592,6 +717,70 @@ if __name__ == "__main__":
 
 ---
 
+## 🏢 Enterprise Features
+
+TFrameX Enterprise provides production-ready features for enterprise deployments:
+
+### 📊 Comprehensive Metrics & Monitoring
+- **Multi-Backend Support**: Prometheus, StatsD, OpenTelemetry, and custom collectors
+- **Real-Time Metrics**: Track agent performance, tool usage, flow execution times
+- **Distributed Tracing**: Full request tracing with OpenTelemetry integration
+- **Health Monitoring**: Built-in health checks and performance benchmarks
+
+### 💾 Multi-Backend Data Persistence
+- **Storage Abstraction**: Unified interface supporting multiple backends
+- **Supported Backends**: SQLite, PostgreSQL, S3, and in-memory storage
+- **Auto-Migration**: Seamless data migration between storage backends
+- **Scalable Architecture**: From development SQLite to production PostgreSQL
+
+### 🔐 Enterprise Security
+- **Authentication**: API Key, JWT, OAuth2, and Basic Auth providers
+- **Authorization (RBAC)**: Role-based access control with permission inheritance
+- **Session Management**: Secure session handling with rotation and cleanup
+- **Audit Logging**: Comprehensive audit trails for compliance and security
+
+### 🛡️ Production-Ready Features
+- **Configuration Management**: YAML/JSON configuration with environment override
+- **Error Handling**: Graceful degradation and comprehensive error handling
+- **Background Services**: Automated cleanup, metrics collection, session management
+- **Docker Support**: Ready-to-deploy containerized applications
+
+### 📈 Enterprise Usage
+
+```python
+from tframex.enterprise import EnterpriseApp, load_enterprise_config
+
+# Load enterprise configuration
+config = load_enterprise_config("enterprise_config.yaml")
+
+# Create enterprise application
+app = EnterpriseApp(
+    default_llm=my_llm,
+    enterprise_config=config
+)
+
+# All core TFrameX features plus enterprise capabilities
+@app.agent(name="SecureAgent", system_prompt="You are a secure enterprise assistant.")
+async def secure_agent(): pass
+
+async def main():
+    # Enterprise features initialized automatically
+    async with app as enterprise_app:
+        # Get enterprise services
+        metrics = app.get_metrics_manager()
+        storage = app.get_storage()
+        rbac = app.get_rbac_engine()
+        
+        # Use with security context
+        async with app.run_context() as ctx:
+            # Metrics, security, and audit logging automatically applied
+            response = await ctx.call_agent("SecureAgent", "Hello!")
+```
+
+See the [Enterprise Examples](examples/) and [Enterprise Documentation](docs/ENTERPRISE.md) for detailed usage guides.
+
+---
+
   
 
 ## 🌟 Use Cases
@@ -627,6 +816,18 @@ TFrameX is ideal for a wide range of applications:
 *  **Automated Content Generation Pipelines:** Chain agents for drafting, revising, fact-checking, and formatting content for various platforms.
 
 *  **Educational Tutors:** Agents specializing in different subjects collaborating to provide comprehensive explanations.
+
+*  **Enterprise Applications (with TFrameX Enterprise):**
+
+* **Customer Service Platforms:** Multi-agent support systems with authentication, role-based access, and comprehensive audit trails.
+
+* **Internal Knowledge Systems:** Secure enterprise chatbots with RBAC, session management, and integration with corporate databases.
+
+* **Automated Compliance Systems:** Agent workflows with full audit logging, metrics collection, and regulatory compliance features.
+
+* **Production AI Pipelines:** Scalable agent orchestration with monitoring, error handling, and enterprise-grade reliability.
+
+* **Multi-Tenant SaaS Applications:** Secure, monitored agent services with per-tenant isolation and comprehensive analytics.
 
   
 

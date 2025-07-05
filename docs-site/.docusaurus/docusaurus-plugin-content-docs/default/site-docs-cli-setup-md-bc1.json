@@ -1,0 +1,28 @@
+{
+  "id": "cli/setup",
+  "title": "tframex setup",
+  "description": "The tframex setup command creates a complete TFrameX project with proper structure, configuration files, and working examples. It's the recommended way to start building production-ready AI applications.",
+  "source": "@site/docs/cli/setup.md",
+  "sourceDirName": "cli",
+  "slug": "/cli/setup",
+  "permalink": "/docs/cli/setup",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/setup.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "tframex setup"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "tframex basic",
+    "permalink": "/docs/cli/basic"
+  },
+  "next": {
+    "title": "tframex serve",
+    "permalink": "/docs/cli/serve"
+  }
+}

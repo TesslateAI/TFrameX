@@ -1,0 +1,28 @@
+{
+  "id": "quickstart",
+  "title": "Quickstart",
+  "description": "Get up and running with TFrameX in 5 minutes! This guide will walk you through creating your first AI agent application.",
+  "source": "@site/docs/quickstart.md",
+  "sourceDirName": ".",
+  "slug": "/quickstart",
+  "permalink": "/docs/quickstart",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/quickstart.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "Quickstart"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Installation",
+    "permalink": "/docs/installation"
+  },
+  "next": {
+    "title": "Your First Agent",
+    "permalink": "/docs/first-agent"
+  }
+}

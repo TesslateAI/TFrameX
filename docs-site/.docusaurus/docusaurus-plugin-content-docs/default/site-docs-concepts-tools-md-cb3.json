@@ -1,0 +1,28 @@
+{
+  "id": "concepts/tools",
+  "title": "Tools",
+  "description": "Tools are the bridge between your AI agents and the real world. They enable agents to perform actions, retrieve information, and interact with external systems.",
+  "source": "@site/docs/concepts/tools.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/tools",
+  "permalink": "/docs/concepts/tools",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/tools.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "Tools"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Agents",
+    "permalink": "/docs/concepts/agents"
+  },
+  "next": {
+    "title": "Flows",
+    "permalink": "/docs/concepts/flows"
+  }
+}

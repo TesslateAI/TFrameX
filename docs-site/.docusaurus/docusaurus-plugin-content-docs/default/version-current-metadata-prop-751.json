@@ -1,0 +1,485 @@
+{
+  "pluginId": "default",
+  "version": "current",
+  "label": "Next",
+  "banner": null,
+  "badge": false,
+  "noIndex": false,
+  "className": "docs-version-current",
+  "isLast": true,
+  "docsSidebars": {
+    "tutorialSidebar": [
+      {
+        "type": "link",
+        "label": "Introduction",
+        "href": "/docs/intro",
+        "docId": "intro",
+        "unlisted": false
+      },
+      {
+        "type": "category",
+        "label": "Getting Started",
+        "items": [
+          {
+            "type": "link",
+            "label": "Installation",
+            "href": "/docs/installation",
+            "docId": "installation",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Quickstart",
+            "href": "/docs/quickstart",
+            "docId": "quickstart",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Your First Agent",
+            "href": "/docs/first-agent",
+            "docId": "first-agent",
+            "unlisted": false
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
+      },
+      {
+        "type": "category",
+        "label": "Core Concepts",
+        "items": [
+          {
+            "type": "link",
+            "label": "Overview",
+            "href": "/docs/concepts/overview",
+            "docId": "concepts/overview",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Agents",
+            "href": "/docs/concepts/agents",
+            "docId": "concepts/agents",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Tools",
+            "href": "/docs/concepts/tools",
+            "docId": "concepts/tools",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Flows",
+            "href": "/docs/concepts/flows",
+            "docId": "concepts/flows",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Patterns",
+            "href": "/docs/concepts/patterns",
+            "docId": "concepts/patterns",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Memory",
+            "href": "/docs/concepts/memory",
+            "docId": "concepts/memory",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "MCP Integration",
+            "href": "/docs/concepts/mcp-integration",
+            "docId": "concepts/mcp-integration",
+            "unlisted": false
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
+      },
+      {
+        "type": "category",
+        "label": "CLI Reference",
+        "items": [
+          {
+            "type": "link",
+            "label": "CLI Overview",
+            "href": "/docs/cli/overview",
+            "docId": "cli/overview",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Command Reference",
+            "href": "/docs/cli/commands",
+            "docId": "cli/commands",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "tframex basic",
+            "href": "/docs/cli/basic",
+            "docId": "cli/basic",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "tframex setup",
+            "href": "/docs/cli/setup",
+            "docId": "cli/setup",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "tframex serve",
+            "href": "/docs/cli/serve",
+            "docId": "cli/serve",
+            "unlisted": false
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
+      },
+      {
+        "type": "category",
+        "label": "API Reference",
+        "items": [
+          {
+            "type": "link",
+            "label": "API Overview",
+            "href": "/docs/api/overview",
+            "docId": "api/overview",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "TFrameXApp",
+            "href": "/docs/api/tframexapp",
+            "docId": "api/tframexapp",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Agents",
+            "href": "/docs/api/agents",
+            "docId": "api/agents",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Tools",
+            "href": "/docs/api/tools",
+            "docId": "api/tools",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Flows",
+            "href": "/docs/api/flows",
+            "docId": "api/flows",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Patterns",
+            "href": "/docs/api/patterns",
+            "docId": "api/patterns",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "MCP Integration",
+            "href": "/docs/api/mcp",
+            "docId": "api/mcp",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Memory API",
+            "href": "/docs/api/memory",
+            "docId": "api/memory",
+            "unlisted": false
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
+      },
+      {
+        "type": "category",
+        "label": "Enterprise Features",
+        "items": [
+          {
+            "type": "link",
+            "label": "Enterprise Overview",
+            "href": "/docs/enterprise/overview",
+            "docId": "enterprise/overview",
+            "unlisted": false
+          },
+          {
+            "type": "link",
+            "label": "Configuration",
+            "href": "/docs/enterprise/configuration",
+            "docId": "enterprise/configuration",
+            "unlisted": false
+          },
+          {
+            "type": "category",
+            "label": "Security",
+            "items": [
+              {
+                "type": "link",
+                "label": "Security Overview",
+                "href": "/docs/enterprise/security/overview",
+                "docId": "enterprise/security/overview",
+                "unlisted": false
+              },
+              {
+                "type": "link",
+                "label": "Authentication",
+                "href": "/docs/enterprise/security/authentication",
+                "docId": "enterprise/security/authentication",
+                "unlisted": false
+              },
+              {
+                "type": "link",
+                "label": "Authorization (RBAC)",
+                "href": "/docs/enterprise/security/authorization",
+                "docId": "enterprise/security/authorization",
+                "unlisted": false
+              },
+              {
+                "type": "link",
+                "label": "Audit Logging",
+                "href": "/docs/enterprise/security/audit",
+                "docId": "enterprise/security/audit",
+                "unlisted": false
+              },
+              {
+                "type": "link",
+                "label": "Session Management",
+                "href": "/docs/enterprise/security/sessions",
+                "docId": "enterprise/security/sessions",
+                "unlisted": false
+              }
+            ],
+            "collapsed": true,
+            "collapsible": true
+          },
+          {
+            "type": "link",
+            "label": "Metrics & Monitoring",
+            "href": "/docs/enterprise/metrics",
+            "docId": "enterprise/metrics",
+            "unlisted": false
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
+      }
+    ]
+  },
+  "docs": {
+    "api/agents": {
+      "id": "api/agents",
+      "title": "Agents",
+      "description": "Agents are the core autonomous entities in TFrameX that can use tools, maintain conversations, and work together to solve complex tasks. This reference covers all agent types and their APIs.",
+      "sidebar": "tutorialSidebar"
+    },
+    "api/flows": {
+      "id": "api/flows",
+      "title": "Flows",
+      "description": "Flows enable complex multi-agent orchestration by defining how agents work together. This reference covers flow creation, execution, and advanced patterns.",
+      "sidebar": "tutorialSidebar"
+    },
+    "api/mcp": {
+      "id": "api/mcp",
+      "title": "MCP Integration",
+      "description": "The Model Context Protocol (MCP) integration in TFrameX v1.1.0 provides seamless connectivity to external services, tools, and data sources through a standardized protocol.",
+      "sidebar": "tutorialSidebar"
+    },
+    "api/memory": {
+      "id": "api/memory",
+      "title": "Memory API",
+      "description": "TFrameX provides a simple memory system for storing conversation history. The current implementation focuses on basic storage and retrieval functionality.",
+      "sidebar": "tutorialSidebar"
+    },
+    "api/overview": {
+      "id": "api/overview",
+      "title": "API Overview",
+      "description": "TFrameX provides a comprehensive Python API for building sophisticated multi-agent LLM applications. This reference covers all public APIs, their usage patterns, and best practices.",
+      "sidebar": "tutorialSidebar"
+    },
+    "api/patterns": {
+      "id": "api/patterns",
+      "title": "Patterns",
+      "description": "Patterns are reusable multi-agent orchestration templates that implement common collaboration strategies. TFrameX provides four built-in patterns that can be customized and nested for complex workflows.",
+      "sidebar": "tutorialSidebar"
+    },
+    "api/patterns_old": {
+      "id": "api/patterns_old",
+      "title": "Patterns",
+      "description": "Patterns are pre-built, reusable flow templates that implement common multi-agent orchestration strategies. TFrameX provides several built-in patterns that can be customized for your specific use cases."
+    },
+    "api/tframexapp": {
+      "id": "api/tframexapp",
+      "title": "TFrameXApp",
+      "description": "The TFrameXApp class is the central orchestrator of the TFrameX framework. It manages agents, tools, runtime contexts, and provides the main interface for building AI applications.",
+      "sidebar": "tutorialSidebar"
+    },
+    "api/tools": {
+      "id": "api/tools",
+      "title": "Tools",
+      "description": "Tools extend agent capabilities by providing access to external functions, APIs, and services. This reference covers the tool system, creation methods, and best practices.",
+      "sidebar": "tutorialSidebar"
+    },
+    "cli/basic": {
+      "id": "cli/basic",
+      "title": "tframex basic",
+      "description": "The tframex basic command provides an instant interactive AI session with a pre-configured assistant. It's the fastest way to experience TFrameX's capabilities.",
+      "sidebar": "tutorialSidebar"
+    },
+    "cli/commands": {
+      "id": "cli/commands",
+      "title": "Command Reference",
+      "description": "Complete reference for all TFrameX CLI commands and options.",
+      "sidebar": "tutorialSidebar"
+    },
+    "cli/overview": {
+      "id": "cli/overview",
+      "title": "CLI Overview",
+      "description": "The TFrameX CLI provides powerful command-line tools for building, testing, and deploying AI agent applications. With simple commands, you can start interactive sessions, create projects, and launch web interfaces.",
+      "sidebar": "tutorialSidebar"
+    },
+    "cli/serve": {
+      "id": "cli/serve",
+      "title": "tframex serve",
+      "description": "The tframex serve command launches a web interface for your TFrameX agents, providing a browser-based chat experience with REST API endpoints.",
+      "sidebar": "tutorialSidebar"
+    },
+    "cli/setup": {
+      "id": "cli/setup",
+      "title": "tframex setup",
+      "description": "The tframex setup command creates a complete TFrameX project with proper structure, configuration files, and working examples. It's the recommended way to start building production-ready AI applications.",
+      "sidebar": "tutorialSidebar"
+    },
+    "concepts/agents": {
+      "id": "concepts/agents",
+      "title": "Agents",
+      "description": "Agents are the core intelligent actors in TFrameX. They process inputs, make decisions, execute tools, and collaborate with other agents to accomplish complex tasks.",
+      "sidebar": "tutorialSidebar"
+    },
+    "concepts/flows": {
+      "id": "concepts/flows",
+      "title": "Flows",
+      "description": "Flows are TFrameX's way of orchestrating complex, multi-step workflows. They enable you to chain agents, tools, and patterns together to solve sophisticated problems.",
+      "sidebar": "tutorialSidebar"
+    },
+    "concepts/mcp-integration": {
+      "id": "concepts/mcp-integration",
+      "title": "MCP Integration",
+      "description": "Model Context Protocol (MCP) integration enables TFrameX to connect with external services, tools, and resources through a standardized protocol. This allows your agents to access capabilities beyond what's built into your application.",
+      "sidebar": "tutorialSidebar"
+    },
+    "concepts/memory": {
+      "id": "concepts/memory",
+      "title": "Memory",
+      "description": "Memory systems in TFrameX enable agents to maintain conversation context, recall past interactions, and build upon previous knowledge. This is crucial for creating coherent, context-aware AI applications.",
+      "sidebar": "tutorialSidebar"
+    },
+    "concepts/overview": {
+      "id": "concepts/overview",
+      "title": "Overview",
+      "description": "TFrameX is built on a few powerful core concepts that work together to create sophisticated AI applications. Understanding these concepts will help you build better agents and workflows.",
+      "sidebar": "tutorialSidebar"
+    },
+    "concepts/patterns": {
+      "id": "concepts/patterns",
+      "title": "Patterns",
+      "description": "Patterns are reusable workflow templates in TFrameX that solve common multi-agent coordination problems. They provide structured ways for agents to work together effectively.",
+      "sidebar": "tutorialSidebar"
+    },
+    "concepts/tools": {
+      "id": "concepts/tools",
+      "title": "Tools",
+      "description": "Tools are the bridge between your AI agents and the real world. They enable agents to perform actions, retrieve information, and interact with external systems.",
+      "sidebar": "tutorialSidebar"
+    },
+    "enterprise/configuration": {
+      "id": "enterprise/configuration",
+      "title": "Configuration",
+      "description": "This guide covers configuring TFrameX Enterprise features including security, metrics, storage, and other production settings.",
+      "sidebar": "tutorialSidebar"
+    },
+    "enterprise/metrics": {
+      "id": "enterprise/metrics",
+      "title": "Metrics & Monitoring",
+      "description": "TFrameX Enterprise provides basic metrics collection for monitoring application performance and usage through Prometheus integration.",
+      "sidebar": "tutorialSidebar"
+    },
+    "enterprise/overview": {
+      "id": "enterprise/overview",
+      "title": "Enterprise Overview",
+      "description": "TFrameX Enterprise provides production-ready features for deploying AI agent systems with persistent storage, basic monitoring, and security foundations.",
+      "sidebar": "tutorialSidebar"
+    },
+    "enterprise/security/audit": {
+      "id": "enterprise/security/audit",
+      "title": "Audit Logging",
+      "description": "TFrameX Enterprise provides comprehensive audit logging for compliance, security monitoring, and forensic analysis. Every significant action is logged with full context and tamper-proof storage.",
+      "sidebar": "tutorialSidebar"
+    },
+    "enterprise/security/authentication": {
+      "id": "enterprise/security/authentication",
+      "title": "Authentication",
+      "description": "TFrameX Enterprise supports multiple authentication providers to integrate with your existing security infrastructure.",
+      "sidebar": "tutorialSidebar"
+    },
+    "enterprise/security/authorization": {
+      "id": "enterprise/security/authorization",
+      "title": "Authorization (RBAC)",
+      "description": "TFrameX Enterprise implements a comprehensive Role-Based Access Control (RBAC) system with hierarchical roles, fine-grained permissions, and dynamic policies.",
+      "sidebar": "tutorialSidebar"
+    },
+    "enterprise/security/overview": {
+      "id": "enterprise/security/overview",
+      "title": "Security Overview",
+      "description": "TFrameX Enterprise provides comprehensive security features to protect your AI agent deployments, ensure compliance, and maintain audit trails.",
+      "sidebar": "tutorialSidebar"
+    },
+    "enterprise/security/sessions": {
+      "id": "enterprise/security/sessions",
+      "title": "Session Management",
+      "description": "TFrameX Enterprise provides secure session management with support for multiple backends, concurrent session control, and advanced security features.",
+      "sidebar": "tutorialSidebar"
+    },
+    "first-agent": {
+      "id": "first-agent",
+      "title": "Your First Agent",
+      "description": "This tutorial will guide you through building a complete AI agent from scratch, teaching you the core concepts of TFrameX along the way.",
+      "sidebar": "tutorialSidebar"
+    },
+    "installation": {
+      "id": "installation",
+      "title": "Installation",
+      "description": "This guide covers all the ways to install and set up TFrameX for your projects.",
+      "sidebar": "tutorialSidebar"
+    },
+    "intro": {
+      "id": "intro",
+      "title": "Introduction",
+      "description": "TFrameX is a production-ready Python framework for building sophisticated multi-agent LLM applications. Move beyond simple prompt-response interactions and construct complex, dynamic workflows where intelligent agents collaborate, use tools, and adapt to intricate tasks.",
+      "sidebar": "tutorialSidebar"
+    },
+    "quickstart": {
+      "id": "quickstart",
+      "title": "Quickstart",
+      "description": "Get up and running with TFrameX in 5 minutes! This guide will walk you through creating your first AI agent application.",
+      "sidebar": "tutorialSidebar"
+    }
+  }
+}

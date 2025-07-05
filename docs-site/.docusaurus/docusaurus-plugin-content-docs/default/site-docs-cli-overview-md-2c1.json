@@ -1,0 +1,28 @@
+{
+  "id": "cli/overview",
+  "title": "CLI Overview",
+  "description": "The TFrameX CLI provides powerful command-line tools for building, testing, and deploying AI agent applications. With simple commands, you can start interactive sessions, create projects, and launch web interfaces.",
+  "source": "@site/docs/cli/overview.md",
+  "sourceDirName": "cli",
+  "slug": "/cli/overview",
+  "permalink": "/docs/cli/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "CLI Overview"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "MCP Integration",
+    "permalink": "/docs/concepts/mcp-integration"
+  },
+  "next": {
+    "title": "Command Reference",
+    "permalink": "/docs/cli/commands"
+  }
+}

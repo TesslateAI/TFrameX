@@ -1,0 +1,28 @@
+{
+  "id": "cli/commands",
+  "title": "Command Reference",
+  "description": "Complete reference for all TFrameX CLI commands and options.",
+  "source": "@site/docs/cli/commands.md",
+  "sourceDirName": "cli",
+  "slug": "/cli/commands",
+  "permalink": "/docs/cli/commands",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/commands.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "title": "Command Reference"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "CLI Overview",
+    "permalink": "/docs/cli/overview"
+  },
+  "next": {
+    "title": "tframex basic",
+    "permalink": "/docs/cli/basic"
+  }
+}

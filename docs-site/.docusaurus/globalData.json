@@ -1,0 +1,192 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs",
+          "mainDocId": "intro",
+          "docs": [
+            {
+              "id": "api/agents",
+              "path": "/docs/api/agents",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/flows",
+              "path": "/docs/api/flows",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/mcp",
+              "path": "/docs/api/mcp",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/memory",
+              "path": "/docs/api/memory",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/overview",
+              "path": "/docs/api/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/patterns",
+              "path": "/docs/api/patterns",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/patterns_old",
+              "path": "/docs/api/patterns_old"
+            },
+            {
+              "id": "api/tframexapp",
+              "path": "/docs/api/tframexapp",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/tools",
+              "path": "/docs/api/tools",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/basic",
+              "path": "/docs/cli/basic",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/commands",
+              "path": "/docs/cli/commands",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/overview",
+              "path": "/docs/cli/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/serve",
+              "path": "/docs/cli/serve",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/setup",
+              "path": "/docs/cli/setup",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "concepts/agents",
+              "path": "/docs/concepts/agents",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "concepts/flows",
+              "path": "/docs/concepts/flows",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "concepts/mcp-integration",
+              "path": "/docs/concepts/mcp-integration",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "concepts/memory",
+              "path": "/docs/concepts/memory",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "concepts/overview",
+              "path": "/docs/concepts/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "concepts/patterns",
+              "path": "/docs/concepts/patterns",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "concepts/tools",
+              "path": "/docs/concepts/tools",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "enterprise/configuration",
+              "path": "/docs/enterprise/configuration",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "enterprise/metrics",
+              "path": "/docs/enterprise/metrics",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "enterprise/overview",
+              "path": "/docs/enterprise/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "enterprise/security/audit",
+              "path": "/docs/enterprise/security/audit",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "enterprise/security/authentication",
+              "path": "/docs/enterprise/security/authentication",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "enterprise/security/authorization",
+              "path": "/docs/enterprise/security/authorization",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "enterprise/security/overview",
+              "path": "/docs/enterprise/security/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "enterprise/security/sessions",
+              "path": "/docs/enterprise/security/sessions",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "first-agent",
+              "path": "/docs/first-agent",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "installation",
+              "path": "/docs/installation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "intro",
+              "path": "/docs/intro",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "quickstart",
+              "path": "/docs/quickstart",
+              "sidebar": "tutorialSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/docs/intro",
+                "label": "Introduction"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}
