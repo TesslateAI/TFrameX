@@ -1,0 +1,19 @@
+{
+  "id": "api/patterns_old",
+  "title": "Patterns",
+  "description": "Patterns are pre-built, reusable flow templates that implement common multi-agent orchestration strategies. TFrameX provides several built-in patterns that can be customized for your specific use cases.",
+  "source": "@site/docs/api/patterns_old.md",
+  "sourceDirName": "api",
+  "slug": "/api/patterns_old",
+  "permalink": "/docs/api/patterns_old",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/patterns_old.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "sidebar_position": 6,
+    "title": "Patterns"
+  }
+}

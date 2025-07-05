@@ -1,0 +1,28 @@
+{
+  "id": "enterprise/overview",
+  "title": "Enterprise Overview",
+  "description": "TFrameX Enterprise provides production-ready features for deploying AI agent systems with persistent storage, basic monitoring, and security foundations.",
+  "source": "@site/docs/enterprise/overview.md",
+  "sourceDirName": "enterprise",
+  "slug": "/enterprise/overview",
+  "permalink": "/docs/enterprise/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Enterprise Overview"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Memory API",
+    "permalink": "/docs/api/memory"
+  },
+  "next": {
+    "title": "Configuration",
+    "permalink": "/docs/enterprise/configuration"
+  }
+}

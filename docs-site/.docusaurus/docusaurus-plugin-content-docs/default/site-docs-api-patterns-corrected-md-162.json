@@ -1,0 +1,19 @@
+{
+  "id": "api/patterns_corrected",
+  "title": "Patterns",
+  "description": "Patterns are reusable multi-agent orchestration templates that implement common collaboration strategies. TFrameX provides four built-in patterns that can be customized and nested for complex workflows.",
+  "source": "@site/docs/api/patterns_corrected.md",
+  "sourceDirName": "api",
+  "slug": "/api/patterns_corrected",
+  "permalink": "/docs/api/patterns_corrected",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/patterns_corrected.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "sidebar_position": 6,
+    "title": "Patterns"
+  }
+}

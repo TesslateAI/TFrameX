@@ -1,0 +1,218 @@
+# TFrameX Enterprise Configuration Example
+# This file demonstrates comprehensive enterprise configuration options
+
+# Core enterprise settings
+enabled: true
+environment: development  # Options: development, staging, production
+debug: true  # Set to false in production
+
+# Storage backend configurations
+storage:
+  # SQLite storage (default for development)
+  sqlite:
+    type: sqlite
+    enabled: true
+    config:
+      database_path: "data/tframex_enterprise.db"
+      pool_size: 10
+      create_tables: true
+      wal_mode: true
+      foreign_keys: true
+  
+  # PostgreSQL storage (recommended for production)
+  postgresql:
+    type: postgresql
+    enabled: false  # Enable for production
+    config:
+      host: "localhost"
+      port: 5432
+      database: "tframex_enterprise"
+      username: "tframex"
+      password: "changeme"  # Use environment variables in production
+      pool_size: 20
+      pool_max_size: 50
+      ssl_mode: "prefer"
+      command_timeout: 60
+      create_tables: true
+
+# Default storage backend to use
+default_storage: sqlite
+
+# Metrics collection configuration
+metrics:
+  enabled: true
+  collection_interval: 60  # seconds
+  buffer_size: 1000
+  
+  # Default labels added to all metrics
+  default_labels:
+    service: "tframex"
+    environment: "development"
+    version: "1.0.0"
+  
+  # Metrics backends
+  backends:
+    # Prometheus metrics
+    prometheus:
+      type: prometheus
+      enabled: true
+      port: 8090
+      host: "0.0.0.0"
+      registry_name: "tframex_registry"
+    
+    # StatsD metrics
+    statsd:
+      type: statsd
+      enabled: false
+      host: "localhost"
+      port: 8125
+      prefix: "tframex"
+      tags_format: "datadog"  # Options: datadog, influxdb, telegraf
+    
+    # OpenTelemetry metrics
+    opentelemetry:
+      type: opentelemetry
+      enabled: false
+      endpoint: "http://localhost:4317"
+      service_name: "tframex"
+      service_version: "1.0.0"
+      environment: "development"
+      enable_tracing: true
+      enable_auto_instrumentation: true
+    
+    # Custom logging metrics backend
+    custom_logging:
+      type: custom
+      enabled: true
+      backend_class: "tframex.enterprise.metrics.custom.LoggingMetricsBackend"
+      backend_config:
+        log_level: "INFO"
+        log_file: "logs/metrics.log"
+
+# Security configuration
+security:
+  # Authentication settings
+  authentication:
+    enabled: true
+    header_name: "Authorization"
+    cookie_name: "auth_token"
+    
+    # Paths that don't require authentication
+    optional_paths:
+      - "/health"
+      - "/metrics"
+      - "/docs"
+      - "/api/docs"
+    
+    # Authentication providers
+    providers:
+      # API Key authentication
+      api_key:
+        type: api_key
+        enabled: true
+        header_name: "X-API-Key"
+        key_length: 32
+        hash_algorithm: "sha256"
+      
+      # Basic HTTP authentication
+      basic:
+        type: basic
+        enabled: true
+        password_salt: "tframex_secure_salt_change_in_production"
+        iterations: 100000
+      
+      # JWT authentication
+      jwt:
+        type: jwt
+        enabled: true
+        secret_key: "change-this-secret-key-in-production"  # MUST change in production
+        algorithm: "HS256"
+        expiration: 3600  # 1 hour
+        issuer: "tframex"
+        audience: "tframex-api"
+      
+      # OAuth2 authentication (example for Google)
+      oauth2_google:
+        type: oauth2
+        enabled: false
+        client_id: "your-google-client-id"
+        client_secret: "your-google-client-secret"
+        issuer: "https://accounts.google.com"
+        scopes: ["openid", "profile", "email"]
+        redirect_uri: "https://your-app.com/auth/callback"
+  
+  # Authorization (RBAC) settings
+  authorization:
+    enabled: true
+    default_role: "user"
+    enable_inheritance: true
+    enable_policies: true
+    cache_ttl: 300  # 5 minutes
+    
+    # Paths that don't require authorization
+    public_paths:
+      - "/health"
+      - "/metrics"
+      - "/auth/login"
+      - "/auth/callback"
+  
+  # Session management
+  session:
+    enabled: true
+    session_timeout: 3600  # 1 hour
+    max_sessions_per_user: 5
+    cleanup_interval: 300  # 5 minutes
+    session_id_length: 64
+    enable_rotation: true
+    store_type: "database"  # Options: database, memory
+  
+  # Audit logging
+  audit:
+    enabled: true
+    buffer_size: 100
+    flush_interval: 30  # seconds
+    retention_days: 365
+    compliance_mode: false  # Enable in production for enhanced compliance
+    
+    # Event logging settings
+    log_requests: true
+    log_responses: false  # Enable carefully in production
+    include_request_body: false
+    include_response_body: false
+    
+    # Events to exclude from logging
+    excluded_events: []
+    
+    # User IDs to exclude from logging (e.g., system users)
+    excluded_users: []
+    
+    # Paths to exclude from audit logging
+    excluded_paths:
+      - "/health"
+      - "/metrics"
+
+# Integration settings
+integration:
+  # Webhooks for external integrations
+  webhooks:
+    enabled: false
+    endpoints:
+      security_alerts: "https://your-webhook-url.com/security"
+      metrics_alerts: "https://your-webhook-url.com/metrics"
+  
+  # External service integrations
+  external_services:
+    # Slack notifications
+    slack:
+      enabled: false
+      webhook_url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+      channel: "#tframex-alerts"
+    
+    # Email notifications
+    email:
+      enabled: false
+      smtp_host: "localhost"
+      smtp_port: 587
+      smtp_username: "notifications@yourcompany.com"
+      smtp_password: "changeme"
+      from_address: "TFrameX <notifications@yourcompany.com>"

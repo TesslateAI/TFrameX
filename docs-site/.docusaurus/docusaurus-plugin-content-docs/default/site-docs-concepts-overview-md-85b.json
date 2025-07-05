@@ -1,0 +1,28 @@
+{
+  "id": "concepts/overview",
+  "title": "Overview",
+  "description": "TFrameX is built on a few powerful core concepts that work together to create sophisticated AI applications. Understanding these concepts will help you build better agents and workflows.",
+  "source": "@site/docs/concepts/overview.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/overview",
+  "permalink": "/docs/concepts/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "Overview"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Your First Agent",
+    "permalink": "/docs/first-agent"
+  },
+  "next": {
+    "title": "Agents",
+    "permalink": "/docs/concepts/agents"
+  }
+}

@@ -1,0 +1,1141 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "loadedVersions": [
+        {
+          "versionName": "current",
+          "label": "Next",
+          "banner": null,
+          "badge": false,
+          "noIndex": false,
+          "className": "docs-version-current",
+          "path": "/docs",
+          "tagsPath": "/docs/tags",
+          "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs",
+          "editUrlLocalized": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/i18n/en/docusaurus-plugin-content-docs/current",
+          "isLast": true,
+          "routePriority": -1,
+          "sidebarFilePath": "/home/smirk/TFrameX/docs-site/sidebars.js",
+          "contentPath": "/home/smirk/TFrameX/docs-site/docs",
+          "contentPathLocalized": "/home/smirk/TFrameX/docs-site/i18n/en/docusaurus-plugin-content-docs/current",
+          "docs": [
+            {
+              "id": "api/agents",
+              "title": "Agents",
+              "description": "Agents are the core autonomous entities in TFrameX that can use tools, maintain conversations, and work together to solve complex tasks. This reference covers all agent types and their APIs.",
+              "source": "@site/docs/api/agents.md",
+              "sourceDirName": "api",
+              "slug": "/api/agents",
+              "permalink": "/docs/api/agents",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/agents.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "Agents"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "TFrameXApp",
+                "permalink": "/docs/api/tframexapp"
+              },
+              "next": {
+                "title": "Tools",
+                "permalink": "/docs/api/tools"
+              }
+            },
+            {
+              "id": "api/flows",
+              "title": "Flows",
+              "description": "Flows enable complex multi-agent orchestration by defining how agents work together. This reference covers flow creation, execution, and advanced patterns.",
+              "source": "@site/docs/api/flows.md",
+              "sourceDirName": "api",
+              "slug": "/api/flows",
+              "permalink": "/docs/api/flows",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/flows.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "sidebar_position": 5,
+                "title": "Flows"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Tools",
+                "permalink": "/docs/api/tools"
+              },
+              "next": {
+                "title": "Patterns",
+                "permalink": "/docs/api/patterns"
+              }
+            },
+            {
+              "id": "api/mcp",
+              "title": "MCP Integration",
+              "description": "The Model Context Protocol (MCP) integration in TFrameX v1.1.0 provides seamless connectivity to external services, tools, and data sources through a standardized protocol.",
+              "source": "@site/docs/api/mcp.md",
+              "sourceDirName": "api",
+              "slug": "/api/mcp",
+              "permalink": "/docs/api/mcp",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/mcp.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 7,
+              "frontMatter": {
+                "sidebar_position": 7,
+                "title": "MCP Integration"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Patterns",
+                "permalink": "/docs/api/patterns"
+              },
+              "next": {
+                "title": "Memory API",
+                "permalink": "/docs/api/memory"
+              }
+            },
+            {
+              "id": "api/memory",
+              "title": "Memory API",
+              "description": "TFrameX provides a simple memory system for storing conversation history. The current implementation focuses on basic storage and retrieval functionality.",
+              "source": "@site/docs/api/memory.md",
+              "sourceDirName": "api",
+              "slug": "/api/memory",
+              "permalink": "/docs/api/memory",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/memory.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "Memory API"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "MCP Integration",
+                "permalink": "/docs/api/mcp"
+              },
+              "next": {
+                "title": "Enterprise Overview",
+                "permalink": "/docs/enterprise/overview"
+              }
+            },
+            {
+              "id": "api/overview",
+              "title": "API Overview",
+              "description": "TFrameX provides a comprehensive Python API for building sophisticated multi-agent LLM applications. This reference covers all public APIs, their usage patterns, and best practices.",
+              "source": "@site/docs/api/overview.md",
+              "sourceDirName": "api",
+              "slug": "/api/overview",
+              "permalink": "/docs/api/overview",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/overview.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "API Overview"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "tframex serve",
+                "permalink": "/docs/cli/serve"
+              },
+              "next": {
+                "title": "TFrameXApp",
+                "permalink": "/docs/api/tframexapp"
+              }
+            },
+            {
+              "id": "api/patterns",
+              "title": "Patterns",
+              "description": "Patterns are reusable multi-agent orchestration templates that implement common collaboration strategies. TFrameX provides four built-in patterns that can be customized and nested for complex workflows.",
+              "source": "@site/docs/api/patterns.md",
+              "sourceDirName": "api",
+              "slug": "/api/patterns",
+              "permalink": "/docs/api/patterns",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/patterns.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 6,
+              "frontMatter": {
+                "sidebar_position": 6,
+                "title": "Patterns"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Flows",
+                "permalink": "/docs/api/flows"
+              },
+              "next": {
+                "title": "MCP Integration",
+                "permalink": "/docs/api/mcp"
+              }
+            },
+            {
+              "id": "api/patterns_old",
+              "title": "Patterns",
+              "description": "Patterns are pre-built, reusable flow templates that implement common multi-agent orchestration strategies. TFrameX provides several built-in patterns that can be customized for your specific use cases.",
+              "source": "@site/docs/api/patterns_old.md",
+              "sourceDirName": "api",
+              "slug": "/api/patterns_old",
+              "permalink": "/docs/api/patterns_old",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/patterns_old.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 6,
+              "frontMatter": {
+                "sidebar_position": 6,
+                "title": "Patterns"
+              }
+            },
+            {
+              "id": "api/tframexapp",
+              "title": "TFrameXApp",
+              "description": "The TFrameXApp class is the central orchestrator of the TFrameX framework. It manages agents, tools, runtime contexts, and provides the main interface for building AI applications.",
+              "source": "@site/docs/api/tframexapp.md",
+              "sourceDirName": "api",
+              "slug": "/api/tframexapp",
+              "permalink": "/docs/api/tframexapp",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/tframexapp.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "TFrameXApp"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "API Overview",
+                "permalink": "/docs/api/overview"
+              },
+              "next": {
+                "title": "Agents",
+                "permalink": "/docs/api/agents"
+              }
+            },
+            {
+              "id": "api/tools",
+              "title": "Tools",
+              "description": "Tools extend agent capabilities by providing access to external functions, APIs, and services. This reference covers the tool system, creation methods, and best practices.",
+              "source": "@site/docs/api/tools.md",
+              "sourceDirName": "api",
+              "slug": "/api/tools",
+              "permalink": "/docs/api/tools",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/tools.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "Tools"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Agents",
+                "permalink": "/docs/api/agents"
+              },
+              "next": {
+                "title": "Flows",
+                "permalink": "/docs/api/flows"
+              }
+            },
+            {
+              "id": "cli/basic",
+              "title": "tframex basic",
+              "description": "The tframex basic command provides an instant interactive AI session with a pre-configured assistant. It's the fastest way to experience TFrameX's capabilities.",
+              "source": "@site/docs/cli/basic.md",
+              "sourceDirName": "cli",
+              "slug": "/cli/basic",
+              "permalink": "/docs/cli/basic",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/basic.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "tframex basic"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Command Reference",
+                "permalink": "/docs/cli/commands"
+              },
+              "next": {
+                "title": "tframex setup",
+                "permalink": "/docs/cli/setup"
+              }
+            },
+            {
+              "id": "cli/commands",
+              "title": "Command Reference",
+              "description": "Complete reference for all TFrameX CLI commands and options.",
+              "source": "@site/docs/cli/commands.md",
+              "sourceDirName": "cli",
+              "slug": "/cli/commands",
+              "permalink": "/docs/cli/commands",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/commands.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "Command Reference"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "CLI Overview",
+                "permalink": "/docs/cli/overview"
+              },
+              "next": {
+                "title": "tframex basic",
+                "permalink": "/docs/cli/basic"
+              }
+            },
+            {
+              "id": "cli/overview",
+              "title": "CLI Overview",
+              "description": "The TFrameX CLI provides powerful command-line tools for building, testing, and deploying AI agent applications. With simple commands, you can start interactive sessions, create projects, and launch web interfaces.",
+              "source": "@site/docs/cli/overview.md",
+              "sourceDirName": "cli",
+              "slug": "/cli/overview",
+              "permalink": "/docs/cli/overview",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/overview.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "CLI Overview"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "MCP Integration",
+                "permalink": "/docs/concepts/mcp-integration"
+              },
+              "next": {
+                "title": "Command Reference",
+                "permalink": "/docs/cli/commands"
+              }
+            },
+            {
+              "id": "cli/serve",
+              "title": "tframex serve",
+              "description": "The tframex serve command launches a web interface for your TFrameX agents, providing a browser-based chat experience with REST API endpoints.",
+              "source": "@site/docs/cli/serve.md",
+              "sourceDirName": "cli",
+              "slug": "/cli/serve",
+              "permalink": "/docs/cli/serve",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/serve.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "sidebar_position": 5,
+                "title": "tframex serve"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "tframex setup",
+                "permalink": "/docs/cli/setup"
+              },
+              "next": {
+                "title": "API Overview",
+                "permalink": "/docs/api/overview"
+              }
+            },
+            {
+              "id": "cli/setup",
+              "title": "tframex setup",
+              "description": "The tframex setup command creates a complete TFrameX project with proper structure, configuration files, and working examples. It's the recommended way to start building production-ready AI applications.",
+              "source": "@site/docs/cli/setup.md",
+              "sourceDirName": "cli",
+              "slug": "/cli/setup",
+              "permalink": "/docs/cli/setup",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/setup.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "tframex setup"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "tframex basic",
+                "permalink": "/docs/cli/basic"
+              },
+              "next": {
+                "title": "tframex serve",
+                "permalink": "/docs/cli/serve"
+              }
+            },
+            {
+              "id": "concepts/agents",
+              "title": "Agents",
+              "description": "Agents are the core intelligent actors in TFrameX. They process inputs, make decisions, execute tools, and collaborate with other agents to accomplish complex tasks.",
+              "source": "@site/docs/concepts/agents.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/agents",
+              "permalink": "/docs/concepts/agents",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/agents.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "Agents"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Overview",
+                "permalink": "/docs/concepts/overview"
+              },
+              "next": {
+                "title": "Tools",
+                "permalink": "/docs/concepts/tools"
+              }
+            },
+            {
+              "id": "concepts/flows",
+              "title": "Flows",
+              "description": "Flows are TFrameX's way of orchestrating complex, multi-step workflows. They enable you to chain agents, tools, and patterns together to solve sophisticated problems.",
+              "source": "@site/docs/concepts/flows.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/flows",
+              "permalink": "/docs/concepts/flows",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/flows.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "Flows"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Tools",
+                "permalink": "/docs/concepts/tools"
+              },
+              "next": {
+                "title": "Patterns",
+                "permalink": "/docs/concepts/patterns"
+              }
+            },
+            {
+              "id": "concepts/mcp-integration",
+              "title": "MCP Integration",
+              "description": "Model Context Protocol (MCP) integration enables TFrameX to connect with external services, tools, and resources through a standardized protocol. This allows your agents to access capabilities beyond what's built into your application.",
+              "source": "@site/docs/concepts/mcp-integration.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/mcp-integration",
+              "permalink": "/docs/concepts/mcp-integration",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/mcp-integration.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 7,
+              "frontMatter": {
+                "sidebar_position": 7,
+                "title": "MCP Integration"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Memory",
+                "permalink": "/docs/concepts/memory"
+              },
+              "next": {
+                "title": "CLI Overview",
+                "permalink": "/docs/cli/overview"
+              }
+            },
+            {
+              "id": "concepts/memory",
+              "title": "Memory",
+              "description": "Memory systems in TFrameX enable agents to maintain conversation context, recall past interactions, and build upon previous knowledge. This is crucial for creating coherent, context-aware AI applications.",
+              "source": "@site/docs/concepts/memory.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/memory",
+              "permalink": "/docs/concepts/memory",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/memory.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 6,
+              "frontMatter": {
+                "sidebar_position": 6,
+                "title": "Memory"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Patterns",
+                "permalink": "/docs/concepts/patterns"
+              },
+              "next": {
+                "title": "MCP Integration",
+                "permalink": "/docs/concepts/mcp-integration"
+              }
+            },
+            {
+              "id": "concepts/overview",
+              "title": "Overview",
+              "description": "TFrameX is built on a few powerful core concepts that work together to create sophisticated AI applications. Understanding these concepts will help you build better agents and workflows.",
+              "source": "@site/docs/concepts/overview.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/overview",
+              "permalink": "/docs/concepts/overview",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/overview.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "Overview"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Your First Agent",
+                "permalink": "/docs/first-agent"
+              },
+              "next": {
+                "title": "Agents",
+                "permalink": "/docs/concepts/agents"
+              }
+            },
+            {
+              "id": "concepts/patterns",
+              "title": "Patterns",
+              "description": "Patterns are reusable workflow templates in TFrameX that solve common multi-agent coordination problems. They provide structured ways for agents to work together effectively.",
+              "source": "@site/docs/concepts/patterns.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/patterns",
+              "permalink": "/docs/concepts/patterns",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/patterns.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "sidebar_position": 5,
+                "title": "Patterns"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Flows",
+                "permalink": "/docs/concepts/flows"
+              },
+              "next": {
+                "title": "Memory",
+                "permalink": "/docs/concepts/memory"
+              }
+            },
+            {
+              "id": "concepts/tools",
+              "title": "Tools",
+              "description": "Tools are the bridge between your AI agents and the real world. They enable agents to perform actions, retrieve information, and interact with external systems.",
+              "source": "@site/docs/concepts/tools.md",
+              "sourceDirName": "concepts",
+              "slug": "/concepts/tools",
+              "permalink": "/docs/concepts/tools",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/tools.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "Tools"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Agents",
+                "permalink": "/docs/concepts/agents"
+              },
+              "next": {
+                "title": "Flows",
+                "permalink": "/docs/concepts/flows"
+              }
+            },
+            {
+              "id": "enterprise/configuration",
+              "title": "Configuration",
+              "description": "This guide covers configuring TFrameX Enterprise features including security, metrics, storage, and other production settings.",
+              "source": "@site/docs/enterprise/configuration.md",
+              "sourceDirName": "enterprise",
+              "slug": "/enterprise/configuration",
+              "permalink": "/docs/enterprise/configuration",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/configuration.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "Configuration"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Enterprise Overview",
+                "permalink": "/docs/enterprise/overview"
+              },
+              "next": {
+                "title": "Security Overview",
+                "permalink": "/docs/enterprise/security/overview"
+              }
+            },
+            {
+              "id": "enterprise/metrics",
+              "title": "Metrics & Monitoring",
+              "description": "TFrameX Enterprise provides basic metrics collection for monitoring application performance and usage through Prometheus integration.",
+              "source": "@site/docs/enterprise/metrics.md",
+              "sourceDirName": "enterprise",
+              "slug": "/enterprise/metrics",
+              "permalink": "/docs/enterprise/metrics",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/metrics.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "Metrics & Monitoring"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Session Management",
+                "permalink": "/docs/enterprise/security/sessions"
+              }
+            },
+            {
+              "id": "enterprise/overview",
+              "title": "Enterprise Overview",
+              "description": "TFrameX Enterprise provides production-ready features for deploying AI agent systems with persistent storage, basic monitoring, and security foundations.",
+              "source": "@site/docs/enterprise/overview.md",
+              "sourceDirName": "enterprise",
+              "slug": "/enterprise/overview",
+              "permalink": "/docs/enterprise/overview",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/overview.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "Enterprise Overview"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Memory API",
+                "permalink": "/docs/api/memory"
+              },
+              "next": {
+                "title": "Configuration",
+                "permalink": "/docs/enterprise/configuration"
+              }
+            },
+            {
+              "id": "enterprise/security/audit",
+              "title": "Audit Logging",
+              "description": "TFrameX Enterprise provides comprehensive audit logging for compliance, security monitoring, and forensic analysis. Every significant action is logged with full context and tamper-proof storage.",
+              "source": "@site/docs/enterprise/security/audit.md",
+              "sourceDirName": "enterprise/security",
+              "slug": "/enterprise/security/audit",
+              "permalink": "/docs/enterprise/security/audit",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/audit.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "Audit Logging"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Authorization (RBAC)",
+                "permalink": "/docs/enterprise/security/authorization"
+              },
+              "next": {
+                "title": "Session Management",
+                "permalink": "/docs/enterprise/security/sessions"
+              }
+            },
+            {
+              "id": "enterprise/security/authentication",
+              "title": "Authentication",
+              "description": "TFrameX Enterprise supports multiple authentication providers to integrate with your existing security infrastructure.",
+              "source": "@site/docs/enterprise/security/authentication.md",
+              "sourceDirName": "enterprise/security",
+              "slug": "/enterprise/security/authentication",
+              "permalink": "/docs/enterprise/security/authentication",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/authentication.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "Authentication"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Security Overview",
+                "permalink": "/docs/enterprise/security/overview"
+              },
+              "next": {
+                "title": "Authorization (RBAC)",
+                "permalink": "/docs/enterprise/security/authorization"
+              }
+            },
+            {
+              "id": "enterprise/security/authorization",
+              "title": "Authorization (RBAC)",
+              "description": "TFrameX Enterprise implements a comprehensive Role-Based Access Control (RBAC) system with hierarchical roles, fine-grained permissions, and dynamic policies.",
+              "source": "@site/docs/enterprise/security/authorization.md",
+              "sourceDirName": "enterprise/security",
+              "slug": "/enterprise/security/authorization",
+              "permalink": "/docs/enterprise/security/authorization",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/authorization.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "Authorization (RBAC)"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Authentication",
+                "permalink": "/docs/enterprise/security/authentication"
+              },
+              "next": {
+                "title": "Audit Logging",
+                "permalink": "/docs/enterprise/security/audit"
+              }
+            },
+            {
+              "id": "enterprise/security/overview",
+              "title": "Security Overview",
+              "description": "TFrameX Enterprise provides comprehensive security features to protect your AI agent deployments, ensure compliance, and maintain audit trails.",
+              "source": "@site/docs/enterprise/security/overview.md",
+              "sourceDirName": "enterprise/security",
+              "slug": "/enterprise/security/overview",
+              "permalink": "/docs/enterprise/security/overview",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/overview.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "Security Overview"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Configuration",
+                "permalink": "/docs/enterprise/configuration"
+              },
+              "next": {
+                "title": "Authentication",
+                "permalink": "/docs/enterprise/security/authentication"
+              }
+            },
+            {
+              "id": "enterprise/security/sessions",
+              "title": "Session Management",
+              "description": "TFrameX Enterprise provides secure session management with support for multiple backends, concurrent session control, and advanced security features.",
+              "source": "@site/docs/enterprise/security/sessions.md",
+              "sourceDirName": "enterprise/security",
+              "slug": "/enterprise/security/sessions",
+              "permalink": "/docs/enterprise/security/sessions",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/sessions.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 5,
+              "frontMatter": {
+                "sidebar_position": 5,
+                "title": "Session Management"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Audit Logging",
+                "permalink": "/docs/enterprise/security/audit"
+              },
+              "next": {
+                "title": "Metrics & Monitoring",
+                "permalink": "/docs/enterprise/metrics"
+              }
+            },
+            {
+              "id": "first-agent",
+              "title": "Your First Agent",
+              "description": "This tutorial will guide you through building a complete AI agent from scratch, teaching you the core concepts of TFrameX along the way.",
+              "source": "@site/docs/first-agent.md",
+              "sourceDirName": ".",
+              "slug": "/first-agent",
+              "permalink": "/docs/first-agent",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/first-agent.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 4,
+              "frontMatter": {
+                "sidebar_position": 4,
+                "title": "Your First Agent"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Quickstart",
+                "permalink": "/docs/quickstart"
+              },
+              "next": {
+                "title": "Overview",
+                "permalink": "/docs/concepts/overview"
+              }
+            },
+            {
+              "id": "installation",
+              "title": "Installation",
+              "description": "This guide covers all the ways to install and set up TFrameX for your projects.",
+              "source": "@site/docs/installation.md",
+              "sourceDirName": ".",
+              "slug": "/installation",
+              "permalink": "/docs/installation",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/installation.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 2,
+              "frontMatter": {
+                "sidebar_position": 2,
+                "title": "Installation"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Introduction",
+                "permalink": "/docs/intro"
+              },
+              "next": {
+                "title": "Quickstart",
+                "permalink": "/docs/quickstart"
+              }
+            },
+            {
+              "id": "intro",
+              "title": "Introduction",
+              "description": "TFrameX is a production-ready Python framework for building sophisticated multi-agent LLM applications. Move beyond simple prompt-response interactions and construct complex, dynamic workflows where intelligent agents collaborate, use tools, and adapt to intricate tasks.",
+              "source": "@site/docs/intro.md",
+              "sourceDirName": ".",
+              "slug": "/intro",
+              "permalink": "/docs/intro",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/intro.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 1,
+              "frontMatter": {
+                "sidebar_position": 1,
+                "title": "Introduction"
+              },
+              "sidebar": "tutorialSidebar",
+              "next": {
+                "title": "Installation",
+                "permalink": "/docs/installation"
+              }
+            },
+            {
+              "id": "quickstart",
+              "title": "Quickstart",
+              "description": "Get up and running with TFrameX in 5 minutes! This guide will walk you through creating your first AI agent application.",
+              "source": "@site/docs/quickstart.md",
+              "sourceDirName": ".",
+              "slug": "/quickstart",
+              "permalink": "/docs/quickstart",
+              "draft": false,
+              "unlisted": false,
+              "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/quickstart.md",
+              "tags": [],
+              "version": "current",
+              "sidebarPosition": 3,
+              "frontMatter": {
+                "sidebar_position": 3,
+                "title": "Quickstart"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Installation",
+                "permalink": "/docs/installation"
+              },
+              "next": {
+                "title": "Your First Agent",
+                "permalink": "/docs/first-agent"
+              }
+            }
+          ],
+          "drafts": [],
+          "sidebars": {
+            "tutorialSidebar": [
+              {
+                "type": "doc",
+                "id": "intro",
+                "label": "Introduction",
+                "translatable": true
+              },
+              {
+                "type": "category",
+                "label": "Getting Started",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "installation"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "quickstart"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "first-agent"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "Core Concepts",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "concepts/overview"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/agents"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/tools"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/flows"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/patterns"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/memory"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "concepts/mcp-integration"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "CLI Reference",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "cli/overview"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "cli/commands"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "cli/basic"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "cli/setup"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "cli/serve"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "API Reference",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "api/overview"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/tframexapp"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/agents"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/tools"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/flows"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/patterns"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/mcp"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "api/memory"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              },
+              {
+                "type": "category",
+                "label": "Enterprise Features",
+                "items": [
+                  {
+                    "type": "doc",
+                    "id": "enterprise/overview"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "enterprise/configuration"
+                  },
+                  {
+                    "type": "category",
+                    "label": "Security",
+                    "items": [
+                      {
+                        "type": "doc",
+                        "id": "enterprise/security/overview"
+                      },
+                      {
+                        "type": "doc",
+                        "id": "enterprise/security/authentication"
+                      },
+                      {
+                        "type": "doc",
+                        "id": "enterprise/security/authorization"
+                      },
+                      {
+                        "type": "doc",
+                        "id": "enterprise/security/audit"
+                      },
+                      {
+                        "type": "doc",
+                        "id": "enterprise/security/sessions"
+                      }
+                    ],
+                    "collapsed": true,
+                    "collapsible": true
+                  },
+                  {
+                    "type": "doc",
+                    "id": "enterprise/metrics"
+                  }
+                ],
+                "collapsed": true,
+                "collapsible": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "docusaurus-plugin-content-blog": {
+    "default": {
+      "blogSidebarTitle": "Recent posts",
+      "blogPosts": [],
+      "blogListPaginated": [],
+      "blogTags": {},
+      "blogTagsListPath": "/blog/tags",
+      "blogTagsPaginated": []
+    }
+  },
+  "docusaurus-plugin-content-pages": {
+    "default": [
+      {
+        "type": "jsx",
+        "permalink": "/",
+        "source": "@site/src/pages/index.js"
+      }
+    ]
+  },
+  "docusaurus-plugin-debug": {},
+  "docusaurus-theme-classic": {},
+  "docusaurus-theme-search-algolia": {},
+  "docusaurus-bootstrap-plugin": {},
+  "docusaurus-mdx-fallback-plugin": {}
+}

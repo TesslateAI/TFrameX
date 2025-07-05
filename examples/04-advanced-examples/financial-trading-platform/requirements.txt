@@ -1,0 +1,28 @@
+# TFrameX Financial Trading Platform - Advanced Example Dependencies
+
+# Core TFrameX framework
+tframex>=0.1.3
+
+# Required for environment configuration
+python-dotenv>=1.0.0
+
+# Optional: Enhanced logging and utilities
+colorama>=0.4.6
+
+# Financial data and analysis
+pandas>=1.5.0
+numpy>=1.24.0
+
+# Optional: Financial data providers (for real implementations)
+# yfinance>=0.2.0  # Yahoo Finance API
+# alpha-vantage>=2.3.0  # Alpha Vantage API
+# requests>=2.28.0  # HTTP API calls
+
+# Optional: Technical analysis
+# TA-Lib>=0.4.0  # Technical Analysis Library
+# matplotlib>=3.6.0  # Plotting and visualization
+# plotly>=5.15.0  # Interactive charts
+
+# Optional: Risk and portfolio optimization
+# scipy>=1.10.0  # Scientific computing
+# cvxpy>=1.3.0  # Optimization library

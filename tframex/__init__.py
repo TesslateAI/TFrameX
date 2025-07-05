@@ -3,6 +3,8 @@ import os
 # from dotenv import load_dotenv # Application should handle this
 # load_dotenv()
 
+__version__ = "1.1.0"
+
 from .agents import BaseAgent, LLMAgent, ToolAgent
 from .app import TFrameXApp, TFrameXRuntimeContext 
 from .flows import FlowContext, Flow

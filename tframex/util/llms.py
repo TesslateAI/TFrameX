@@ -90,8 +90,12 @@ class OpenAIChatLLM(BaseLLMWrapper):
         api_key: Optional[str] = None,
         default_max_tokens: int = 4096,
         default_temperature: float = 0.7,
+        parse_text_tool_calls: bool = False,
         **kwargs: Any,
     ):
+        # Extract OpenAIChatLLM-specific parameters before passing to parent
+        self.parse_text_tool_calls = parse_text_tool_calls
+        
         super().__init__(
             model_id=model_name,
             api_key=api_key,
@@ -148,6 +152,40 @@ class OpenAIChatLLM(BaseLLMWrapper):
                     response_data = response.json()
                     choice = response_data.get("choices", [{}])[0]
                     msg_data = choice.get("message", {})
+                    
+                    # Debug logging for tool call parsing issues
+                    logger.debug(f"LLM Response choice: {choice}")
+                    logger.debug(f"LLM Response msg_data: {msg_data}")
+                    
+                    # Handle tool_calls parsing - some APIs return them differently
+                    if "tool_calls" in msg_data and msg_data["tool_calls"]:
+                        logger.debug(f"Found tool_calls in response: {msg_data['tool_calls']}")
+                        # Ensure tool_calls are properly formatted
+                        for i, tool_call in enumerate(msg_data["tool_calls"]):
+                            if isinstance(tool_call, dict):
+                                # Ensure required fields exist
+                                if "id" not in tool_call:
+                                    tool_call["id"] = f"call_{i}"
+                                if "type" not in tool_call:
+                                    tool_call["type"] = "function"
+                                if "function" in tool_call and isinstance(tool_call["function"], dict):
+                                    # Ensure arguments is a string
+                                    if "arguments" in tool_call["function"]:
+                                        args = tool_call["function"]["arguments"]
+                                        if not isinstance(args, str):
+                                            tool_call["function"]["arguments"] = json.dumps(args)
+                    
+                    # Optional: Handle APIs that return tool calls as text content
+                    elif (hasattr(self, 'parse_text_tool_calls') and self.parse_text_tool_calls and 
+                          msg_data.get("content") and self._contains_text_tool_calls(msg_data["content"])):
+                        logger.debug(f"Parsing tool calls from text content: {msg_data['content']}")
+                        parsed_tool_calls = self._parse_text_tool_calls(msg_data["content"])
+                        if parsed_tool_calls:
+                            msg_data["tool_calls"] = parsed_tool_calls
+                            # Clear content since it's now a tool call
+                            msg_data["content"] = None
+                            logger.debug(f"Converted text to {len(parsed_tool_calls)} tool calls")
+                    
                     return Message(**msg_data)
 
             except httpx.HTTPStatusError as e:
@@ -336,3 +374,81 @@ class OpenAIChatLLM(BaseLLMWrapper):
                         content=None,
                         tool_calls=parsed_tool_calls_list,
                     )
+    
+    def _contains_text_tool_calls(self, content: str) -> bool:
+        """Check if content contains tool calls in text format."""
+        if not content:
+            return False
+        
+        # Look for patterns like [function_name(...)] or function_name(...)
+        import re
+        patterns = [
+            r'\[[\w_]+\([^)]*\)\]',  # [function_name(args)]
+            r'[\w_]+\([^)]*\)',      # function_name(args)
+        ]
+        
+        for pattern in patterns:
+            if re.search(pattern, content):
+                return True
+        return False
+    
+    def _parse_text_tool_calls(self, content: str) -> List[Dict[str, Any]]:
+        """Parse tool calls from text content."""
+        import re
+        import uuid
+        
+        tool_calls = []
+        
+        # Pattern to match [function_name(args)] or function_name(args)
+        pattern = r'(?:\[)?(\w+)\(([^)]*)\)(?:\])?'
+        matches = re.findall(pattern, content)
+        
+        for i, (func_name, args_str) in enumerate(matches):
+            # Generate unique ID
+            call_id = f"call_{str(uuid.uuid4())[:8]}"
+            
+            # Parse arguments
+            arguments = {}
+            if args_str.strip():
+                # Simple argument parsing - handles key=value pairs
+                try:
+                    # Try to parse as Python-like function call
+                    for arg_pair in args_str.split(','):
+                        if '=' in arg_pair:
+                            key, value = arg_pair.split('=', 1)
+                            key = key.strip()
+                            value = value.strip()
+                            
+                            # Try to parse the value
+                            try:
+                                # Handle quoted strings
+                                if (value.startswith('"') and value.endswith('"')) or \
+                                   (value.startswith("'") and value.endswith("'")):
+                                    arguments[key] = value[1:-1]
+                                # Handle numbers
+                                elif value.isdigit():
+                                    arguments[key] = int(value)
+                                elif '.' in value and value.replace('.', '').isdigit():
+                                    arguments[key] = float(value)
+                                # Handle booleans
+                                elif value.lower() in ['true', 'false']:
+                                    arguments[key] = value.lower() == 'true'
+                                else:
+                                    arguments[key] = value
+                            except:
+                                arguments[key] = value
+                except:
+                    # If parsing fails, just pass empty arguments
+                    pass
+            
+            tool_call = {
+                "id": call_id,
+                "type": "function",
+                "function": {
+                    "name": func_name,
+                    "arguments": json.dumps(arguments)
+                }
+            }
+            tool_calls.append(tool_call)
+        
+        return tool_calls

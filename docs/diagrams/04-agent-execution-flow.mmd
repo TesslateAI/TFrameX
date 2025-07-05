@@ -1,0 +1,62 @@
+flowchart TD
+    %% Input Processing
+    A[User Input] --> B[Runtime Context]
+    B --> C[Engine.execute_agent]
+    
+    %% Agent Resolution
+    C --> D{Agent Type?}
+    D -->|LLM Agent| E[LLMAgent.run]
+    D -->|Tool Agent| F[ToolAgent.run]
+    
+    %% LLM Agent Flow
+    E --> G[Load Memory]
+    G --> H[Apply System Prompt]
+    H --> I[Call LLM]
+    I --> J{Tool Calls?}
+    J -->|Yes| K[Execute Tools]
+    J -->|No| L[Process Response]
+    
+    %% Tool Execution
+    K --> M{Tool Type?}
+    M -->|Native| N[Execute Native Tool]
+    M -->|MCP| O[Execute MCP Tool]
+    M -->|Agent| P[Execute Agent Tool]
+    
+    %% Tool Results
+    N --> Q[Aggregate Results]
+    O --> Q
+    P --> Q
+    Q --> R[Update Memory]
+    R --> S{Continue?}
+    S -->|Yes| I
+    S -->|No| L
+    
+    %% Tool Agent Flow
+    F --> T[Direct Tool Execution]
+    T --> U[Return Result]
+    
+    %% Response Processing
+    L --> V[Strip Think Tags]
+    V --> W[Update Memory]
+    W --> X[Return Response]
+    U --> X
+    
+    %% Memory Management
+    G --> Y[Memory Store]
+    R --> Y
+    W --> Y
+    
+    %% Style
+    classDef input fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef execution fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef llm fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef tools fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef memory fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef output fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px
+    
+    class A,B input
+    class C,D execution
+    class E,G,H,I,J,L,V llm
+    class F,K,M,N,O,P,Q,T tools
+    class R,S,W,Y memory
+    class U,X output

@@ -1,0 +1,28 @@
+{
+  "id": "api/tools",
+  "title": "Tools",
+  "description": "Tools extend agent capabilities by providing access to external functions, APIs, and services. This reference covers the tool system, creation methods, and best practices.",
+  "source": "@site/docs/api/tools.md",
+  "sourceDirName": "api",
+  "slug": "/api/tools",
+  "permalink": "/docs/api/tools",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/tools.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "Tools"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Agents",
+    "permalink": "/docs/api/agents"
+  },
+  "next": {
+    "title": "Flows",
+    "permalink": "/docs/api/flows"
+  }
+}

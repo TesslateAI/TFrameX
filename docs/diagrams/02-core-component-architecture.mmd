@@ -1,0 +1,85 @@
+graph LR
+    %% Application Layer
+    subgraph "Application Layer"
+        A[TFrameXApp]
+        B[TFrameXRuntimeContext]
+        C[Engine]
+    end
+    
+    %% Agent System
+    subgraph "Agent System"
+        D[BaseAgent]
+        E[LLMAgent]
+        F[ToolAgent]
+        G[AgentFactory]
+    end
+    
+    %% Tool System
+    subgraph "Tool System"
+        H[ToolRegistry]
+        I[NativeTools]
+        J[MCPTools]
+        K[MetaTools]
+        L[ToolSchema]
+    end
+    
+    %% Flow System
+    subgraph "Flow System"
+        M[Flow]
+        N[FlowContext]
+        O[Patterns]
+        P[FlowStep]
+    end
+    
+    %% MCP Integration
+    subgraph "MCP Integration"
+        Q[MCPManager]
+        R[ServerConnector]
+        S[ProtocolHandler]
+        T[TransportLayer]
+    end
+    
+    %% Utilities
+    subgraph "Utilities"
+        U[LLMWrapper]
+        V[MemoryStore]
+        W[Logger]
+        X[ConfigManager]
+    end
+    
+    %% Relationships
+    A --> B
+    B --> C
+    C --> D
+    C --> H
+    C --> M
+    C --> Q
+    
+    D --> E
+    D --> F
+    C --> G
+    
+    H --> I
+    H --> J
+    H --> K
+    H --> L
+    
+    M --> N
+    M --> O
+    M --> P
+    
+    Q --> R
+    Q --> S
+    Q --> T
+    
+    E --> U
+    E --> V
+    C --> W
+    A --> X
+    
+    classDef app fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    classDef agents fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef tools fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef flows fill:#fce4ec,stroke:#ad1457,stroke-width:2px
+    classDef mcp fill:#e8eaf6,stroke:#283593,stroke-width:2px
+    classDef utils fill:#f3e5f5,stroke:#4a148c,stroke-width:2px

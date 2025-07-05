@@ -1,0 +1,28 @@
+{
+  "id": "api/overview",
+  "title": "API Overview",
+  "description": "TFrameX provides a comprehensive Python API for building sophisticated multi-agent LLM applications. This reference covers all public APIs, their usage patterns, and best practices.",
+  "source": "@site/docs/api/overview.md",
+  "sourceDirName": "api",
+  "slug": "/api/overview",
+  "permalink": "/docs/api/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "title": "API Overview"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "tframex serve",
+    "permalink": "/docs/cli/serve"
+  },
+  "next": {
+    "title": "TFrameXApp",
+    "permalink": "/docs/api/tframexapp"
+  }
+}

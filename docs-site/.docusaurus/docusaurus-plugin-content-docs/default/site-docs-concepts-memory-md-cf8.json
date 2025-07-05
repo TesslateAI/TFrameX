@@ -1,0 +1,28 @@
+{
+  "id": "concepts/memory",
+  "title": "Memory",
+  "description": "Memory systems in TFrameX enable agents to maintain conversation context, recall past interactions, and build upon previous knowledge. This is crucial for creating coherent, context-aware AI applications.",
+  "source": "@site/docs/concepts/memory.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/memory",
+  "permalink": "/docs/concepts/memory",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/memory.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "sidebar_position": 6,
+    "title": "Memory"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Patterns",
+    "permalink": "/docs/concepts/patterns"
+  },
+  "next": {
+    "title": "MCP Integration",
+    "permalink": "/docs/concepts/mcp-integration"
+  }
+}

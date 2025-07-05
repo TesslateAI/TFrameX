@@ -1,0 +1,28 @@
+{
+  "id": "api/mcp",
+  "title": "MCP Integration",
+  "description": "The Model Context Protocol (MCP) integration in TFrameX v1.1.0 provides seamless connectivity to external services, tools, and data sources through a standardized protocol.",
+  "source": "@site/docs/api/mcp.md",
+  "sourceDirName": "api",
+  "slug": "/api/mcp",
+  "permalink": "/docs/api/mcp",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/mcp.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 7,
+  "frontMatter": {
+    "sidebar_position": 7,
+    "title": "MCP Integration"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Patterns",
+    "permalink": "/docs/api/patterns"
+  },
+  "next": {
+    "title": "Memory API",
+    "permalink": "/docs/api/memory"
+  }
+}

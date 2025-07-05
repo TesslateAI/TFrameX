@@ -1,0 +1,28 @@
+{
+  "id": "enterprise/security/audit",
+  "title": "Audit Logging",
+  "description": "TFrameX Enterprise provides comprehensive audit logging for compliance, security monitoring, and forensic analysis. Every significant action is logged with full context and tamper-proof storage.",
+  "source": "@site/docs/enterprise/security/audit.md",
+  "sourceDirName": "enterprise/security",
+  "slug": "/enterprise/security/audit",
+  "permalink": "/docs/enterprise/security/audit",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/security/audit.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4,
+    "title": "Audit Logging"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Authorization (RBAC)",
+    "permalink": "/docs/enterprise/security/authorization"
+  },
+  "next": {
+    "title": "Session Management",
+    "permalink": "/docs/enterprise/security/sessions"
+  }
+}

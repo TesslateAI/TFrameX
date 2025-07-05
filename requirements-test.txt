@@ -1,0 +1,42 @@
+# TFrameX Enterprise Testing Requirements
+# These packages are required for running enterprise feature tests
+
+# Core testing dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.0.0
+python-dotenv>=1.0.0
+
+# Enterprise feature dependencies
+pydantic>=2.0.0
+aiosqlite>=0.19.0
+asyncpg>=0.28.0  # PostgreSQL support
+aioboto3>=11.0.0  # S3 support
+
+# Metrics and monitoring
+prometheus-client>=0.17.0
+opentelemetry-api>=1.20.0
+opentelemetry-sdk>=1.20.0
+opentelemetry-exporter-otlp>=1.20.0
+opentelemetry-instrumentation>=0.41b0
+
+# Security and cryptography
+cryptography>=41.0.0
+PyJWT>=2.8.0
+httpx>=0.24.0
+
+# Data and configuration
+PyYAML>=6.0
+aiofiles>=23.0.0
+
+# Development and testing utilities
+factory-boy>=3.3.0  # For test data generation
+freezegun>=1.2.0   # For time-based testing
+responses>=0.23.0  # For HTTP mocking
+
+# Optional: Performance testing
+locust>=2.16.0     # Load testing
+
+# Optional: Security testing
+bandit>=1.7.5      # Security linting
+safety>=2.3.0      # Vulnerability scanning

@@ -3,9 +3,9 @@ import asyncio
 import inspect
 import json
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, List, Optional, Type, Union
 
-from ..models.primitives import Message, ToolDefinition, ToolParameters, ToolParameterProperty
+from ..models.primitives import Message, MessageChunk, ToolDefinition, ToolParameters, ToolParameterProperty
 from ..util.tools import Tool
 # MCP specific types for parsing results if needed, though results are simplified to string/error dict
 from mcp.types import TextContent, ImageContent, EmbeddedResource
@@ -109,6 +109,26 @@ class Engine:
         else: raise TypeError(f"input_message must be str or Message, not {type(input_message)}")
         agent_instance = self._get_agent_instance(agent_name)
         return await agent_instance.run(input_msg_obj, **kwargs)
+    
+    def call_agent_stream(
+        self, agent_name: str, input_message: Union[str, Message], **kwargs: Any
+    ) -> AsyncGenerator[MessageChunk, None]:
+        """Stream response from an agent. Yields MessageChunk objects as they arrive."""
+        return self._call_agent_stream_impl(agent_name, input_message, **kwargs)
+    
+    async def _call_agent_stream_impl(
+        self, agent_name: str, input_message: Union[str, Message], **kwargs: Any
+    ) -> AsyncGenerator[MessageChunk, None]:
+        """Implementation of streaming agent call."""
+        if isinstance(input_message, str): input_msg_obj = Message(role="user", content=input_message)
+        elif isinstance(input_message, Message): input_msg_obj = input_message
+        else: raise TypeError(f"input_message must be str or Message, not {type(input_message)}")
+        agent_instance = self._get_agent_instance(agent_name)
+        
+        # Call agent with streaming enabled - this returns an async generator
+        stream_generator = await agent_instance.run(input_msg_obj, stream=True, **kwargs)
+        async for chunk in stream_generator:
+            yield chunk
 
     async def execute_tool_by_llm_definition(
         self,

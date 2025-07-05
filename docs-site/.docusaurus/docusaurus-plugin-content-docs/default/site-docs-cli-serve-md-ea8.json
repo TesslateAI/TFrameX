@@ -1,0 +1,28 @@
+{
+  "id": "cli/serve",
+  "title": "tframex serve",
+  "description": "The tframex serve command launches a web interface for your TFrameX agents, providing a browser-based chat experience with REST API endpoints.",
+  "source": "@site/docs/cli/serve.md",
+  "sourceDirName": "cli",
+  "slug": "/cli/serve",
+  "permalink": "/docs/cli/serve",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/serve.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5,
+    "title": "tframex serve"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "tframex setup",
+    "permalink": "/docs/cli/setup"
+  },
+  "next": {
+    "title": "API Overview",
+    "permalink": "/docs/api/overview"
+  }
+}

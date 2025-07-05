@@ -1,0 +1,28 @@
+{
+  "id": "enterprise/configuration",
+  "title": "Configuration",
+  "description": "This guide covers configuring TFrameX Enterprise features including security, metrics, storage, and other production settings.",
+  "source": "@site/docs/enterprise/configuration.md",
+  "sourceDirName": "enterprise",
+  "slug": "/enterprise/configuration",
+  "permalink": "/docs/enterprise/configuration",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/enterprise/configuration.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2,
+    "title": "Configuration"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Enterprise Overview",
+    "permalink": "/docs/enterprise/overview"
+  },
+  "next": {
+    "title": "Security Overview",
+    "permalink": "/docs/enterprise/security/overview"
+  }
+}

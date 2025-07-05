@@ -1,0 +1,28 @@
+{
+  "id": "api/flows",
+  "title": "Flows",
+  "description": "Flows enable complex multi-agent orchestration by defining how agents work together. This reference covers flow creation, execution, and advanced patterns.",
+  "source": "@site/docs/api/flows.md",
+  "sourceDirName": "api",
+  "slug": "/api/flows",
+  "permalink": "/docs/api/flows",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/api/flows.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "sidebar_position": 5,
+    "title": "Flows"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Tools",
+    "permalink": "/docs/api/tools"
+  },
+  "next": {
+    "title": "Patterns",
+    "permalink": "/docs/api/patterns"
+  }
+}

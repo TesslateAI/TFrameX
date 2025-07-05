@@ -1,0 +1,28 @@
+{
+  "id": "cli/basic",
+  "title": "tframex basic",
+  "description": "The tframex basic command provides an instant interactive AI session with a pre-configured assistant. It's the fastest way to experience TFrameX's capabilities.",
+  "source": "@site/docs/cli/basic.md",
+  "sourceDirName": "cli",
+  "slug": "/cli/basic",
+  "permalink": "/docs/cli/basic",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/cli/basic.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3,
+    "title": "tframex basic"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Command Reference",
+    "permalink": "/docs/cli/commands"
+  },
+  "next": {
+    "title": "tframex setup",
+    "permalink": "/docs/cli/setup"
+  }
+}

@@ -1,0 +1,94 @@
+graph TB
+    %% MCP Manager
+    subgraph "MCP Manager"
+        A[MCPManager]
+        B[Server Registry]
+        C[Tool Aggregator]
+        D[Capability Manager]
+    end
+    
+    %% Server Connectors
+    subgraph "Server Connectors"
+        E[StdioConnector]
+        F[HTTPConnector]
+        G[SSEConnector]
+    end
+    
+    %% Protocol Layer
+    subgraph "Protocol Layer"
+        H[Protocol Handler]
+        I[Message Router]
+        J[Notification Handler]
+        K[Progress Tracker]
+    end
+    
+    %% Transport Layer
+    subgraph "Transport Layer"
+        L[Stdio Transport]
+        M[HTTP Transport]
+        N[SSE Transport]
+    end
+    
+    %% External MCP Servers
+    subgraph "External MCP Servers"
+        O[Math Server]
+        P[SQLite Server]
+        Q[Blender Server]
+        R[AWS Docs Server]
+        S[Custom Servers]
+    end
+    
+    %% Capabilities
+    subgraph "Advanced Capabilities"
+        T[Roots Management]
+        U[Sampling Control]
+        V[Resource Access]
+        W[Content Processing]
+    end
+    
+    %% Data Flow
+    A --> B
+    A --> C
+    A --> D
+    
+    B --> E
+    B --> F
+    B --> G
+    
+    E --> H
+    F --> H
+    G --> H
+    
+    H --> I
+    H --> J
+    H --> K
+    
+    I --> L
+    I --> M
+    I --> N
+    
+    L --> O
+    M --> P
+    M --> Q
+    N --> R
+    L --> S
+    
+    D --> T
+    D --> U
+    D --> V
+    D --> W
+    
+    %% Style
+    classDef manager fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef connector fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef protocol fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef transport fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef servers fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef capabilities fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px
+    
+    class A,B,C,D manager
+    class E,F,G connector
+    class H,I,J,K protocol
+    class L,M,N transport
+    class O,P,Q,R,S servers
+    class T,U,V,W capabilities

@@ -1,0 +1,28 @@
+{
+  "id": "concepts/mcp-integration",
+  "title": "MCP Integration",
+  "description": "Model Context Protocol (MCP) integration enables TFrameX to connect with external services, tools, and resources through a standardized protocol. This allows your agents to access capabilities beyond what's built into your application.",
+  "source": "@site/docs/concepts/mcp-integration.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/mcp-integration",
+  "permalink": "/docs/concepts/mcp-integration",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/TesslateAI/TFrameX/tree/main/docs-site/docs/concepts/mcp-integration.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 7,
+  "frontMatter": {
+    "sidebar_position": 7,
+    "title": "MCP Integration"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Memory",
+    "permalink": "/docs/concepts/memory"
+  },
+  "next": {
+    "title": "CLI Overview",
+    "permalink": "/docs/cli/overview"
+  }
+}

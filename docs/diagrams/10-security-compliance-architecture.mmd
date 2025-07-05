@@ -1,0 +1,74 @@
+graph TB
+    %% Security Layers
+    subgraph "Input Security"
+        A[Input Validation]
+        B[Parameter Sanitization]
+        C[Schema Validation]
+    end
+    
+    subgraph "Authentication & Authorization"
+        D[API Key Management]
+        E[Server Authentication]
+        F[Resource Access Control]
+    end
+    
+    subgraph "Execution Security"
+        G[Sandbox Execution]
+        H[Timeout Controls]
+        I[Resource Limits]
+    end
+    
+    subgraph "Data Security"
+        J[Memory Isolation]
+        K[Secure Storage]
+        L[Data Encryption]
+    end
+    
+    subgraph "Audit & Monitoring"
+        M[Audit Logging]
+        N[Security Metrics]
+        O[Compliance Reporting]
+    end
+    
+    %% Compliance Features
+    subgraph "Compliance Features"
+        P[HIPAA Compliance]
+        Q[Data Retention]
+        R[Privacy Controls]
+    end
+    
+    %% Relationships
+    A --> D
+    B --> E
+    C --> F
+    
+    D --> G
+    E --> H
+    F --> I
+    
+    G --> J
+    H --> K
+    I --> L
+    
+    J --> M
+    K --> N
+    L --> O
+    
+    M --> P
+    N --> Q
+    O --> R
+    
+    %% Style
+    classDef input fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    classDef auth fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef exec fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef data fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef audit fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef compliance fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class A,B,C input
+    class D,E,F auth
+    class G,H,I exec
+    class J,K,L data
+    class M,N,O audit
+    class P,Q,R compliance
