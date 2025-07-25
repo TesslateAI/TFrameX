@@ -126,13 +126,17 @@ pip install tframex
 
 ### Basic Example
 
+## Example using call_agent() method
 ```python
 from tframex import TFrameXApp
 from tframex.util.llms import OpenAIChatLLM
 import asyncio
+import os
 
 # Initialize app
-app = TFrameXApp(default_llm=OpenAIChatLLM('model_name', 'api_base_url', 'api_key'))
+app = TFrameXApp(default_llm=OpenAIChatLLM(model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-4")
+                                           ,api_base_url=os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1"),
+                                            api_key=os.getenv("OPENAI_API_KEY")))
 
 # Define a tool
 @app.tool(description="Add two numbers")
@@ -160,6 +164,42 @@ async def main():
 
 asyncio.run(main())
 ```
+
+## Example using call_agent_stream() method
+```python
+from tframex import TFrameXApp
+from tframex.util.llms import OpenAIChatLLM
+import asyncio
+import os
+
+app = TFrameXApp(default_llm=OpenAIChatLLM(model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-4o")
+                                           ,api_base_url=os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1"),
+                                            api_key=os.getenv("OPENAI_API_KEY")))
+
+# Define a tool
+@app.tool(description="Converts a string to uppercase")
+async def to_uppercase(text: str) -> str:
+    return text.upper()
+
+#Define the agent
+@app.agent(
+    name="WriterAgent",
+    description="Writes a story in multiple steps",
+    tools=["to_uppercase"],
+    system_prompt="You are a storyteller. Use tools if necessary"
+)
+async def writer_agent():
+    pass
+
+async def main():
+    async with app.run_context() as rt:
+        async for chunk in rt.call_agent_stream("WriterAgent", "Write a short story about AI and humans."):
+            # Each chunk is a partial response
+            print(chunk.delta, end="")
+
+asyncio.run(main())
+```
+
 
 ### Environment Configuration
 
@@ -827,7 +867,7 @@ async def debug_agent():
         # Set breakpoint
         import pdb; pdb.set_trace()
         
-        result = await rt.execute_agent("MyAgent", "test input")
+        result = await rt.call_agent("MyAgent", "test input")
         print(f"Result: {result}")
 
 # Monitor execution
