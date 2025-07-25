@@ -132,7 +132,7 @@ from tframex.util.llms import OpenAIChatLLM
 import asyncio
 
 # Initialize app
-app = TFrameXApp(default_llm=OpenAIChatLLM())
+app = TFrameXApp(default_llm=OpenAIChatLLM('model_name', 'api_base_url', 'api_key'))
 
 # Define a tool
 @app.tool(description="Add two numbers")
@@ -152,7 +152,7 @@ async def math_agent():
 # Use the agent
 async def main():
     async with app.run_context() as rt:
-        result = await rt.execute_agent(
+        result = await rt.call_agent(
             "MathAgent",
             "What is 5 + 3?"
         )
