@@ -1,6 +1,6 @@
 # TFrameX v1.1.0
 
-![1.00](docs/assets/images/banner.jpeg)
+![image](https://github.com/user-attachments/assets/031f3b09-34da-4725-bb05-d064f55eec9e)
 
 <p align="center">
   <strong>The Enterprise-Ready Multi-Agent LLM Orchestration Framework - Build sophisticated, multi-agent LLM applications with unparalleled ease and flexibility.</strong>
