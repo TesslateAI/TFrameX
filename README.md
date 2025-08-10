@@ -1,312 +1,286 @@
+# TFrameX v1.1.0
 
-  
+![1.00](docs/assets/images/banner.jpeg)
 
-# TFrameX v1.1.0: The Enterprise-Ready Multi-Agent LLM Orchestration Framework 🚀
-  
-  
+<p align="center">
+  <strong>The Enterprise-Ready Multi-Agent LLM Orchestration Framework - Build sophisticated, multi-agent LLM applications with unparalleled ease and flexibility.</strong>
+</p>
 
-![image](https://github.com/user-attachments/assets/031f3b09-34da-4725-bb05-d064f55eec9e)
+<p align="center">
+  <a href="https://pypi.org/project/tframex/">
+    <img src="https://badge.fury.io/py/tframex.svg" alt="PyPI version">
+  </a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+  </a>
+  <a href="https://tframex.tesslate.com/">
+    <img src="https://img.shields.io/badge/docs-website-blue.svg" alt="Documentation">
+  </a>
+</p>
 
-Please join our discord for support: [Discord](https://discord.gg/DkzMzwBTaw)
+<h3 align="center">
+  <a href="https://discord.gg/DkzMzwBTaw"><strong>Join our Discord for support and discussions</strong></a>
+</h3>
 
-[TframeX Documentation Website](https://tframex.tesslate.com/)
-
-[![PyPI version](https://badge.fury.io/py/tframex.svg)](https://badge.fury.io/py/tframex)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  
-  
+***
 
 **TFrameX** empowers you to build sophisticated, multi-agent LLM applications with unparalleled ease and flexibility. Move beyond simple prompt-response interactions and construct complex, dynamic workflows where intelligent agents collaborate, use tools, and adapt to intricate tasks.
 
-## 🔥 **What's NEW in v1.1.0: Enterprise-Grade Power!**
+## What's NEW in v1.1.0: Enterprise-Grade Power
 
-### 🌊 **Revolutionary Streaming Support**
-- **Real-Time Agent Responses**: Experience blazing-fast streaming responses from all agents
-- **Live Flow Execution**: Watch your multi-agent workflows execute in real-time
-- **Seamless Integration**: Zero configuration change needed - just add `streaming=True`
+### Revolutionary Streaming Support
 
-### 🔌 **Next-Level MCP Integration** 
-- **Universal Tool Connectivity**: Connect to any MCP-compatible service with zero friction
-- **Enhanced Stability**: Rock-solid MCP server management with auto-reconnection
-- **Rich Meta-Tools**: Built-in tools for server discovery, resource exploration, and dynamic prompt usage
-- **Production Ready**: Battle-tested MCP integration for enterprise deployments
+* **Real-Time Agent Responses**: Experience blazing-fast streaming responses from all agents
+* **Live Flow Execution**: Watch your multi-agent workflows execute in real-time
+* **Seamless Integration**: Zero configuration change needed - just add `streaming=True`
 
-### 🏢 **Enterprise-Grade Features**
-- **🔒 Enterprise Security**: Full RBAC, multi-auth (JWT, OAuth2, API keys), audit logging, and session management
-- **📊 Advanced Monitoring**: Prometheus, OpenTelemetry, and custom metrics with real-time dashboards  
-- **🗄️ Multi-Backend Storage**: SQLite → PostgreSQL → S3 with seamless auto-migration
-- **⚡ Production Performance**: Optimized for high-throughput, multi-tenant deployments
-- **🛡️ Compliance Ready**: Complete audit trails, data governance, and regulatory compliance features
+### Next-Level MCP Integration
+
+* **Universal Tool Connectivity**: Connect to any MCP-compatible service with zero friction
+* **Enhanced Stability**: Rock-solid MCP server management with auto-reconnection
+* **Rich Meta-Tools**: Built-in tools for server discovery, resource exploration, and dynamic prompt usage
+* **Production Ready**: Battle-tested MCP integration for enterprise deployments
+
+### Enterprise-Grade Features
+
+* **Enterprise Security**: Full RBAC, multi-auth (JWT, OAuth2, API keys), audit logging, and session management
+* **Advanced Monitoring**: Prometheus, OpenTelemetry, and custom metrics with real-time dashboards
+* **Multi-Backend Storage**: SQLite → PostgreSQL → S3 with seamless auto-migration
+* **Production Performance**: Optimized for high-throughput, multi-tenant deployments
+* **Compliance Ready**: Complete audit trails, data governance, and regulatory compliance features
 
 Perfect for production deployments, enterprise applications, and mission-critical AI systems!
 
-  
-  
-
 **Find our Agent Builder Framework Here**: [Tesslate Studio Agent Builder](https://github.com/TesslateAI/Agent-Builder)
 
-![image](https://github.com/user-attachments/assets/8e5b0689-38e6-4832-8de5-07ea03ed1c25)
+![1.00](docs/assets/images/banner.jpeg)
 
-  
+***
 
----
+## Why TFrameX?
 
-  
+### Key Features
 
-## ✨ Why TFrameX?
+* **Intelligent Agents, Simplified:** Define specialized agents with unique system prompts, tools, and even dedicated LLM models.
 
-  
+* **Seamless Tool Integration:** Equip your agents with custom tools using a simple decorator. Let them interact with APIs, databases, or any Python function.
 
-* 🧠 **Intelligent Agents, Simplified:** Define specialized agents with unique system prompts, tools, and even dedicated LLM models.
+* **Powerful Flow Orchestration:** Design complex workflows by chaining agents and predefined patterns (Sequential, Parallel, Router, Discussion) using an intuitive `Flow` API.
 
-* 🛠️ **Seamless Tool Integration:** Equip your agents with custom tools using a simple decorator. Let them interact with APIs, databases, or any Python function.
+* **Lightning-Fast Streaming:** Experience real-time agent responses with our revolutionary streaming support - just add `streaming=True` for instant responsiveness.
 
-* 🌊 **Powerful Flow Orchestration:** Design complex workflows by chaining agents and predefined patterns (Sequential, Parallel, Router, Discussion) using an intuitive `Flow` API.
+* **Universal MCP Connectivity:** Connect to any MCP-compatible service with zero friction - from file systems to databases to external APIs.
 
-* ⚡ **Lightning-Fast Streaming:** Experience real-time agent responses with our revolutionary streaming support - just add `streaming=True` for instant responsiveness.
+* **Composable & Modular:** Build reusable components (agents, tools, flows) that can be combined to create increasingly complex applications.
 
-* 🔌 **Universal MCP Connectivity:** Connect to any MCP-compatible service with zero friction - from file systems to databases to external APIs.
+* **Agent-as-Tool Paradigm:** Elevate your architecture by enabling agents to call other agents as tools, creating hierarchical and supervised agent structures.
 
-* 🧩 **Composable & Modular:** Build reusable components (agents, tools, flows) that can be combined to create increasingly complex applications.
+* **Enterprise-Ready:** Full RBAC, authentication, audit logging, metrics collection, and multi-backend storage for production deployments.
 
-* 🚀 **Agent-as-Tool Paradigm:** Elevate your architecture by enabling agents to call other agents as tools, creating hierarchical and supervised agent structures.
+* **Fine-Grained Control:** Customize agent behavior with features like per-agent LLMs and `<think>` tag stripping for cleaner outputs.
 
-* 🏢 **Enterprise-Ready:** Full RBAC, authentication, audit logging, metrics collection, and multi-backend storage for production deployments.
+* **Interactive Debugging:** Quickly test your flows and agents with the built-in interactive chat.
 
-* 🎨 **Fine-Grained Control:** Customize agent behavior with features like per-agent LLMs and `<think>` tag stripping for cleaner outputs.
+* **Pluggable LLMs:** Start with `OpenAIChatLLM` (compatible with OpenAI API and many local server UIs like Ollama) and extend to other models easily.
 
-* 💬 **Interactive Debugging:** Quickly test your flows and agents with the built-in interactive chat.
+* **CLI Tooling:** Complete command-line interface with `tframex basic` for instant interaction, `tframex setup` for project scaffolding, and `tframex serve` for web interfaces.
 
-* 🔌 **Pluggable LLMs:** Start with `OpenAIChatLLM` (compatible with OpenAI API and many local server UIs like Ollama) and extend to other models easily.
+***
 
-* ⚡ **CLI Tooling:** Complete command-line interface with `tframex basic` for instant interaction, `tframex setup` for project scaffolding, and `tframex serve` for web interfaces.
+## Core Concepts
 
-  
-
----
-
-## 💡 Core Concepts
-
-
-[TframeX Documentation Website](https://tframex.tesslate.com/)
-  
+For complete documentation, visit: [TFrameX Documentation Website](https://tframex.tesslate.com/)
 
 **TFrameX** is designed to orchestrate complex agent interactions using its powerful `Flow` system, which controls the sequence and logic of operations.
 
-  
-
 Within a `Flow`, you define reusable collaboration structures called **Patterns**—such as `SequentialPattern`, `RouterPattern`, or `DiscussionPattern`. These patterns can be **nested** inside one another. For example, a `ParallelPattern` may contain several `SequentialPattern`s, enabling hierarchical task breakdowns.
-
-  
 
 TFrameX also supports the **agent-as-tool** paradigm: `LLMAgent`s can directly call other registered agents. This enables supervisor-worker relationships and task delegation between agents.
 
-  
-
 Together, **nested patterns** and **inter-agent calling** allow for sophisticated designs—including recursive or cyclical flows. For example, a `DiscussionPattern` creates a controlled loop of interaction. However, to avoid infinite loops, flows must be carefully structured with clear **termination conditions** or managed by **moderator agents**.
-
-  
 
 These entire `Flows`—along with their patterns and agent configurations—can be defined declaratively in **YAML** files. This makes it easy to version, share, and modify agent behaviors programmatically, giving you maximum flexibility in building adaptive, interconnected agent systems.
 
-  
-  
+### Architecture Components
 
-TFrameX revolves around a few key concepts:
+TFrameX revolves around several key concepts:
 
-  
+#### 1. Agents (`BaseAgent`, `LLMAgent`, `ToolAgent`)
 
-1. 🌟 **Agents (`BaseAgent`, `LLMAgent`, `ToolAgent`)**:
+* The core actors in your system
+* **`LLMAgent`**: Leverages an LLM to reason, respond, and decide when to use tools or call other agents
+* **`ToolAgent`**: A stateless agent that directly executes a specific tool (useful for simpler, direct tool invocations within a flow)
+* Can have their own memory, system prompts, and a dedicated LLM instance
+* Support for `strip_think_tags`: Automatically remove internal "thinking" steps (e.g., `<think>...</think>`) from the final output for cleaner user-facing responses
 
-* The core actors in your system.
+#### 2. Tools (`@app.tool`)
 
-*  **`LLMAgent`**: Leverages an LLM to reason, respond, and decide when to use tools or call other agents.
+* Python functions (sync or async) that agents can call to perform actions or retrieve information from the outside world (APIs, databases, file systems, etc.)
+* Schemas are automatically inferred from type hints or can be explicitly defined
 
-*  **`ToolAgent`**: A stateless agent that directly executes a specific tool (useful for simpler, direct tool invocations within a flow).
+#### 3. Flows (`Flow`)
 
-* Can have their own memory, system prompts, and a dedicated LLM instance.
+* Define the sequence or graph of operations
+* A flow consists of steps, where each step can be an agent or a **Pattern**
+* Orchestrate how data (as `Message` objects) and control pass between agents
 
-* Support for `strip_think_tags`: Automatically remove internal "thinking" steps (e.g., `<think>...</think>`) from the final output for cleaner user-facing responses.
+#### 4. Patterns (`SequentialPattern`, `ParallelPattern`, `RouterPattern`, `DiscussionPattern`)
 
-  
+Reusable templates for common multi-agent interaction structures:
 
-2. 🔧 **Tools (`@app.tool`)**:
+* **`SequentialPattern`**: Executes a series of agents/patterns one after another
+* **`ParallelPattern`**: Executes multiple agents/patterns concurrently on the same input
+* **`RouterPattern`**: Uses a "router" agent to decide which subsequent agent/pattern to execute
+* **`DiscussionPattern`**: Facilitates a multi-round discussion between several agents, optionally moderated
 
-* Python functions (sync or async) that agents can call to perform actions or retrieve information from the outside world (APIs, databases, file systems, etc.).
+#### 5. Agent-as-Tool (Supervisor Agents)
 
-* Schemas are automatically inferred from type hints or can be explicitly defined.
+* A powerful feature where one `LLMAgent` can be configured to call other registered agents as if they were tools
+* Allows for creating supervisor agents that delegate tasks to specialized sub-agents
 
-  
+#### 6. LLMs (`BaseLLMWrapper`, `OpenAIChatLLM`)
 
-3. 🌊 **Flows (`Flow`)**:
+* Pluggable wrappers for LLM APIs
+* `OpenAIChatLLM` provides out-of-the-box support for OpenAI-compatible APIs (including many local model servers like Ollama or LiteLLM)
+* Agents can use a default LLM provided by the app, or have a specific LLM instance assigned for specialized tasks
 
-* Define the sequence or graph of operations.
+#### 7. Memory (`InMemoryMemoryStore`)
 
-* A flow consists of steps, where each step can be an agent or a **Pattern**.
+* Provides agents with conversation history
 
-* Orchestrate how data (as `Message` objects) and control pass between agents.
-
-  
-
-4. 🧩 **Patterns (`SequentialPattern`, `ParallelPattern`, `RouterPattern`, `DiscussionPattern`)**:
-
-* Reusable templates for common multi-agent interaction structures:
-
-*  **`SequentialPattern`**: Executes a series of agents/patterns one after another.
-
-*  **`ParallelPattern`**: Executes multiple agents/patterns concurrently on the same input.
-
-*  **`RouterPattern`**: Uses a "router" agent to decide which subsequent agent/pattern to execute.
-
-*  **`DiscussionPattern`**: Facilitates a multi-round discussion between several agents, optionally moderated.
-
-  
-
-5. 🤝 **Agent-as-Tool (Supervisor Agents)**:
-
-* A powerful feature where one `LLMAgent` can be configured to call other registered agents as if they were tools. This allows for creating supervisor agents that delegate tasks to specialized sub-agents.
-
-  
-
-6. 🤖 **LLMs (`BaseLLMWrapper`, `OpenAIChatLLM`)**:
-
-* Pluggable wrappers for LLM APIs. `OpenAIChatLLM` provides out-of-the-box support for OpenAI-compatible APIs (including many local model servers like Ollama or LiteLLM).
-
-* Agents can use a default LLM provided by the app, or have a specific LLM instance assigned for specialized tasks.
-
-  
-
-7. 💾 **Memory (`InMemoryMemoryStore`)**:
-
-* Provides agents with conversation history. `InMemoryMemoryStore` is available by default, and you can implement custom stores by inheriting from `BaseMemoryStore`.
-
-  
-
+* `InMemoryMemoryStore` is available by default, and you can implement custom stores by inheriting from `BaseMemoryStore`
 
 ## Getting Started
 
-### 🚀 Quick Start with CLI
+### Quick Start with CLI
 
 The fastest way to get started with TFrameX is using the built-in CLI:
 
 1. **Install TFrameX:**
-   ```bash
+   ```Shell
    pip install tframex
    ```
 
 2. **Start an interactive session:**
-   ```bash
+   ```Shell
    # Set your API key
    export OPENAI_API_KEY="sk-..."
-   
+
    # Launch interactive chat
    tframex basic
    ```
 
 3. **Create your first project:**
-   ```bash
+   ```Shell
    # Generate a complete project structure
    tframex setup my-ai-app
    cd my-ai-app
-   
+
    # Configure environment
    cp .env.example .env
    # Edit .env with your API keys
-   
+
    # Install dependencies and run
    pip install -r requirements.txt
    python main.py
    ```
 
 4. **Try the web interface:**
-   ```bash
+   ```Shell
    # Install web dependencies
    pip install tframex[web]
-   
+
    # Launch web server
    tframex serve
    # Open http://localhost:8000 in your browser
    ```
 
-### 📚 CLI Commands
+### CLI Commands
 
-- **`tframex basic`** - Interactive AI session with built-in tools
-- **`tframex setup <project>`** - Complete project scaffolding 
-- **`tframex serve`** - Web interface for agent interaction
+* **`tframex basic`** - Interactive AI session with built-in tools
+* **`tframex setup <project>`** - Complete project scaffolding
+* **`tframex serve`** - Web interface for agent interaction
 
 For complete CLI documentation, see [CLI Guide](docs/CLI_GUIDE.md) and [CLI Reference](docs/CLI_REFERENCE.md).
 
-### 📦 Manual Installation
+### Manual Installation
 
 To use TFrameX in your project manually, install it via pip:
-```bash
+
+```Shell
 pip install tframex
 ```
+
 Core dependencies (like `httpx`, `pydantic`, `PyYAML`, `python-dotenv`, `openai`) are listed in `pyproject.toml` and should be installed automatically. If you plan to run specific examples from the TFrameX repository, you might need additional packages like `aiohttp` (for the Reddit tool example) or `Flask` (for the web app example). You can install these separately: `pip install aiohttp Flask`.
 
-    **For Developers (Contributing to TFrameX or running all examples from source):**
+#### For Developers (Contributing to TFrameX or running examples from source)
 
-    If you're developing TFrameX itself or want to run examples directly from a cloned repository, we recommend setting up a dedicated virtual environment. You can use [`uv`](https://github.com/astral-sh/uv) for its speed, or `pip` with `venv`.
+If you're developing TFrameX itself or want to run examples directly from a cloned repository, we recommend setting up a dedicated virtual environment. You can use [`uv`](https://github.com/astral-sh/uv) for its speed, or `pip` with `venv`.
 
-    **Setting up with `uv` (Recommended):**
-    First, install `uv` by following the instructions at [astral.sh/uv](https://astral.sh/uv).
-    Then, in your cloned TFrameX repository:
-    ```bash
-    # Clone the repository (if you haven't already)
-    # git clone https://github.com/TesslateAI/TFrameX.git
-    # cd TFrameX
+**Setting up with** **`uv`** **(Recommended):**
 
-    # Create and activate a virtual environment
-    uv venv
-    source .venv/bin/activate  # On macOS/Linux
-    # For Windows PowerShell: .venv\Scripts\Activate.ps1
+First, install `uv` by following the instructions at [astral.sh/uv](https://astral.sh/uv).
+Then, in your cloned TFrameX repository:
 
-    # Install TFrameX in editable mode with optional dependencies
-    # For core development and running most examples:
-    uv pip install -e ".[examples]"
-    # To include development tools (linters, formatters):
-    # uv pip install -e ".[examples,dev]"
-    ```
-    This approach uses the `pyproject.toml` file for precise dependency management.
+```Shell
+# Clone the repository (if you haven't already)
+# git clone https://github.com/TesslateAI/TFrameX.git
+# cd TFrameX
 
-    **Setting up with `pip` and `venv` (Alternative):**
-    In your cloned TFrameX repository:
-    ```bash
-    # Clone the repository (if you haven't already)
-    # git clone https://github.com/TesslateAI/TFrameX.git
-    # cd TFrameX
+# Create and activate a virtual environment
+uv venv
+source .venv/bin/activate  # On macOS/Linux
+# For Windows PowerShell: .venv\Scripts\Activate.ps1
 
-    # Create and activate a virtual environment
-    python -m venv .venv
-    source .venv/bin/activate  # On macOS/Linux
-    # For Windows Command Prompt: .venv\Scripts\activate.bat
+# Install TFrameX in editable mode with optional dependencies
+# For core development and running most examples:
+uv pip install -e ".[examples]"
+# To include development tools (linters, formatters):
+# uv pip install -e ".[examples,dev]"
+```
 
-    # Install TFrameX in editable mode with optional dependencies
-    # For core development and running most examples:
-    pip install -e ".[examples]"
-    # To include development tools:
-    # pip install -e ".[examples,dev]"
-    ```
+This approach uses the `pyproject.toml` file for precise dependency management.
 
-2.  **Set up your LLM Environment:**
-    Ensure your environment variables for your LLM API are set (e.g., `OPENAI_API_KEY`, `OPENAI_API_BASE`). Create a `.env` file in your project root (TFrameX uses `python-dotenv` to load this):
-    ```env
-    # Example for Ollama (running locally)
-    OPENAI_API_BASE="http://localhost:11434/v1"
-    OPENAI_API_KEY="ollama" # Placeholder, as Ollama doesn't require a key by default
-    OPENAI_MODEL_NAME="llama3" # Or your preferred model served by Ollama
+**Setting up with** **`pip`** **and** **`venv`** **(Alternative):**
 
-    # Example for OpenAI API
-    # OPENAI_API_KEY="your_openai_api_key"
-    # OPENAI_MODEL_NAME="gpt-3.5-turbo"
-    # OPENAI_API_BASE="https://api.openai.com/v1" # (Usually default if not set)
-    ```
+In your cloned TFrameX repository:
 
-3.  **Your First TFrameX App:**
+```Shell
+# Clone the repository (if you haven't already)
+# git clone https://github.com/TesslateAI/TFrameX.git
+# cd TFrameX
 
-  
-```python
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On macOS/Linux
+# For Windows Command Prompt: .venv\Scripts\activate.bat
+
+# Install TFrameX in editable mode with optional dependencies
+# For core development and running most examples:
+pip install -e ".[examples]"
+# To include development tools:
+# pip install -e ".[examples,dev]"
+```
+
+#### Set up your LLM Environment
+
+Ensure your environment variables for your LLM API are set (e.g., `OPENAI_API_KEY`, `OPENAI_API_BASE`). Create a `.env` file in your project root (TFrameX uses `python-dotenv` to load this):
+
+```env
+# Example for Ollama (running locally)
+OPENAI_API_BASE="http://localhost:11434/v1"
+OPENAI_API_KEY="ollama" # Placeholder, as Ollama doesn't require a key by default
+OPENAI_MODEL_NAME="llama3" # Or your preferred model served by Ollama
+
+# Example for OpenAI API
+# OPENAI_API_KEY="your_openai_api_key"
+# OPENAI_MODEL_NAME="gpt-3.5-turbo"
+# OPENAI_API_BASE="https://api.openai.com/v1" # (Usually default if not set)
+```
+
+### Your First TFrameX App
+
+```Python
 import asyncio
 import os
 from dotenv import load_dotenv
@@ -360,16 +334,16 @@ if  __name__ == "__main__":
         asyncio.run(main())
 ```
 
-### 🌊 **Streaming Agents Example:**
+### Streaming Agents Example
 
 Experience real-time responses with TFrameX's streaming capabilities:
 
-```python
+```Python
 # Enable streaming for lightning-fast responses
 @app.agent(
     name="StreamingAssistant",
     system_prompt="You are a helpful assistant. Provide detailed, thoughtful responses.",
-    streaming=True  # ✨ Just add this for real-time streaming!
+    streaming=True  # Just add this for real-time streaming!
 )
 async def streaming_assistant():
     pass
@@ -383,11 +357,11 @@ async def streaming_demo():
         print(f"Streamed response: {response.content}")
 ```
 
-### 🔌 **MCP Integration Example:**
+### MCP Integration Example
 
 Connect to external services with MCP:
 
-```python
+```Python
 # MCP servers auto-discovered and integrated
 @app.agent(
     name="MCPAgent",
@@ -405,27 +379,17 @@ async def mcp_agent():
 # - tframex_use_mcp_prompt: Execute MCP prompts
 ```
 
----
+***
 
-  
-
-## 🛠️ Building with TFrameX: Code In Action
-
-  
+## Building with TFrameX: Code In Action
 
 Let's explore how to use TFrameX's features with concrete examples.
 
-  
-
-### 🤖 Defining Agents
-
-  
+### Defining Agents
 
 Agents are the heart of TFrameX. Use the `@app.agent` decorator.
 
-  
-
-```python
+```Python
 # In your app setup (app = TFrameXApp(...))
 
 
@@ -461,23 +425,17 @@ async def creative_writer_placeholder():
     pass
 ```
 
-*  **System Prompts:** Guide the LLM's behavior and persona. You can use f-string like template variables (e.g., `{user_name}`) that are filled at runtime.
+* **System Prompts:** Guide the LLM's behavior and persona. You can use f-string like template variables (e.g., `{user_name}`) that are filled at runtime.
 
-*  **Per-Agent LLM:** Assign `llm=your_llm_instance` to give an agent a specific model, different from the app's default.
+* **Per-Agent LLM:** Assign `llm=your_llm_instance` to give an agent a specific model, different from the app's default.
 
-*  **`strip_think_tags=True`:** If your agent's system prompt encourages it to "think out loud" using `<think>...</think>` tags (a common technique for complex reasoning), setting this to `True` will remove those blocks before the final response is returned, keeping the output clean for the end-user.
+* **`strip_think_tags=True`:** If your agent's system prompt encourages it to "think out loud" using `<think>...</think>` tags (a common technique for complex reasoning), setting this to `True` will remove those blocks before the final response is returned, keeping the output clean for the end-user.
 
-  
-
-### 🔧 Defining Tools
-
-  
+### Defining Tools
 
 Equip your agents with tools to interact with the world.
 
-  
-
-```python
+```Python
 @app.tool(description="Gets the current weather for a specific location.")
 async def get_current_weather(location: str, unit: str = "celsius") -> str:
     # In a real app, this would call a weather API
@@ -505,17 +463,11 @@ async def weather_agent_placeholder():
 
 TFrameX automatically generates the necessary schema for the LLM to understand how to call your tools based on function signatures and type hints. The `{available_tools_descriptions}` placeholder in the system prompt will be dynamically replaced with the names and descriptions of the tools available to that specific agent.
 
-  
-
-### 🌊 Orchestrating with Flows
-
-  
+### Orchestrating with Flows
 
 Flows define how agents and patterns are connected to achieve complex tasks.
 
-  
-
-```python
+```Python
 from tframex import Flow, SequentialPattern, ParallelPattern, RouterPattern, DiscussionPattern
 
 # --- Assume Agents are defined (e.g., EchoAgent, UpperCaseAgent, WeatherAgent, CityInfoAgent, SummarizerAgent) ---
@@ -624,17 +576,11 @@ if __name__ == "__main__":
         print("Please ensure 'app' and its 'default_llm' are initialized, and all agents are defined.")
 ```
 
-  
-
-### 🤝 Agent-as-Tool: Building Supervisor Agents
-
-  
+### Agent-as-Tool: Building Supervisor Agents
 
 One of TFrameX's most powerful features is allowing an `LLMAgent` to call *other registered agents* as if they were tools. This enables hierarchical agent structures where a "supervisor" agent can delegate sub-tasks to specialized "worker" agents.
 
-  
-
-```python
+```Python
 # Assuming WeatherAgent and CityInfoAgent are already defined and registered...
 
 
@@ -685,17 +631,11 @@ if __name__ == "__main__":
 
 When you specify `callable_agents`, TFrameX makes these agents available to the `SmartQueryDelegateAgent` as functions it can invoke (via the LLM's tool/function calling mechanism). The `{available_agents_descriptions}` template variable in the system prompt will automatically be populated with the names and descriptions of these callable agents, guiding the supervisor LLM on how and when to use them. The supervisor agent will then receive their responses as tool results and can synthesize a final answer.
 
-  
-
-### 💬 Interactive Chat
-
-  
+### Interactive Chat
 
 Test your flows quickly using the built-in interactive chat mode.
 
-  
-
-```python
+```Python
 async def main_interactive():
     async with app.run_context() as rt:
         # If you have multiple flows, it will ask you to choose one.
@@ -714,40 +654,43 @@ if __name__ == "__main__":
         print("Please ensure 'app' and its 'default_llm' are initialized for interactive chat.")
 ```
 
+***
 
----
-
-## 🏢 Enterprise Features
+## Enterprise Features
 
 TFrameX Enterprise provides production-ready features for enterprise deployments:
 
-### 📊 Comprehensive Metrics & Monitoring
-- **Multi-Backend Support**: Prometheus, StatsD, OpenTelemetry, and custom collectors
-- **Real-Time Metrics**: Track agent performance, tool usage, flow execution times
-- **Distributed Tracing**: Full request tracing with OpenTelemetry integration
-- **Health Monitoring**: Built-in health checks and performance benchmarks
+### Comprehensive Metrics & Monitoring
 
-### 💾 Multi-Backend Data Persistence
-- **Storage Abstraction**: Unified interface supporting multiple backends
-- **Supported Backends**: SQLite, PostgreSQL, S3, and in-memory storage
-- **Auto-Migration**: Seamless data migration between storage backends
-- **Scalable Architecture**: From development SQLite to production PostgreSQL
+* **Multi-Backend Support**: Prometheus, StatsD, OpenTelemetry, and custom collectors
+* **Real-Time Metrics**: Track agent performance, tool usage, flow execution times
+* **Distributed Tracing**: Full request tracing with OpenTelemetry integration
+* **Health Monitoring**: Built-in health checks and performance benchmarks
 
-### 🔐 Enterprise Security
-- **Authentication**: API Key, JWT, OAuth2, and Basic Auth providers
-- **Authorization (RBAC)**: Role-based access control with permission inheritance
-- **Session Management**: Secure session handling with rotation and cleanup
-- **Audit Logging**: Comprehensive audit trails for compliance and security
+### Multi-Backend Data Persistence
 
-### 🛡️ Production-Ready Features
-- **Configuration Management**: YAML/JSON configuration with environment override
-- **Error Handling**: Graceful degradation and comprehensive error handling
-- **Background Services**: Automated cleanup, metrics collection, session management
-- **Docker Support**: Ready-to-deploy containerized applications
+* **Storage Abstraction**: Unified interface supporting multiple backends
+* **Supported Backends**: SQLite, PostgreSQL, S3, and in-memory storage
+* **Auto-Migration**: Seamless data migration between storage backends
+* **Scalable Architecture**: From development SQLite to production PostgreSQL
 
-### 📈 Enterprise Usage
+### Enterprise Security
 
-```python
+* **Authentication**: API Key, JWT, OAuth2, and Basic Auth providers
+* **Authorization (RBAC)**: Role-based access control with permission inheritance
+* **Session Management**: Secure session handling with rotation and cleanup
+* **Audit Logging**: Comprehensive audit trails for compliance and security
+
+### Production-Ready Features
+
+* **Configuration Management**: YAML/JSON configuration with environment override
+* **Error Handling**: Graceful degradation and comprehensive error handling
+* **Background Services**: Automated cleanup, metrics collection, session management
+* **Docker Support**: Ready-to-deploy containerized applications
+
+### Enterprise Usage
+
+```Python
 from tframex.enterprise import EnterpriseApp, load_enterprise_config
 
 # Load enterprise configuration
@@ -779,99 +722,73 @@ async def main():
 
 See the [Enterprise Examples](examples/) and [Enterprise Documentation](docs/ENTERPRISE.md) for detailed usage guides.
 
----
+***
 
-  
-
-## 🌟 Use Cases
-
-  
+## Use Cases
 
 TFrameX is ideal for a wide range of applications:
 
-  
+### Core Applications
 
-*  **Complex Task Decomposition:** Break down large tasks (e.g., "research the impact of AI on healthcare, find three key papers, summarize them, and draft a blog post") into smaller, manageable sub-tasks handled by specialized agents coordinated by a supervisor.
+* **Complex Task Decomposition:** Break down large tasks (e.g., "research the impact of AI on healthcare, find three key papers, summarize them, and draft a blog post") into smaller, manageable sub-tasks handled by specialized agents coordinated by a supervisor.
 
-*  **Multi-Agent Collaboration:**
+* **Multi-Agent Collaboration:**
+  * Simulate debates (Optimist vs. Pessimist vs. Realist)
+  * Collaborative problem-solving teams (e.g., Developer Agent, QA Agent, ProductManager Agent working on a feature)
+  * Creative writing ensembles where different agents contribute different parts of a story
 
-* Simulate debates (Optimist vs. Pessimist vs. Realist).
+* **Tool-Augmented LLM Applications:**
+  * Customer support bots that can query databases, CRM systems, or knowledge bases
+  * Data analysis agents that can execute Python code (via a tool) or fetch real-time financial data
+  * Personal assistants that manage calendars, send emails, or control smart home devices
+  * A Reddit chatbot that can fetch top posts, analyze sentiment, and engage in discussions (see `examples/redditchatbot` for inspiration)
 
-* Collaborative problem-solving teams (e.g., Developer Agent, QA Agent, ProductManager Agent working on a feature).
+* **Dynamic Chatbots:** Create chatbots that can intelligently route user queries to the most appropriate agent or tool based on context and conversation history
 
-* Creative writing ensembles where different agents contribute different parts of a story.
+* **Automated Content Generation Pipelines:** Chain agents for drafting, revising, fact-checking, and formatting content for various platforms
 
-*  **Tool-Augmented LLM Applications:**
+* **Educational Tutors:** Agents specializing in different subjects collaborating to provide comprehensive explanations
 
-* Customer support bots that can query databases, CRM systems, or knowledge bases.
+### Enterprise Applications (with TFrameX Enterprise)
 
-* Data analysis agents that can execute Python code (via a tool) or fetch real-time financial data.
+* **Customer Service Platforms:** Multi-agent support systems with authentication, role-based access, and comprehensive audit trails
 
-* Personal assistants that manage calendars, send emails, or control smart home devices.
+* **Internal Knowledge Systems:** Secure enterprise chatbots with RBAC, session management, and integration with corporate databases
 
-* A Reddit chatbot that can fetch top posts, analyze sentiment, and engage in discussions (see `examples/redditchatbot` for inspiration).
+* **Automated Compliance Systems:** Agent workflows with full audit logging, metrics collection, and regulatory compliance features
 
-*  **Dynamic Chatbots:** Create chatbots that can intelligently route user queries to the most appropriate agent or tool based on context and conversation history.
+* **Production AI Pipelines:** Scalable agent orchestration with monitoring, error handling, and enterprise-grade reliability
 
-*  **Automated Content Generation Pipelines:** Chain agents for drafting, revising, fact-checking, and formatting content for various platforms.
+* **Multi-Tenant SaaS Applications:** Secure, monitored agent services with per-tenant isolation and comprehensive analytics
 
-*  **Educational Tutors:** Agents specializing in different subjects collaborating to provide comprehensive explanations.
+***
 
-*  **Enterprise Applications (with TFrameX Enterprise):**
+## Advanced Concepts
 
-* **Customer Service Platforms:** Multi-agent support systems with authentication, role-based access, and comprehensive audit trails.
+### TFrameXRuntimeContext (`rt`)
 
-* **Internal Knowledge Systems:** Secure enterprise chatbots with RBAC, session management, and integration with corporate databases.
+* Created when you use `async with app.run_context() as rt:`
+* Manages the lifecycle of agent instances and LLM clients for a given execution scope
+* Provides methods like `rt.call_agent()`, `rt.run_flow()`, `rt.call_tool()`
+* Can have its own LLM override, distinct from the app's default or agent-specific LLMs, useful for setting a context-wide LLM for all operations within that `with` block unless an agent has its own override
 
-* **Automated Compliance Systems:** Agent workflows with full audit logging, metrics collection, and regulatory compliance features.
+### FlowContext
 
-* **Production AI Pipelines:** Scalable agent orchestration with monitoring, error handling, and enterprise-grade reliability.
+* Passed between steps in a `Flow`
+* Holds `current_message` (the output of the last step), `history` (all messages exchanged in the current flow execution, including intermediate agent calls), and `shared_data` (a dictionary for patterns/steps to pass arbitrary data or control signals like `STOP_FLOW`)
 
-* **Multi-Tenant SaaS Applications:** Secure, monitored agent services with per-tenant isolation and comprehensive analytics.
+### Template Variables in Prompts & Flows
 
-  
+System prompts for agents can include placeholders like `{variable_name}`.
 
----
+When calling an agent directly or running a flow, you can pass a `template_vars` (for `call_agent`) or `flow_template_vars` (for `run_flow`) dictionary:
 
-  
-
-## 🔬 Advanced Concepts
-
-  
-
-*  **`TFrameXRuntimeContext` (`rt`):**
-
-* Created when you use `async with app.run_context() as rt:`.
-
-* Manages the lifecycle of agent instances and LLM clients for a given execution scope.
-
-* Provides methods like `rt.call_agent()`, `rt.run_flow()`, `rt.call_tool()`.
-
-* Can have its own LLM override, distinct from the app's default or agent-specific LLMs, useful for setting a context-wide LLM for all operations within that `with` block unless an agent has its own override.
-
-  
-
-*  **`FlowContext`:**
-
-* Passed between steps in a `Flow`.
-
-* Holds `current_message` (the output of the last step), `history` (all messages exchanged in the current flow execution, including intermediate agent calls), and `shared_data` (a dictionary for patterns/steps to pass arbitrary data or control signals like `STOP_FLOW`).
-
-  
-
-*  **Template Variables in Prompts & Flows:**
-
-* System prompts for agents can include placeholders like `{variable_name}`.
-
-* When calling an agent directly or running a flow, you can pass a `template_vars` (for `call_agent`) or `flow_template_vars` (for `run_flow`) dictionary:
-
-```python
+```Python
 # For call_agent
 await rt.call_agent(
     "MyAgentWithTemplates",
     input_msg,
     template_vars={"user_name": "Alice", "current_date": "2024-07-15"}
-
 )
 
 # For run_flow
@@ -882,29 +799,26 @@ await rt.run_flow(
 )
 ```
 
-* These variables are made available during system prompt rendering for all agents invoked within that specific call or flow execution, enhancing dynamic behavior and context-awareness. The `system_prompt_template` in an agent's definition (e.g., `@app.agent(system_prompt="Hello {user_name}")`) will be formatted using these variables.
+These variables are made available during system prompt rendering for all agents invoked within that specific call or flow execution, enhancing dynamic behavior and context-awareness. The `system_prompt_template` in an agent's definition (e.g., `@app.agent(system_prompt="Hello {user_name}")`) will be formatted using these variables.
 
-  
+***
 
----
-
-  
-
-## 🤝 Contributing
-
-  
+## Contributing
 
 Contributions are welcome! We're excited to see how the community extends and builds upon TFrameX. Please feel free to open an issue for discussions, bug reports, or feature requests, or submit a pull request.
 
-  
+***
 
----
-
-
-[TframeX Documentation Website](https://tframex.tesslate.com/)
-
-## 📜 License
-
-  
+## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+***
+
+<p align="center">
+  For complete documentation, visit: <a href="https://tframex.tesslate.com/">TFrameX Documentation Website</a>
+</p>
+
+<p align="center">
+  <em>Developed by Tesslate</em>
+</p>
